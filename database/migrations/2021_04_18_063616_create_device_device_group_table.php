@@ -12,16 +12,14 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('device_device_group', function (Blueprint $table) {
             $table->id();
-            $table->string('unique_id')->unique();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->text('device_connection_key');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->unsignedBigInteger('device_id');
+            $table->unsignedBigInteger('device_group_id');
             $table->timestamps();
+
+            $table->foreign('device_id')->references('id')->on('devices')->onDelete('cascade');
+            $table->foreign('device_group_id')->references('id')->on('device_groups')->onDelete('cascade');
         });
     }
 
@@ -32,6 +30,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('device_device_group');
     }
 };
