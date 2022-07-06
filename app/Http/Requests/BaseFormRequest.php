@@ -21,6 +21,6 @@ class BaseFormRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException($this->apiBadRequest(errors: $validator->getMessageBag()->toArray()));
+        throw new HttpResponseException($this->apiUnprocessableEntity(errors: $validator->getMessageBag()->toArray()));
     }
 }

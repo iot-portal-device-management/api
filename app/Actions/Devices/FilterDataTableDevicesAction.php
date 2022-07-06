@@ -3,7 +3,12 @@
 namespace App\Actions\Devices;
 
 use App\Actions\DataTables\CalculateDataTableFinalRowsAction;
+use App\Http\Resources\DeviceCollectionPagination;
+use App\Models\Device;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class FilterDataTableDevicesAction
 {
@@ -18,50 +23,90 @@ class FilterDataTableDevicesAction
     {
         $query = Auth::user()->devices()->with('deviceCategory:id,name', 'deviceStatus:id,name');
 
-        if (isset($data['deviceGroupId'])) $query->deviceGroupId($data['deviceGroupId']);
+//        if (isset($data['deviceGroupId'])) $query->deviceGroupId($data['deviceGroupId']);
+//
+//        if (isset($data['deviceGroupUniqueId'])) $query->deviceGroupUniqueId($data['deviceGroupUniqueId']);
 
-        if (isset($data['deviceGroupUniqueId'])) $query->deviceGroupUniqueId($data['deviceGroupUniqueId']);
+        $relationships = ['deviceCategory', 'deviceStatus'];
 
-        if (isset($data['filters'])) {
-            $filters = json_decode($data['filters']);
+        if (isset($data['sortModel'])) {
+            foreach ($data['sortModel'] as $sortCriterion) {
+                $sortCriterionObject = json_decode($sortCriterion);
 
-            foreach ($filters as $key => $value) {
-                if ($key === 'unique_id') $query->uniqueIdLike($value->value);
+                if (Str::contains($sortCriterionObject->field, '.')) {
+                    $relationAndColumn = explode('.', $sortCriterionObject->field);
+                    $relation = $relationAndColumn[0];
+                    $column = $relationAndColumn[1];
 
-                if ($key === 'name') $query->nameLike($value->value);
+                    if (in_array($relation, $relationships)) {
+                        $query->orderBy(function (QueryBuilder $query) use ($relation, $column) {
+                            $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
 
-                if ($key === 'bios_vendor') $query->biosVendorLike($value->value);
-
-                if ($key === 'bios_version') $query->biosVersionLike($value->value);
-
-                if ($key === 'device_category_id') $query->deviceCategoryId($value->value);
-
-                if ($key === 'device_status_id') $query->deviceStatusId($value->value);
-
-                if ($key === 'globalFilter') {
-                    $query->where(function ($query) use ($value) {
-                        $query->uniqueIdLike($value->value)
-                            ->orWhere->nameLike($value->value)
-                            ->orWhere->biosVendorLike($value->value)
-                            ->orWhere->biosVersionLike($value->value);
-                    });
+                            $query->select(Str::snake($column))
+                                ->from($modelQualifiedName::getTableName())
+                                ->whereColumn($modelQualifiedName::getTableName() . '.id', Device::getTableName() . '.' . Str::snake($relation) . '_id')
+                                ->limit(1);
+                        }, $sortCriterionObject->sort);
+                    }
+                } else {
+                    $snakeCaseField = Str::snake($sortCriterionObject->field);
+                    $query->orderBy($snakeCaseField, $sortCriterionObject->sort);
                 }
             }
         }
 
-        if (isset($data['sortField'])) {
-            if ($data['sortOrder'] === '1')
-                $query->orderBy($data['sortField']);
-            else
-                $query->orderByDesc($data['sortField']);
+        if (isset($data['filterModel'])) {
+            $filterOptions = json_decode($data['filterModel']);
+
+            if (isset($filterOptions->items)) {
+                foreach ($filterOptions->items as $filterItem) {
+                    if (isset($filterItem->value) && $filterItem->value !== '') {
+                        if (Str::contains($filterItem->columnField, '.')) {
+                            $relationAndColumn = explode('.', $filterItem->columnField);
+
+                            $query->whereHas(Str::camel($relationAndColumn[0]), function (EloquentBuilder $query) use ($relationAndColumn, $filterItem) {
+                                $modelQualifiedName = 'App\Models\\' . Str::studly($relationAndColumn[0]);
+                                $query->where($modelQualifiedName::getTableName() . '.' . Str::snake($relationAndColumn[1]), 'ILIKE', "%{$filterItem->value}%");
+                            });
+                        } else {
+                            $query->where(Device::getTableName() . '.' . Str::snake($filterItem->columnField), 'ILIKE', "%{$filterItem->value}%");
+                        }
+                    }
+                }
+            }
+
+            if (isset($filterOptions->quickFilterValues)) {
+                $quickFilterColumns = ['name', 'bios_vendor', 'bios_version', 'deviceCategory:name', 'deviceStatus:name'];
+
+                foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
+                    if (isset($quickFilterValue)) {
+                        $query->where(function (EloquentBuilder $query) use ($quickFilterColumns, $quickFilterValue) {
+                            foreach ($quickFilterColumns as $quickFilterColumn) {
+                                if (Str::contains($quickFilterColumn, ':')) {
+                                    $relationAndColumnsString = explode(':', $quickFilterColumn);
+                                    $relation = $relationAndColumnsString[0];
+                                    $columns = explode(',', $relationAndColumnsString[1]);
+
+                                    foreach ($columns as $column) {
+                                        $query->orWhere->whereHas($relation, function (EloquentBuilder $query) use ($quickFilterValue, $relation, $column) {
+                                            $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
+                                            $query->where($modelQualifiedName::getTableName() . '.' . $column, 'ILIKE', "%{$quickFilterValue}%");
+                                        });
+                                    }
+                                } else {
+                                    $query->orWhere->where(Device::getTableName() . '.' . $quickFilterColumn, 'ILIKE', "%{$quickFilterValue}%");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         }
 
-        if (isset($data['fetchAll']) && $data['fetchAll'] === 'true') {
-            return $query->paginate($query->count());
-        }
-
-        $rows = $this->calculateDataTableFinalRowsAction->execute($data['rows'] ?? null);
-
-        return $query->paginate($rows);
+        $pageSize = $this->calculateDataTableFinalRowsAction->execute($data['pageSize'] ?? null);
+//        if (isset($data['fetchAll']) && $data['fetchAll'] === 'true') {
+//            return $query->paginate($query->count());
+//        }
+        return new DeviceCollectionPagination($query->paginate($pageSize));
     }
 }

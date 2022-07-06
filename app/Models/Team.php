@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
+use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Team extends Model
 {
-    use HasFactory, EloquentGetTableName;
+    use HasFactory, EloquentGetTableName, Uuid;
 
     /**
      * Get the admins that owns the team.

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\DeviceCategoryController;
+use App\Http\Controllers\Api\DeviceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
+require __DIR__ . '/api_auth.php';
+
+// Devices
+Route::delete('/devices', [DeviceController::class, 'destroySelected']);
+
+Route::apiResource('/devices', DeviceController::class);
+
+
+// Device Categories
+Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
+
+
+
+

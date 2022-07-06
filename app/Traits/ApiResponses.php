@@ -27,7 +27,7 @@ trait ApiResponses
         ], $status);
     }
 
-    public function apiInternalServerError($result = [], bool $success = false, $errors = [], $message = [], $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
+    public function apiUnauthorized($result = [], bool $success = false, $errors = [], $message = [], $status = Response::HTTP_UNAUTHORIZED): JsonResponse
     {
         return response()->json([
             'result' => $result,
@@ -37,7 +37,17 @@ trait ApiResponses
         ], $status);
     }
 
-    public function apiUnauthorized($result = [], bool $success = false, $errors = [], $message = [], $status = Response::HTTP_UNAUTHORIZED): JsonResponse
+    public function apiUnprocessableEntity($result = [], bool $success = false, $errors = [], $message = [], $status = Response::HTTP_UNPROCESSABLE_ENTITY): JsonResponse
+    {
+        return response()->json([
+            'result' => $result,
+            'success' => $success,
+            'errors' => $errors,
+            'messages' => $message,
+        ], $status);
+    }
+
+    public function apiInternalServerError($result = [], bool $success = false, $errors = [], $message = [], $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
     {
         return response()->json([
             'result' => $result,
@@ -65,17 +75,17 @@ trait ApiResponses
         return response()->json(['result' => $result], $status);
     }
 
-    public function apiMqttInternalServerError($result = [], $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
-    {
-        return response()->json(['result' => $result], $status);
-    }
-
     public function apiMqttUnauthorized($result = [], $status = Response::HTTP_UNAUTHORIZED): JsonResponse
     {
         return response()->json(['result' => $result], $status);
     }
 
     public function apiMqttNotFound($result = [], $status = Response::HTTP_NOT_FOUND): JsonResponse
+    {
+        return response()->json(['result' => $result], $status);
+    }
+
+    public function apiMqttInternalServerError($result = [], $status = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
     {
         return response()->json(['result' => $result], $status);
     }

@@ -13,8 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('devices', function (Blueprint $table) {
-            $table->id();
-            $table->string('unique_id')->unique();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('bios_release_date')->nullable();
             $table->string('bios_vendor')->nullable();
@@ -27,8 +26,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('total_memory')->nullable();
             $table->text('mqtt_password');
             $table->timestamp('last_seen')->nullable();
-            $table->unsignedBigInteger('device_category_id');
-            $table->unsignedBigInteger('device_status_id');
+            $table->uuid('device_category_id');
+            $table->uuid('device_status_id');
             $table->timestamps();
 
             $table->foreign('device_category_id')->references('id')->on('device_categories')->onDelete('cascade');

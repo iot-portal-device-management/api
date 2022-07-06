@@ -14,7 +14,6 @@ class EventHistoryFactory extends Factory
     public function definition()
     {
         return [
-//            'type' => config('constants.raw_data_types'. '.' . array_rand(config('constants.raw_data_types'))),
             'raw_data' => '{"app":"compose","cmd":"down","containerTag":"hjckhjkhjk"}',
         ];
     }

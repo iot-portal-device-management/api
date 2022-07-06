@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
+use App\Traits\HasBaseCommandRecords;
+use App\Traits\HasBaseEventRecords;
 use App\Traits\HasMqttCredentials;
-use App\Traits\HasUniqueId;
+use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
-    use HasFactory, EloquentGetTableName, HasUniqueId, HasMqttCredentials;
+    use HasFactory, EloquentGetTableName, Uuid, HasMqttCredentials, HasBaseCommandRecords, HasBaseEventRecords;
 
     /**
      * The attributes that are mass assignable.
@@ -47,30 +49,12 @@ class Device extends Model
     public static function boot()
     {
         parent::boot();
+
         static::creating(function ($model) {
-            $uniqueId = self::generateUniqueId();
-            $model->unique_id = $uniqueId;
-            $model->name = $model->name ? $model->name : $uniqueId;
-            $model->mqtt_password = self::generateEncryptedMqttPassword();
+            if ($model->name === null) {
+                $model->setAttribute('name', $model->getKey());
+            }
         });
-
-        static::created(function ($model) {
-            $commandRecords = config('constants.command_records');
-            $eventRecords = config('constants.event_records');
-
-            $model->commands()->createMany($commandRecords);
-            $model->events()->createMany($eventRecords);
-        });
-    }
-
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'unique_id';
     }
 
     public function notFoundMessage()
@@ -192,52 +176,42 @@ class Device extends Model
 
     public function scopeId($query, $value)
     {
-        return $query->where('id', $value);
+        return $query->where($this->getTable() . '.id', $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn('devices.id', $value);
-    }
-
-    public function scopeUniqueId($query, $value)
-    {
-        return $query->where('devices.unique_id', $value);
-    }
-
-    public function scopeUniqueIdLike($query, $value)
-    {
-        return $query->where('devices.unique_id', 'like', "%{$value}%");
+        return $query->whereIn($this->getTable() . '.id', $value);
     }
 
     public function scopeName($query, $value)
     {
-        return $query->where('devices.name', $value);
+        return $query->where($this->getTable() . '.name', $value);
     }
 
-    public function scopeNameLike($query, $value)
+    public function scopeNameILike($query, $value)
     {
-        return $query->where('devices.name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
     }
 
-    public function scopeBiosVendorLike($query, $value)
+    public function scopeBiosVendorILike($query, $value)
     {
-        return $query->where('bios_vendor', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.bios_vendor', 'ILIKE', "%{$value}%");
     }
 
-    public function scopeBiosVersionLike($query, $value)
+    public function scopeBiosVersionILike($query, $value)
     {
-        return $query->where('bios_version', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.bios_version', 'ILIKE', "%{$value}%");
     }
 
     public function scopeDeviceCategoryId($query, $value)
     {
-        return $query->where('device_category_id', $value);
+        return $query->where($this->getTable() . '.device_category_id', $value);
     }
 
     public function scopeDeviceStatusId($query, $value)
     {
-        return $query->where('device_status_id', $value);
+        return $query->where($this->getTable() . '.device_status_id', $value);
     }
 
     public function scopeDeviceGroupId($query, $value)
@@ -256,7 +230,7 @@ class Device extends Model
 
     public function scopeExcludeId($query, $value)
     {
-        return $query->where('devices.id', '!=', $value);
+        return $query->where($this->getTable() . '.id', '!=', $value);
     }
 
     public function scopeUserId($query, $value)

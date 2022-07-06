@@ -13,12 +13,11 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('saved_commands', function (Blueprint $table) {
-            $table->id();
-            $table->string('unique_id')->unique();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('command_name');
             $table->json('payload')->nullable();
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('user_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

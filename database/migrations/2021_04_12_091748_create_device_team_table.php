@@ -13,9 +13,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('device_team', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('device_id');
-            $table->unsignedBigInteger('team_id');
+            $table->uuid('id')->primary();
+            $table->uuid('device_id');
+            $table->uuid('team_id');
             $table->timestamps();
 
             $table->foreign('device_id')->references('id')->on('devices')->onDelete('cascade');

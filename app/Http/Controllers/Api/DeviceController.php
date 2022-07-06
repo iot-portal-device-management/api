@@ -6,6 +6,7 @@ use App\Actions\Commands\TriggerCommandAction;
 use App\Actions\Devices\CreateDeviceAction;
 use App\Actions\Devices\DeleteMultipleDevicesAction;
 use App\Actions\Devices\FilterDataTableDevicesAction;
+use App\Actions\Devices\FindDeviceByIdAction;
 use App\Actions\Devices\FindDeviceByIdOrUniqueIdAction;
 use App\Actions\Devices\RegisterDeviceAction;
 use App\Actions\Devices\UpdateDeviceAction;
@@ -17,10 +18,12 @@ use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\TriggerCommandRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Http\Requests\ValidateDeviceFieldsRequest;
+use App\Http\Resources\DeviceResource;
 use App\Models\Device;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class DeviceController
@@ -47,7 +50,7 @@ class DeviceController extends Controller
      * @param FilterDataTableDevicesAction $filterDataTableDevicesAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDevicesAction $filterDataTableDevicesAction): JsonResponse
+    public function index(Request $request, FilterDataTableDevicesAction $filterDataTableDevicesAction)
     {
         $devices = $filterDataTableDevicesAction->execute($request->all());
 
@@ -71,18 +74,18 @@ class DeviceController extends Controller
     /**
      * Return the specified device.
      *
-     * @param FindDeviceByIdOrUniqueIdAction $findDeviceByIdOrUniqueIdAction
+     * @param FindDeviceByIdAction $findDeviceByIdAction
      * @param string $id
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindDeviceByIdOrUniqueIdAction $findDeviceByIdOrUniqueIdAction, string $id): JsonResponse
+    public function show(FindDeviceByIdAction $findDeviceByIdAction, string $id): JsonResponse
     {
-        $device = $findDeviceByIdOrUniqueIdAction->execute($id);
+        $device = $findDeviceByIdAction->execute($id);
 
         $this->authorize('view', $device);
 
-        return $this->apiOk(['device' => $device]);
+        return $this->apiOk(['device' => new DeviceResource($device)]);
     }
 
     /**

@@ -13,9 +13,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('team_user', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('team_id');
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('id')->primary();
+            $table->uuid('team_id');
+            $table->uuid('user_id');
             $table->integer('role');
             $table->timestamps();
 

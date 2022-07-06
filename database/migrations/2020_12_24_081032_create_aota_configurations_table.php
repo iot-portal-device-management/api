@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('aota_configurations', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('app');
             $table->string('command');
             $table->string('container_tag')->nullable();
@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->string('docker_registry')->nullable();
             $table->string('docker_username')->nullable();
             $table->string('docker_compose_file')->nullable();
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('user_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

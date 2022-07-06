@@ -13,14 +13,14 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('command_histories', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->json('payload')->nullable();
             $table->string('error')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('responded_at')->nullable();
-            $table->unsignedBigInteger('command_id');
-            $table->unsignedBigInteger('device_job_id')->nullable();
+            $table->uuid('command_id');
+            $table->uuid('device_job_id')->nullable();
             $table->timestamps();
 
             $table->foreign('command_id')->references('id')->on('commands')->onDelete('cascade');

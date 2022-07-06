@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('fota_configurations', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('bios_version')->nullable();
             $table->string('fetch');
             $table->string('manufacturer')->nullable();
@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->string('tools_options')->nullable();
             $table->string('vendor')->nullable();
             $table->string('server_username')->nullable();
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('user_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

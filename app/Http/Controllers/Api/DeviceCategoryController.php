@@ -13,6 +13,7 @@ use App\Http\Requests\StoreDeviceCategoryRequest;
 use App\Http\Requests\UpdateDeviceCategoryRequest;
 use App\Http\Requests\ValidateDeviceCategoryFieldsRequest;
 use App\Models\DeviceCategory;
+use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -119,10 +120,10 @@ class DeviceCategoryController extends Controller
      */
     public function options(Request $request): JsonResponse
     {
-        $query = DeviceCategory::query();
+        $query = User::first()->deviceCategories();
 
         if ($request->has('name')) {
-            $query->nameLike($request->name);
+            $query->nameILike($request->name);
         }
 
         return $this->apiOk(['deviceCategories' => $query->getOptions()]);

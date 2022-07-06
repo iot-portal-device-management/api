@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
+use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Command extends Model
 {
-    use HasFactory, EloquentGetTableName;
+    use HasFactory, EloquentGetTableName, Uuid;
 
     /**
      * The attributes that are mass assignable.
@@ -44,16 +45,6 @@ class Command extends Model
     public function scopeIdIn($query, $value)
     {
         return $query->whereIn('devices.id', $value);
-    }
-
-    public function scopeUniqueId($query, $value)
-    {
-        return $query->where('unique_id', $value);
-    }
-
-    public function scopeUniqueIdLike($query, $value)
-    {
-        return $query->where('devices.unique_id', 'like', "%{$value}%");
     }
 
     public function scopeName($query, $value)

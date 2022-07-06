@@ -13,9 +13,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('disk_statistics', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->float('disk_percentage_used');
-            $table->unsignedBigInteger('device_id');
+            $table->uuid('device_id');
             $table->timestamps();
 
             $table->foreign('device_id')->references('id')->on('devices')->onDelete('cascade');

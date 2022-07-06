@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
 use App\Traits\HasDeviceConnectionKey;
-use App\Traits\HasUniqueId;
+use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, EloquentGetTableName, HasUniqueId, HasDeviceConnectionKey;
+    use HasApiTokens, HasFactory, Notifiable, EloquentGetTableName, Uuid, HasDeviceConnectionKey;
 
     /**
      * The attributes that are mass assignable.
@@ -43,15 +43,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public static function boot()
-    {
-        parent::boot();
-        self::creating(function ($model) {
-            $model->unique_id = self::generateUniqueId();
-            $model->device_connection_key = self::generateEncryptedDeviceConnectionKey();
-        });
-    }
 
     /**
      * Get the managed teams for the user.
@@ -141,16 +132,6 @@ class User extends Authenticatable
     public function scopeIdIn($query, $value)
     {
         return $query->whereIn('users.id', $value);
-    }
-
-    public function scopeUniqueId($query, $value)
-    {
-        return $query->where('unique_id', $value);
-    }
-
-    public function scopeUniqueIdLike($query, $value)
-    {
-        return $query->where('unique_id', 'like', "%{$value}%");
     }
 
     public function scopeNameLike($query, $value)

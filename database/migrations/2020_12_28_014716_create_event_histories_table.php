@@ -13,9 +13,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('event_histories', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->json('raw_data');
-            $table->unsignedBigInteger('event_id');
+            $table->uuid('event_id');
             $table->timestamps();
 
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');

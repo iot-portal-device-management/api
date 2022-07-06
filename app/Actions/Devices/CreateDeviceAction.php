@@ -11,7 +11,7 @@ class CreateDeviceAction
     {
         return $user->devices()->create([
             'name' => $data['name'] ?? null,
-            'device_category_id' => $data['device_category'] ?? $user->deviceCategories()->getUncategorized()->id,
+            'device_category_id' => $data['deviceCategory'] ?? $user->deviceCategories()->getUncategorized()->id,
             'device_status_id' => DeviceStatus::getRegistered()->id,
         ]);
     }

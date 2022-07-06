@@ -13,8 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('unique_id')->unique();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->text('device_connection_key');
