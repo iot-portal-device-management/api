@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceId;
+use App\Rules\ExistsDeviceIdForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -37,7 +37,7 @@ class StoreDeviceGroupRequest extends BaseFormRequest
             'devices' => [
                 'required',
                 'array',
-                new ExistsDeviceId,
+                new ExistsDeviceIdForAuthUser,
             ],
         ];
     }

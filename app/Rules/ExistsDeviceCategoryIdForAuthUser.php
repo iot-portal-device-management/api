@@ -6,7 +6,7 @@ use App\Models\DeviceCategory;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 
-class ExistsDeviceCategoryId implements Rule
+class ExistsDeviceCategoryIdForAuthUser implements Rule
 {
     /**
      * Create a new rule instance.

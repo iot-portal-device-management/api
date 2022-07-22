@@ -30,12 +30,12 @@ class MetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction
-     * @param Device $device
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function cpuTemperatures(Request $request, FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction, Device $device): JsonResponse
+    public function cpuTemperatures(Request $request, FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction, string $deviceId): JsonResponse
     {
-        $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($device, $request->only('timeRangeFilter'));
+        $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($deviceId, $request->only('timeRange'));
 
         return $this->apiOk(['cpuTemperatures' => $cpuTemperatures->toArray()]);
     }
@@ -45,12 +45,12 @@ class MetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction
-     * @param Device $device
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function cpuUsages(Request $request, FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction, Device $device): JsonResponse
+    public function cpuUsages(Request $request, FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction, string $deviceId): JsonResponse
     {
-        $cpuUsages = $filterDeviceCpuUsagesAction->execute($device, $request->only('timeRangeFilter'));
+        $cpuUsages = $filterDeviceCpuUsagesAction->execute($deviceId, $request->only('timeRange'));
 
         return $this->apiOk(['cpuUsages' => $cpuUsages->toArray()]);
     }
@@ -60,12 +60,12 @@ class MetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction
-     * @param Device $device
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function diskUsages(Request $request, FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction, Device $device): JsonResponse
+    public function diskUsages(Request $request, FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction, string $deviceId): JsonResponse
     {
-        $diskUsages = $filterDeviceDiskUsagesAction->execute($device, $request->only('timeRangeFilter'));
+        $diskUsages = $filterDeviceDiskUsagesAction->execute($deviceId, $request->only('timeRange'));
 
         return $this->apiOk(['diskUsages' => $diskUsages->toArray()]);
     }
@@ -75,12 +75,12 @@ class MetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction
-     * @param Device $device
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function memoryAvailables(Request $request, FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction, Device $device): JsonResponse
+    public function memoryAvailables(Request $request, FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction, string $deviceId): JsonResponse
     {
-        $availableMemories = $filterDeviceMemoryAvailablesAction->execute($device, $request->only('timeRangeFilter'));
+        $availableMemories = $filterDeviceMemoryAvailablesAction->execute($deviceId, $request->only('timeRange'));
 
         return $this->apiOk(['availableMemories' => $availableMemories->toArray()]);
     }

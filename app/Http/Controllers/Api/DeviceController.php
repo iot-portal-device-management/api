@@ -7,7 +7,6 @@ use App\Actions\Devices\CreateDeviceAction;
 use App\Actions\Devices\DeleteMultipleDevicesAction;
 use App\Actions\Devices\FilterDataTableDevicesAction;
 use App\Actions\Devices\FindDeviceByIdAction;
-use App\Actions\Devices\FindDeviceByIdOrUniqueIdAction;
 use App\Actions\Devices\RegisterDeviceAction;
 use App\Actions\Devices\UpdateDeviceAction;
 use App\Exceptions\InvalidDeviceConnectionKeyException;
@@ -23,7 +22,6 @@ use App\Models\Device;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class DeviceController
@@ -68,7 +66,7 @@ class DeviceController extends Controller
     {
         $device = $createDeviceAction->execute($request->user(), $request->validated());
 
-        return $this->apiOk(['device' => $device]);
+        return $this->apiOk(['device' => new DeviceResource($device)]);
     }
 
     /**
@@ -93,15 +91,15 @@ class DeviceController extends Controller
      *
      * @param UpdateDeviceRequest $request
      * @param UpdateDeviceAction $updateDeviceAction
-     * @param Device $device
+     * @param string $id
      * @return JsonResponse
      */
-    public function update(UpdateDeviceRequest $request, UpdateDeviceAction $updateDeviceAction, Device $device): JsonResponse
+    public function update(UpdateDeviceRequest $request, UpdateDeviceAction $updateDeviceAction, string $id): JsonResponse
     {
-        $success = $updateDeviceAction->execute($device, $request->validated());
+        $success = $updateDeviceAction->execute($id, $request->validated());
 
         return $success
-            ? $this->apiOk(['device' => $device->load('deviceCategory:id,name', 'deviceStatus:id,name')])
+            ? $this->apiOk(['device' => new DeviceResource(Device::id($id)->with('deviceCategory:id,name', 'deviceStatus:id,name')->firstOrFail())])
             : $this->apiInternalServerError('Failed to update device.');
     }
 
@@ -135,12 +133,12 @@ class DeviceController extends Controller
      *
      * @param TriggerCommandRequest $request
      * @param TriggerCommandAction $triggerCommandAction
-     * @param Device $device
+     * @param string $id
      * @return JsonResponse
      */
-    public function commands(TriggerCommandRequest $request, TriggerCommandAction $triggerCommandAction, Device $device): JsonResponse
+    public function commands(TriggerCommandRequest $request, TriggerCommandAction $triggerCommandAction, string $id): JsonResponse
     {
-        $commandHistory = $triggerCommandAction->execute($device, $request->validated());
+        $commandHistory = $triggerCommandAction->execute($id, $request->validated());
 
         return $this->apiOk(['commandHistory' => $commandHistory]);
     }

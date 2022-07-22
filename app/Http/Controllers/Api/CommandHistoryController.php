@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\CommandHistories\FilterDataTableCommandHistoriesAction;
 use App\Http\Controllers\Controller;
-use App\Models\Device;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,13 +26,13 @@ class CommandHistoryController extends Controller
      *
      * @param Request $request
      * @param FilterDataTableCommandHistoriesAction $filterDataTableCommandHistoriesAction
-     * @param Device $device
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableCommandHistoriesAction $filterDataTableCommandHistoriesAction, Device $device): JsonResponse
+    public function index(Request $request, FilterDataTableCommandHistoriesAction $filterDataTableCommandHistoriesAction, string $deviceId): JsonResponse
     {
-        $deviceCommandHistories = $filterDataTableCommandHistoriesAction->execute($device, $request->all());
+        $commandHistories = $filterDataTableCommandHistoriesAction->execute($deviceId, $request->all());
 
-        return $this->apiOk(['deviceCommandHistories' => $deviceCommandHistories]);
+        return $this->apiOk(['commandHistories' => $commandHistories]);
     }
 }

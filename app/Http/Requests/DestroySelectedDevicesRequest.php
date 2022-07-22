@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceId;
+use App\Rules\ExistsDeviceIdForAuthUser;
 
 class DestroySelectedDevicesRequest extends BaseFormRequest
 {
@@ -27,7 +27,7 @@ class DestroySelectedDevicesRequest extends BaseFormRequest
             'ids' => [
                 'required',
                 'array',
-                new ExistsDeviceId,
+                new ExistsDeviceIdForAuthUser,
             ],
         ];
     }

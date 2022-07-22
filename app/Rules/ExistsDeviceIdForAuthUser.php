@@ -6,7 +6,7 @@ use App\Models\Device;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 
-class UniqueDeviceName implements Rule
+class ExistsDeviceIdForAuthUser implements Rule
 {
     /**
      * Create a new rule instance.
@@ -27,7 +27,7 @@ class UniqueDeviceName implements Rule
      */
     public function passes($attribute, $value)
     {
-        return Device::name($value)->userId(Auth::user()->id)->count() <= 0;
+        return Device::id($value)->userId(Auth::user()->id)->count() > 0;
     }
 
     /**
@@ -37,6 +37,6 @@ class UniqueDeviceName implements Rule
      */
     public function message()
     {
-        return 'The :attribute has already been taken.';
+        return 'The selected :attribute is invalid.';
     }
 }

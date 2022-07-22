@@ -4,7 +4,7 @@ namespace App\Actions\CommandHistories;
 
 use App\Models\CommandHistory;
 
-class MarkCommandHistoryAsCompleted
+class MarkCommandHistoryAsCompletedAction
 {
     public function execute(CommandHistory $commandHistory): bool
     {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-class DeviceResource extends JsonResource
+class EventHistoryResource extends JsonResource
 {
     //
 }

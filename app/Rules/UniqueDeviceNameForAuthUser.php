@@ -6,34 +6,28 @@ use App\Models\Device;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 
-class UniqueDeviceNameExcludeOld implements Rule
+class UniqueDeviceNameForAuthUser implements Rule
 {
-    private $oldDeviceId;
-
     /**
      * Create a new rule instance.
      *
-     * @param $oldDeviceId
+     * @return void
      */
-    public function __construct($oldDeviceId)
+    public function __construct()
     {
-        $this->oldDeviceId = $oldDeviceId;
-
+        //
     }
 
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
     {
-        return Device::name($value)
-                ->excludeId($this->oldDeviceId)
-                ->userId(Auth::user()->id)
-                ->count() <= 0;
+        return Device::name($value)->userId(Auth::user()->id)->count() <= 0;
     }
 
     /**

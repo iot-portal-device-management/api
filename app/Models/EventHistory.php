@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
 use App\Traits\Uuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,18 +32,23 @@ class EventHistory extends Model
 
     public function scopeRawDataLike($query, $value)
     {
-        return $query->where('raw_data', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.raw_data', 'like', "%{$value}%");
     }
 
     public function scopeEventId($query, $value)
     {
-        return $query->where('event_id', $value);
+        return $query->where($this->getTable() . '.event_id', $value);
     }
 
     public function scopeCreatedAtBetween($query, $dates)
     {
-        return $query->whereBetween('event_histories.created_at', $dates);
+        return $query->whereBetween($this->getTable() . '.created_at', $dates);
     }
 
-
+    public function scopeDeviceId($query, $value)
+    {
+        return $query->whereHas('event', function (Builder $query) use ($value) {
+            $query->deviceId($value);
+        });
+    }
 }

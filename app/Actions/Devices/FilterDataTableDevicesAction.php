@@ -27,7 +27,7 @@ class FilterDataTableDevicesAction
 //
 //        if (isset($data['deviceGroupUniqueId'])) $query->deviceGroupUniqueId($data['deviceGroupUniqueId']);
 
-        $relationships = ['deviceCategory', 'deviceStatus'];
+        $relations = ['deviceCategory', 'deviceStatus'];
 
         if (isset($data['sortModel'])) {
             foreach ($data['sortModel'] as $sortCriterion) {
@@ -38,7 +38,7 @@ class FilterDataTableDevicesAction
                     $relation = $relationAndColumn[0];
                     $column = $relationAndColumn[1];
 
-                    if (in_array($relation, $relationships)) {
+                    if (in_array($relation, $relations)) {
                         $query->orderBy(function (QueryBuilder $query) use ($relation, $column) {
                             $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
 

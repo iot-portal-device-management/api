@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceCategoryId;
-use App\Rules\UniqueDeviceName;
+use App\Rules\ExistsDeviceCategoryIdForAuthUser;
+use App\Rules\UniqueDeviceNameForAuthUser;
 
 class StoreDeviceRequest extends BaseFormRequest
 {
@@ -29,11 +29,11 @@ class StoreDeviceRequest extends BaseFormRequest
                 'required',
                 'string',
                 'max:255',
-                new UniqueDeviceName,
+                new UniqueDeviceNameForAuthUser,
             ],
             'deviceCategory' => [
                 'required',
-                new ExistsDeviceCategoryId,
+                new ExistsDeviceCategoryIdForAuthUser,
             ],
         ];
     }

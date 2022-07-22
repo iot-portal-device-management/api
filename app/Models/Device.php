@@ -221,13 +221,6 @@ class Device extends Model
         });
     }
 
-    public function scopeDeviceGroupUniqueId($query, $value)
-    {
-        return $query->whereHas('deviceGroups', function (Builder $query) use ($value) {
-            $query->where('device_groups.unique_id', $value);
-        });
-    }
-
     public function scopeExcludeId($query, $value)
     {
         return $query->where($this->getTable() . '.id', '!=', $value);

@@ -39,22 +39,37 @@ class Command extends Model
 
     public function scopeId($query, $value)
     {
-        return $query->where('id', $value);
+        return $query->where($this->getTable() . '.id', $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn('devices.id', $value);
+        return $query->whereIn($this->getTable() . '.id', $value);
     }
 
     public function scopeName($query, $value)
     {
-        return $query->where('name', $value);
+        return $query->where($this->getTable() . '.name', $value);
     }
 
-    public function scopeNameLike($query, $value)
+    public function scopeNameILike($query, $value)
     {
-        return $query->where('name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
+    }
+
+    public function scopeMethodName($query, $value)
+    {
+        return $query->where($this->getTable() . '.method_name', $value);
+    }
+
+    public function scopeMethodNameILike($query, $value)
+    {
+        return $query->where($this->getTable() . '.method_name', 'ILIKE', "%{$value}%");
+    }
+
+    public function scopeDeviceId($query, $value)
+    {
+        return $query->where($this->getTable() . '.device_id', $value);
     }
 
     public function scopeGetOptions($query)

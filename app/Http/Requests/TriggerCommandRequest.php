@@ -23,7 +23,7 @@ class TriggerCommandRequest extends BaseFormRequest
      */
     public function rules()
     {
-        $deviceId = $this->route('device')->id;
+        $deviceId = $this->route('id');
 
         return [
             'command' => [
@@ -33,7 +33,9 @@ class TriggerCommandRequest extends BaseFormRequest
                     return $query->where('device_id', $deviceId);
                 }),
             ],
-            'payload' => 'nullable',
+            'payload' => [
+                'nullable',
+            ],
         ];
     }
 }

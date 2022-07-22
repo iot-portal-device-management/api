@@ -2,17 +2,17 @@
 
 namespace App\Actions\Metrics;
 
-use App\Models\Device;
+use App\Models\TemperatureStatistic;
 use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceCpuTemperaturesAction
 {
-    public function execute(Device $device, array $data): Collection
+    public function execute(string $deviceId, array $data): Collection
     {
-        $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
+        $timeRange = (int)($data['timeRange'] ?? 1);
 
-        $cpuTemperatures = $device->temperatureStatistics()
-            ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
+        $cpuTemperatures = TemperatureStatistic::deviceId($deviceId)
+            ->whereBetween('created_at', [now()->subHours($timeRange), now()])
             ->orderBy('created_at')
             ->get(['id', 'temperature', 'created_at']);
 

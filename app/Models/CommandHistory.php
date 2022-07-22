@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
 use App\Traits\Uuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,21 +56,28 @@ class CommandHistory extends Model
 
     public function scopePayloadLike($query, $value)
     {
-        return $query->where('payload', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.payload', 'like', "%{$value}%");
     }
 
     public function scopeCommandId($query, $value)
     {
-        return $query->where('command_id', $value);
+        return $query->where($this->getTable() . '.command_id', $value);
     }
 
     public function scopeRespondedAtBetween($query, $dates)
     {
-        return $query->whereBetween('responded_at', $dates);
+        return $query->whereBetween($this->getTable() . '.responded_at', $dates);
     }
 
     public function scopeCreatedAtBetween($query, $dates)
     {
-        return $query->whereBetween('command_histories.created_at', $dates);
+        return $query->whereBetween($this->getTable() . '.created_at', $dates);
+    }
+
+    public function scopeDeviceId($query, $value)
+    {
+        return $query->whereHas('command', function (Builder $query) use ($value) {
+            $query->deviceId($value);
+        });
     }
 }

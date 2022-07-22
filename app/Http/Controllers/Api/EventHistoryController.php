@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\EventHistories\FilterDataTableEventHistoriesAction;
 use App\Http\Controllers\Controller;
-use App\Models\Device;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,13 +26,13 @@ class EventHistoryController extends Controller
      *
      * @param Request $request
      * @param FilterDataTableEventHistoriesAction $filterDataTableEventHistoriesAction
-     * @param Device $device
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableEventHistoriesAction $filterDataTableEventHistoriesAction, Device $device): JsonResponse
+    public function index(Request $request, FilterDataTableEventHistoriesAction $filterDataTableEventHistoriesAction, string $deviceId): JsonResponse
     {
-        $deviceEventHistories = $filterDataTableEventHistoriesAction->execute($device, $request->all());
+        $eventHistories = $filterDataTableEventHistoriesAction->execute($deviceId, $request->all());
 
-        return $this->apiOk(['deviceEventHistories' => $deviceEventHistories]);
+        return $this->apiOk(['eventHistories' => $eventHistories]);
     }
 }

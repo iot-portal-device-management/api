@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\UniqueDeviceName;
+use App\Rules\UniqueDeviceNameForAuthUser;
 
 class ValidateDeviceFieldsRequest extends BaseFormRequest
 {
@@ -28,7 +28,7 @@ class ValidateDeviceFieldsRequest extends BaseFormRequest
                 'nullable',
                 'string',
                 'max:255',
-                new UniqueDeviceName,
+                new UniqueDeviceNameForAuthUser,
             ]
         ];
     }

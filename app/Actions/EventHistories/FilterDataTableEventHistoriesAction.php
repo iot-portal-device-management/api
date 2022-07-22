@@ -3,7 +3,11 @@
 namespace App\Actions\EventHistories;
 
 use App\Actions\DataTables\CalculateDataTableFinalRowsAction;
-use App\Models\Device;
+use App\Http\Resources\EventHistoryCollectionPagination;
+use App\Models\EventHistory;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Str;
 
 class FilterDataTableEventHistoriesAction
 {
@@ -14,40 +18,88 @@ class FilterDataTableEventHistoriesAction
         $this->calculateDataTableFinalRowsAction = $calculateDataTableFinalRowsAction;
     }
 
-    public function execute(Device $device, array $data)
+    public function execute(string $deviceId, array $data)
     {
-        $query = $device->eventHistories()->with('event:id,name');
+        $query = EventHistory::deviceId($deviceId)->with('event:id,name');
 
-        if (isset($data['filters'])) {
-            $filters = json_decode($data['filters']);
+        $relations = ['event'];
 
-            foreach ($filters as $key => $value) {
-                if ($key === 'raw_data') $query->rawDataLike($value->value);
+        if (isset($data['sortModel'])) {
+            foreach ($data['sortModel'] as $sortCriterion) {
+                $sortCriterionObject = json_decode($sortCriterion);
 
-                if ($key === 'event_id') $query->eventId($value->value);
+                if (Str::contains($sortCriterionObject->field, '.')) {
+                    $relationAndColumn = explode('.', $sortCriterionObject->field);
+                    $relation = $relationAndColumn[0];
+                    $column = $relationAndColumn[1];
 
-                if ($key === 'created_at') {
-                    $dates = explode(" - ", $value->value);
-                    $query->createdAtBetween($dates);
-                }
+                    if (in_array($relation, $relations)) {
+                        $query->orderBy(function (QueryBuilder $query) use ($relation, $column) {
+                            $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
 
-                if ($key === 'globalFilter') {
-                    $query->where(function ($query) use ($value) {
-                        $query->rawDataLike($value->value);
-                    });
+                            $query->select(Str::snake($column))
+                                ->from($modelQualifiedName::getTableName())
+                                ->whereColumn($modelQualifiedName::getTableName() . '.id', EventHistory::getTableName() . '.' . Str::snake($relation) . '_id')
+                                ->limit(1);
+                        }, $sortCriterionObject->sort);
+                    }
+                } else {
+                    $snakeCaseField = Str::snake($sortCriterionObject->field);
+                    $query->orderBy($snakeCaseField, $sortCriterionObject->sort);
                 }
             }
         }
 
-        if (isset($data['sortField'])) {
-            if ($data['sortOrder'] === '1')
-                $query->orderBy($data['sortField']);
-            else
-                $query->orderByDesc($data['sortField']);
+        if (isset($data['filterModel'])) {
+            $filterOptions = json_decode($data['filterModel']);
+
+            if (isset($filterOptions->items)) {
+                foreach ($filterOptions->items as $filterItem) {
+                    if (isset($filterItem->value) && $filterItem->value !== '') {
+                        if (Str::contains($filterItem->columnField, '.')) {
+                            $relationAndColumn = explode('.', $filterItem->columnField);
+
+                            $query->whereHas(Str::camel($relationAndColumn[0]), function (EloquentBuilder $query) use ($relationAndColumn, $filterItem) {
+                                $modelQualifiedName = 'App\Models\\' . Str::studly($relationAndColumn[0]);
+                                $query->where($modelQualifiedName::getTableName() . '.' . Str::snake($relationAndColumn[1]), 'ILIKE', "%{$filterItem->value}%");
+                            });
+                        } else {
+                            $query->where(EventHistory::getTableName() . '.' . Str::snake($filterItem->columnField), 'ILIKE', "%{$filterItem->value}%");
+                        }
+                    }
+                }
+            }
+
+            if (isset($filterOptions->quickFilterValues)) {
+                $quickFilterColumns = ['raw_data', 'event:name'];
+
+                foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
+                    if (isset($quickFilterValue)) {
+                        $query->where(function (EloquentBuilder $query) use ($quickFilterColumns, $quickFilterValue) {
+                            foreach ($quickFilterColumns as $quickFilterColumn) {
+                                if (Str::contains($quickFilterColumn, ':')) {
+                                    $relationAndColumnsString = explode(':', $quickFilterColumn);
+                                    $relation = $relationAndColumnsString[0];
+                                    $columns = explode(',', $relationAndColumnsString[1]);
+
+                                    foreach ($columns as $column) {
+                                        $query->orWhere->whereHas($relation, function (EloquentBuilder $query) use ($quickFilterValue, $relation, $column) {
+                                            $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
+                                            $query->where($modelQualifiedName::getTableName() . '.' . $column, 'ILIKE', "%{$quickFilterValue}%");
+                                        });
+                                    }
+                                } else {
+                                    $query->orWhere->where(EventHistory::getTableName() . '.' . $quickFilterColumn, 'ILIKE', "%{$quickFilterValue}%");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         }
 
-        $rows = $this->calculateDataTableFinalRowsAction->execute($data['rows'] ?? null);
+        $pageSize = $this->calculateDataTableFinalRowsAction->execute($data['rows'] ?? null);
 
-        return $query->paginate($rows);
+        return new EventHistoryCollectionPagination($query->paginate($pageSize));
     }
 }

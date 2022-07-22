@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceCategoryId;
-use App\Rules\UniqueDeviceNameExcludeOld;
+use App\Rules\ExistsDeviceCategoryIdForAuthUser;
+use App\Rules\UniqueDeviceNameExcludeOldForAuthUser;
 
 class UpdateDeviceRequest extends BaseFormRequest
 {
@@ -29,11 +29,11 @@ class UpdateDeviceRequest extends BaseFormRequest
                 'nullable',
                 'string',
                 'max:255',
-                new UniqueDeviceNameExcludeOld($this->route('device')->id),
+                new UniqueDeviceNameExcludeOldForAuthUser($this->route('id')),
             ],
-            'device_category' => [
+            'deviceCategory' => [
                 'nullable',
-                new ExistsDeviceCategoryId,
+                new ExistsDeviceCategoryIdForAuthUser,
             ],
         ];
     }

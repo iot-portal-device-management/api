@@ -41,12 +41,12 @@ class Event extends Model
 
     public function scopeName($query, $value)
     {
-        return $query->where('name', $value);
+        return $query->where($this->getTable() . '.name', $value);
     }
 
     public function scopeNameLike($query, $value)
     {
-        return $query->where('name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'like', "%{$value}%");
     }
 
     public function scopeProperty($query)
@@ -57,6 +57,11 @@ class Event extends Model
     public function scopeTelemetry($query)
     {
         return $query->name(self::EVENT_TELEMETRY);
+    }
+
+    public function scopeDeviceId($query, $value)
+    {
+        return $query->where($this->getTable() . '.device_id', $value);
     }
 
     public function scopeGetProperty($query)

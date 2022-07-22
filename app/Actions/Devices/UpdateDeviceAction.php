@@ -6,11 +6,13 @@ use App\Models\Device;
 
 class UpdateDeviceAction
 {
-    public function execute(Device $device, array $data): bool
+    public function execute(string $id, array $data): bool
     {
-        return $device->update([
-            'name' => $data['name'] ?? $device->name,
-            'device_category_id' => $data['device_category'] ?? $device->device_category_id,
-        ]);
+        $newDevice = [];
+
+        if ($data['name']) $newDevice['name'] = $data['name'];
+        if ($data['deviceCategory']) $newDevice['device_category_id'] = $data['deviceCategory'];
+
+        return Device::id($id)->update($newDevice);
     }
 }

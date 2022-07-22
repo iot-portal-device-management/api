@@ -27,4 +27,9 @@ class MemoryStatistic extends Model
     {
         return $this->belongsTo(Device::class);
     }
+
+    public function scopeDeviceId($query, $value)
+    {
+        return $query->where($this->getTable() . '.device_id', $value);
+    }
 }

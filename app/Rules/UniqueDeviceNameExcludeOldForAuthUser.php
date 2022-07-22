@@ -6,16 +6,19 @@ use App\Models\Device;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 
-class ExistsDeviceId implements Rule
+class UniqueDeviceNameExcludeOldForAuthUser implements Rule
 {
+    private string $oldDeviceId;
+
     /**
      * Create a new rule instance.
      *
-     * @return void
+     * @param $oldDeviceId
      */
-    public function __construct()
+    public function __construct($oldDeviceId)
     {
-        //
+        $this->oldDeviceId = $oldDeviceId;
+
     }
 
     /**
@@ -27,7 +30,10 @@ class ExistsDeviceId implements Rule
      */
     public function passes($attribute, $value)
     {
-        return Device::id($value)->userId(Auth::user()->id)->count() > 0;
+        return Device::name($value)
+                ->excludeId($this->oldDeviceId)
+                ->userId(Auth::user()->id)
+                ->count() <= 0;
     }
 
     /**
@@ -37,6 +43,6 @@ class ExistsDeviceId implements Rule
      */
     public function message()
     {
-        return 'The selected :attribute is invalid.';
+        return 'The :attribute has already been taken.';
     }
 }

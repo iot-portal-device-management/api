@@ -2,16 +2,16 @@
 
 namespace App\Actions\Metrics;
 
-use App\Models\Device;
+use App\Models\CpuStatistic;
 use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceCpuUsagesAction
 {
-    public function execute(Device $device, array $data): Collection
+    public function execute(string $deviceId, array $data): Collection
     {
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
-        $cpuUsages = $device->cpuStatistics()
+        $cpuUsages = CpuStatistic::deviceId($deviceId)
             ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
             ->orderBy('created_at')
             ->get(['id', 'system_cpu_percentage', 'created_at']);
