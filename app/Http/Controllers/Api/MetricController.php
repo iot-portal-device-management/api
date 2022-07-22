@@ -7,7 +7,6 @@ use App\Actions\Metrics\FilterDeviceCpuUsagesAction;
 use App\Actions\Metrics\FilterDeviceDiskUsagesAction;
 use App\Actions\Metrics\FilterDeviceMemoryAvailablesAction;
 use App\Http\Controllers\Controller;
-use App\Models\Device;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
