@@ -34,7 +34,7 @@ class UpdateDeviceGroupRequest extends BaseFormRequest
                     return $query->where('user_id', Auth::user()->id);
                 })->ignore($this->route('deviceGroup')->id),
             ],
-            'devices' => [
+            'deviceIds' => [
                 'required',
                 'array',
                 new ExistsDeviceIdForAuthUser,

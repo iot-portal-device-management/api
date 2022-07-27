@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\CommandHistoryController;
 use App\Http\Controllers\Api\DeviceCategoryController;
 use App\Http\Controllers\Api\DeviceController;
+use App\Http\Controllers\Api\DeviceGroupController;
 use App\Http\Controllers\Api\EventHistoryController;
 use App\Http\Controllers\Api\MetricController;
+use App\Http\Controllers\Api\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +27,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 require __DIR__ . '/api_auth.php';
 
+
 // Devices
 Route::get('/devices', [DeviceController::class, 'index']);
 
@@ -35,6 +38,18 @@ Route::get('/devices/{id}', [DeviceController::class, 'show']);
 Route::match(['put', 'patch'], '/devices/{id}', [DeviceController::class, 'update']);
 
 Route::delete('/devices', [DeviceController::class, 'destroySelected']);
+
+
+// Device Groups
+Route::get('/device/groups', [DeviceGroupController::class, 'index']);
+
+Route::post('/device/groups', [DeviceGroupController::class, 'store']);
+
+Route::get('/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'show']);
+
+Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'update']);
+
+Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected']);
 
 
 // Device Categories
@@ -59,3 +74,7 @@ Route::get('/devices/{deviceId}/metrics/memory/availables', [MetricController::c
 Route::get('/devices/{deviceId}/commands/histories', [CommandHistoryController::class, 'index']);
 
 Route::get('/devices/{deviceId}/events/histories', [EventHistoryController::class, 'index']);
+
+
+
+//Route::get('/test', [TestController::class, 'index']);

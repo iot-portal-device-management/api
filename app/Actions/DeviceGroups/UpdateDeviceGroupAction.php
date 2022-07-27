@@ -2,18 +2,27 @@
 
 namespace App\Actions\DeviceGroups;
 
-use App\Models\DeviceGroup;
-
 class UpdateDeviceGroupAction
 {
-    public function execute(DeviceGroup $deviceGroup, array $data): bool
+    private FindDeviceGroupByIdAction $findDeviceGroupByIdAction;
+
+    public function __construct(FindDeviceGroupByIdAction $findDeviceGroupByIdAction)
     {
-        $success = $deviceGroup->update([
-            'name' => $data['name'] ?? $deviceGroup->name,
-        ]);
+        $this->findDeviceGroupByIdAction = $findDeviceGroupByIdAction;
+    }
 
-        $deviceGroup->devices()->sync($data['devices']);
+    public function execute(string $deviceGroupId, array $data): bool
+    {
+        $deviceGroup = $this->findDeviceGroupByIdAction->execute($deviceGroupId);
 
-        return $success;
+        if ($data['name']) {
+            $deviceGroup->update([
+                'name' => $data['name'],
+            ]);
+        }
+
+        $deviceGroup->devices()->sync($data['deviceIds']);
+
+        return true;
     }
 }

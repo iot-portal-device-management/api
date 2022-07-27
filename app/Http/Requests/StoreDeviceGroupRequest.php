@@ -34,7 +34,7 @@ class StoreDeviceGroupRequest extends BaseFormRequest
                     return $query->where('user_id', Auth::user()->id);
                 }),
             ],
-            'devices' => [
+            'deviceIds' => [
                 'required',
                 'array',
                 new ExistsDeviceIdForAuthUser,
