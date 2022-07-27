@@ -71,7 +71,7 @@ class FilterDataTableCommandHistoriesAction
             }
 
             if (isset($filterOptions->quickFilterValues)) {
-                $quickFilterColumns = ['payload', 'command:name'];
+                $quickFilterColumns = ['id', 'payload', 'command:name'];
 
                 foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
                     if (isset($quickFilterValue)) {

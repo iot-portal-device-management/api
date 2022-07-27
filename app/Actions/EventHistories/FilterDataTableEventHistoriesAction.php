@@ -71,7 +71,7 @@ class FilterDataTableEventHistoriesAction
             }
 
             if (isset($filterOptions->quickFilterValues)) {
-                $quickFilterColumns = ['raw_data', 'event:name'];
+                $quickFilterColumns = ['id', 'raw_data', 'event:name'];
 
                 foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
                     if (isset($quickFilterValue)) {

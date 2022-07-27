@@ -72,7 +72,7 @@ class FilterDataTableDeviceGroupAction
             }
 
             if (isset($filterOptions->quickFilterValues)) {
-                $quickFilterColumns = ['name'];
+                $quickFilterColumns = ['id', 'name'];
 
                 foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
                     if (isset($quickFilterValue)) {

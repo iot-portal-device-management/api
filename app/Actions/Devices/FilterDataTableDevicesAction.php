@@ -76,7 +76,7 @@ class FilterDataTableDevicesAction
             }
 
             if (isset($filterOptions->quickFilterValues)) {
-                $quickFilterColumns = ['name', 'bios_vendor', 'bios_version', 'deviceCategory:name', 'deviceStatus:name'];
+                $quickFilterColumns = ['id', 'name', 'bios_vendor', 'bios_version', 'deviceCategory:name', 'deviceStatus:name'];
 
                 foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
                     if (isset($quickFilterValue)) {
