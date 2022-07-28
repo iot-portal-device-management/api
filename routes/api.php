@@ -51,6 +51,8 @@ Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupCon
 
 Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected']);
 
+Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex']);
+
 
 // Device Categories
 Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);

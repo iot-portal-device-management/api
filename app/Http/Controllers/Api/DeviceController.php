@@ -114,7 +114,9 @@ class DeviceController extends Controller
     {
         $success = $deleteMultipleDevicesAction->execute($request->ids);
 
-        return $this->apiOk([], $success);
+        return $success
+            ? $this->apiOk()
+            : $this->apiInternalServerError('Failed to delete devices');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\DeviceGroups\FindDeviceGroupByIdAction;
 use App\Rules\ExistsDeviceIdForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -23,8 +24,10 @@ class UpdateDeviceGroupRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(FindDeviceGroupByIdAction $findDeviceGroupByIdAction)
     {
+        $existingDeviceGroup = $findDeviceGroupByIdAction->execute($this->route('deviceGroupId'));
+
         return [
             'name' => [
                 'required',
@@ -32,7 +35,7 @@ class UpdateDeviceGroupRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('device_groups', 'name')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
-                })->ignore($this->route('deviceGroup')->id),
+                })->ignore($existingDeviceGroup->id),
             ],
             'deviceIds' => [
                 'required',

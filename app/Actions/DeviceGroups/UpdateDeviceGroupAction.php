@@ -2,6 +2,8 @@
 
 namespace App\Actions\DeviceGroups;
 
+use App\Models\DeviceGroup;
+
 class UpdateDeviceGroupAction
 {
     private FindDeviceGroupByIdAction $findDeviceGroupByIdAction;
@@ -21,7 +23,13 @@ class UpdateDeviceGroupAction
             ]);
         }
 
-        $deviceGroup->devices()->sync($data['deviceIds']);
+        $deviceRows = [];
+
+        foreach ($data['deviceIds'] as $deviceId) {
+            $deviceRows[$deviceId] = ['id' => DeviceGroup::generateId()];
+        }
+
+        $deviceGroup->devices()->sync($deviceRows);
 
         return true;
     }

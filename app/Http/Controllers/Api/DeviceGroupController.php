@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\DeviceGroups\CreateDeviceGroupAction;
 use App\Actions\DeviceGroups\DeleteMultipleDeviceGroupsAction;
 use App\Actions\DeviceGroups\FilterDataTableDeviceGroupAction;
+use App\Actions\DeviceGroups\FilterDataTableDeviceGroupDevicesAction;
 use App\Actions\DeviceGroups\FindDeviceGroupByIdAction;
 use App\Actions\DeviceGroups\UpdateDeviceGroupAction;
 use App\Http\Controllers\Controller;
@@ -109,8 +110,26 @@ class DeviceGroupController extends Controller
     {
         $success = $deleteMultipleDeviceGroupsAction->execute($request->ids);
 
-        return $this->apiOk([], $success);
+        return $success
+            ? $this->apiOk()
+            : $this->apiInternalServerError('Failed to delete device groups');
     }
+
+    /**
+     * Return a listing of the device group devices.
+     *
+     * @param Request $request
+     * @param FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction
+     * @param string $deviceGroupId
+     * @return JsonResponse
+     */
+    public function deviceGroupDevicesIndex(Request $request, FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction, string $deviceGroupId): JsonResponse
+    {
+        $deviceGroupDevices = $filterDataTableDeviceGroupDevicesAction->execute($deviceGroupId, $request->all());
+
+        return $this->apiOk(['deviceGroupDevices' => $deviceGroupDevices]);
+    }
+
 
     /**
      * Return device group options for user.
