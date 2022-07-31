@@ -2,14 +2,33 @@
 
 namespace App\Actions\DeviceCategories;
 
-use App\Models\DeviceCategory;
+use App\Models\Device;
 
 class UpdateDeviceCategoryAction
 {
-    public function execute(DeviceCategory $deviceCategory, array $data): bool
+    private FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction;
+
+    public function __construct(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction)
     {
-        return $deviceCategory->update([
-            'name' => $data['name'] ?? $deviceCategory->name,
-        ]);
+        $this->findDeviceCategoryByIdAction = $findDeviceCategoryByIdAction;
+    }
+
+    public function execute(string $deviceCategoryId, array $data): bool
+    {
+        $deviceCategory = $this->findDeviceCategoryByIdAction->execute($deviceCategoryId);
+
+        if (isset($data['name'])) {
+            $deviceCategory->update([
+                'name' => $data['name'],
+            ]);
+        }
+
+        if (isset($data['deviceIds'])) {
+            Device::idIn($data['deviceIds'])->update([
+                'device_category_id' => $deviceCategory->id,
+            ]);
+        }
+
+        return true;
     }
 }

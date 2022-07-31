@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\DeviceCategories\FindDeviceCategoryByIdAction;
+use App\Rules\ExistsDeviceIdForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -20,10 +22,13 @@ class UpdateDeviceCategoryRequest extends BaseFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
      * @return array
      */
-    public function rules()
+    public function rules(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction)
     {
+        $existingDeviceCategory = $findDeviceCategoryByIdAction->execute($this->route('deviceCategoryId'));
+
         return [
             'name' => [
                 'required',
@@ -31,7 +36,12 @@ class UpdateDeviceCategoryRequest extends BaseFormRequest
                 'max:255',
                 Rule::unique('device_categories', 'name')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
-                })->ignore($this->route('deviceCategory')->id),
+                })->ignore($existingDeviceCategory->id),
+            ],
+            'deviceIds' => [
+                'nullable',
+                'array',
+                new ExistsDeviceIdForAuthUser,
             ],
         ];
     }

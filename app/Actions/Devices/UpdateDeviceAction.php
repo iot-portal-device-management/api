@@ -10,8 +10,8 @@ class UpdateDeviceAction
     {
         $newDevice = [];
 
-        if ($data['name']) $newDevice['name'] = $data['name'];
-        if ($data['deviceCategory']) $newDevice['device_category_id'] = $data['deviceCategory'];
+        if (isset($data['name'])) $newDevice['name'] = $data['name'];
+        if (isset($data['deviceCategory'])) $newDevice['device_category_id'] = $data['deviceCategory'];
 
         return Device::id($id)->update($newDevice);
     }

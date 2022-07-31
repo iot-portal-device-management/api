@@ -3,14 +3,14 @@
 namespace App\Actions\DeviceCategories;
 
 use App\Actions\DataTables\CalculateDataTableFinalRowsAction;
-use App\Http\Resources\DeviceCategoryCollectionPagination;
-use App\Models\DeviceCategory;
+use App\Http\Resources\DeviceCollectionPagination;
+use App\Models\Device;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class FilterDataTableDeviceCategoriesAction
+class FilterDataTableDeviceCategoryDevicesAction
 {
     private CalculateDataTableFinalRowsAction $calculateDataTableFinalRowsAction;
 
@@ -19,11 +19,14 @@ class FilterDataTableDeviceCategoriesAction
         $this->calculateDataTableFinalRowsAction = $calculateDataTableFinalRowsAction;
     }
 
-    public function execute(array $data)
+    public function execute(string $deviceCategoryId, array $data)
     {
-        $query = Auth::user()->deviceCategories();
+        $query = Auth::user()
+            ->devices()
+            ->with('deviceCategory:id,name', 'deviceStatus:id,name')
+            ->deviceCategoryId($deviceCategoryId);
 
-        $relations = [];
+        $relations = ['deviceCategory', 'deviceStatus'];
 
         if (isset($data['sortModel'])) {
             foreach ($data['sortModel'] as $sortCriterion) {
@@ -40,7 +43,7 @@ class FilterDataTableDeviceCategoriesAction
 
                             $query->select(Str::snake($column))
                                 ->from($modelQualifiedName::getTableName())
-                                ->whereColumn($modelQualifiedName::getTableName() . '.id', DeviceCategory::getTableName() . '.' . Str::snake($relation) . '_id')
+                                ->whereColumn($modelQualifiedName::getTableName() . '.id', Device::getTableName() . '.' . Str::snake($relation) . '_id')
                                 ->limit(1);
                         }, $sortCriterionObject->sort);
                     }
@@ -65,14 +68,14 @@ class FilterDataTableDeviceCategoriesAction
                                 $query->where($modelQualifiedName::getTableName() . '.' . Str::snake($relationAndColumn[1]), 'ILIKE', "%{$filterItem->value}%");
                             });
                         } else {
-                            $query->where(DeviceCategory::getTableName() . '.' . Str::snake($filterItem->columnField), 'ILIKE', "%{$filterItem->value}%");
+                            $query->where(Device::getTableName() . '.' . Str::snake($filterItem->columnField), 'ILIKE', "%{$filterItem->value}%");
                         }
                     }
                 }
             }
 
             if (isset($filterOptions->quickFilterValues)) {
-                $quickFilterColumns = ['id', 'name'];
+                $quickFilterColumns = ['id', 'name', 'bios_vendor', 'bios_version', 'deviceCategory:name', 'deviceStatus:name'];
 
                 foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
                     if (isset($quickFilterValue)) {
@@ -90,7 +93,7 @@ class FilterDataTableDeviceCategoriesAction
                                         });
                                     }
                                 } else {
-                                    $query->orWhere->where(DeviceCategory::getTableName() . '.' . $quickFilterColumn, 'ILIKE', "%{$quickFilterValue}%");
+                                    $query->orWhere->where(Device::getTableName() . '.' . $quickFilterColumn, 'ILIKE', "%{$quickFilterValue}%");
                                 }
                             }
                         });
@@ -99,8 +102,12 @@ class FilterDataTableDeviceCategoriesAction
             }
         }
 
+        if (isset($data['fetchAll']) && $data['fetchAll'] === 'true') {
+            return new DeviceCollectionPagination($query->paginate($query->count()));
+        }
+
         $pageSize = $this->calculateDataTableFinalRowsAction->execute($data['pageSize'] ?? null);
 
-        return new DeviceCategoryCollectionPagination($query->paginate($pageSize, ['id', 'name']));
+        return new DeviceCollectionPagination($query->paginate($pageSize));
     }
 }

@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Actions\DeviceCategories\CreateDeviceCategoryAction;
 use App\Actions\DeviceCategories\DeleteMultipleDeviceCategoriesAction;
 use App\Actions\DeviceCategories\FilterDataTableDeviceCategoriesAction;
-use App\Actions\DeviceCategories\FindDeviceCategoryByIdOrUniqueIdAction;
+use App\Actions\DeviceCategories\FilterDataTableDeviceCategoryDevicesAction;
+use App\Actions\DeviceCategories\FindDeviceCategoryByIdAction;
 use App\Actions\DeviceCategories\UpdateDeviceCategoryAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceCategoryRequest;
 use App\Http\Requests\StoreDeviceCategoryRequest;
 use App\Http\Requests\UpdateDeviceCategoryRequest;
 use App\Http\Requests\ValidateDeviceCategoryFieldsRequest;
-use App\Models\DeviceCategory;
-use App\Models\User;
+use App\Http\Resources\DeviceCategoryResource;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -61,24 +61,24 @@ class DeviceCategoryController extends Controller
     {
         $deviceCategory = $createDeviceCategoryAction->execute($request->user(), $request->validated());
 
-        return $this->apiOk(['deviceCategory' => $deviceCategory]);
+        return $this->apiOk(['deviceCategory' => new DeviceCategoryResource($deviceCategory)]);
     }
 
     /**
      * Display the specified device category.
      *
-     * @param FindDeviceCategoryByIdOrUniqueIdAction $findDeviceCategoryByIdOrUniqueIdAction
-     * @param string $id
+     * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
+     * @param string $deviceCategoryId
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindDeviceCategoryByIdOrUniqueIdAction $findDeviceCategoryByIdOrUniqueIdAction, string $id): JsonResponse
+    public function show(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction, string $deviceCategoryId): JsonResponse
     {
-        $deviceCategory = $findDeviceCategoryByIdOrUniqueIdAction->execute($id);
+        $deviceCategory = $findDeviceCategoryByIdAction->execute($deviceCategoryId);
 
         $this->authorize('view', $deviceCategory);
 
-        return $this->apiOk(['deviceCategory' => $deviceCategory]);
+        return $this->apiOk(['deviceCategory' => new DeviceCategoryResource($deviceCategory)]);
     }
 
     /**
@@ -86,15 +86,16 @@ class DeviceCategoryController extends Controller
      *
      * @param UpdateDeviceCategoryRequest $request
      * @param UpdateDeviceCategoryAction $updateDeviceCategoryAction
-     * @param DeviceCategory $deviceCategory
+     * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
+     * @param string $deviceCategoryId
      * @return JsonResponse
      */
-    public function update(UpdateDeviceCategoryRequest $request, UpdateDeviceCategoryAction $updateDeviceCategoryAction, DeviceCategory $deviceCategory): JsonResponse
+    public function update(UpdateDeviceCategoryRequest $request, UpdateDeviceCategoryAction $updateDeviceCategoryAction, FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction, string $deviceCategoryId): JsonResponse
     {
-        $success = $updateDeviceCategoryAction->execute($deviceCategory, $request->validated());
+        $success = $updateDeviceCategoryAction->execute($deviceCategoryId, $request->validated());
 
         return $success
-            ? $this->apiOk(['deviceCategory' => $deviceCategory])
+            ? $this->apiOk(['deviceCategory' => new DeviceCategoryResource($findDeviceCategoryByIdAction->execute($deviceCategoryId))])
             : $this->apiInternalServerError('Failed to update device category.');
     }
 
@@ -109,7 +110,24 @@ class DeviceCategoryController extends Controller
     {
         $success = $deleteMultipleDeviceCategoriesAction->execute($request->ids);
 
-        return $this->apiOk([], $success);
+        return $success
+            ? $this->apiOk()
+            : $this->apiInternalServerError('Failed to delete device categories');
+    }
+
+    /**
+     * Return a listing of the device group devices.
+     *
+     * @param Request $request
+     * @param FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction
+     * @param string $deviceCategoryId
+     * @return JsonResponse
+     */
+    public function deviceCategoryDevicesIndex(Request $request, FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction, string $deviceCategoryId): JsonResponse
+    {
+        $deviceCategoryDevices = $filterDataTableDeviceCategoryDevicesAction->execute($deviceCategoryId, $request->all());
+
+        return $this->apiOk(['deviceCategoryDevices' => $deviceCategoryDevices]);
     }
 
     /**
@@ -120,7 +138,7 @@ class DeviceCategoryController extends Controller
      */
     public function options(Request $request): JsonResponse
     {
-        $query = User::first()->deviceCategories();
+        $query = Auth::user()->deviceCategories();
 
         if ($request->has('name')) {
             $query->nameILike($request->name);

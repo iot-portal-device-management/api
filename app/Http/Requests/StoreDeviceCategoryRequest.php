@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ExistsDeviceIdForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -32,6 +33,11 @@ class StoreDeviceCategoryRequest extends BaseFormRequest
                 Rule::unique('device_categories', 'name')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
                 }),
+            ],
+            'deviceIds' => [
+                'nullable',
+                'array',
+                new ExistsDeviceIdForAuthUser,
             ],
         ];
     }

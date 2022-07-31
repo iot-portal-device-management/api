@@ -55,6 +55,18 @@ Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::cla
 
 
 // Device Categories
+Route::get('/device/categories', [DeviceCategoryController::class, 'index']);
+
+Route::post('/device/categories', [DeviceCategoryController::class, 'store']);
+
+Route::get('/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'show']);
+
+Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'update']);
+
+Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
+
+Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex']);
+
 Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
 
 
