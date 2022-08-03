@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\Commands\TriggerCommandAction;
-use App\Actions\Devices\CreateDeviceAction;
-use App\Actions\Devices\DeleteMultipleDevicesAction;
-use App\Actions\Devices\FilterDataTableDevicesAction;
-use App\Actions\Devices\FindDeviceByIdAction;
-use App\Actions\Devices\RegisterDeviceAction;
-use App\Actions\Devices\UpdateDeviceAction;
+use App\Actions\Device\CreateDeviceAction;
+use App\Actions\Device\DeleteMultipleDevicesAction;
+use App\Actions\Device\FilterDataTableDevicesAction;
+use App\Actions\Device\FindDeviceByIdAction;
+use App\Actions\Device\RegisterDeviceAction;
+use App\Actions\Device\UpdateDeviceAction;
+use App\Actions\DeviceCommandType\TriggerCommandAction;
 use App\Exceptions\InvalidDeviceConnectionKeyException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDevicesRequest;
@@ -73,13 +73,13 @@ class DeviceController extends Controller
      * Return the specified device.
      *
      * @param FindDeviceByIdAction $findDeviceByIdAction
-     * @param string $id
+     * @param string $deviceId
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindDeviceByIdAction $findDeviceByIdAction, string $id): JsonResponse
+    public function show(FindDeviceByIdAction $findDeviceByIdAction, string $deviceId): JsonResponse
     {
-        $device = $findDeviceByIdAction->execute($id);
+        $device = $findDeviceByIdAction->execute($deviceId);
 
         $this->authorize('view', $device);
 
@@ -91,15 +91,15 @@ class DeviceController extends Controller
      *
      * @param UpdateDeviceRequest $request
      * @param UpdateDeviceAction $updateDeviceAction
-     * @param string $id
+     * @param string $deviceId
      * @return JsonResponse
      */
-    public function update(UpdateDeviceRequest $request, UpdateDeviceAction $updateDeviceAction, string $id): JsonResponse
+    public function update(UpdateDeviceRequest $request, UpdateDeviceAction $updateDeviceAction, string $deviceId): JsonResponse
     {
-        $success = $updateDeviceAction->execute($id, $request->validated());
+        $success = $updateDeviceAction->execute($deviceId, $request->validated());
 
         return $success
-            ? $this->apiOk(['device' => new DeviceResource(Device::id($id)->with('deviceCategory:id,name', 'deviceStatus:id,name')->firstOrFail())])
+            ? $this->apiOk(['device' => new DeviceResource(Device::id($deviceId)->with('deviceCategory:id,name', 'deviceStatus:id,name')->firstOrFail())])
             : $this->apiInternalServerError('Failed to update device.');
     }
 

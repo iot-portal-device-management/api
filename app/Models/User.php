@@ -49,7 +49,8 @@ class User extends Authenticatable
      */
     public function managedTeams()
     {
-        return $this->belongsToMany(Team::class)->wherePivot('role', 0);
+        return $this->belongsToMany(Team::class)
+            ->wherePivot('role', 0);
     }
 
     /**
@@ -85,11 +86,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all of the saved commands for the user.
+     * Get all of the saved device commands for the user.
      */
-    public function savedCommands()
+    public function savedDeviceCommands()
     {
-        return $this->hasMany(SavedCommand::class);
+        return $this->hasMany(SavedDeviceCommand::class);
     }
 
     /**
@@ -101,41 +102,41 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the FOTA configurations for the user.
+     * Get the device FOTA configurations for the user.
      */
-    public function fotaConfigurations()
+    public function deviceFotaConfigurations()
     {
-        return $this->hasMany(FotaConfiguration::class);
+        return $this->hasMany(DeviceFotaConfiguration::class);
     }
 
     /**
-     * Get the AOTA configurations for the user.
+     * Get the device AOTA configurations for the user.
      */
-    public function aotaConfigurations()
+    public function deviceAotaConfigurations()
     {
-        return $this->hasMany(AotaConfiguration::class);
+        return $this->hasMany(DeviceAotaConfiguration::class);
     }
 
     /**
-     * Get the configuration files for the user.
+     * Get the device configuration files for the user.
      */
-    public function configurationFiles()
+    public function deviceConfigurationFiles()
     {
-        return $this->hasMany(ConfigurationFile::class);
+        return $this->hasMany(DeviceConfigurationFile::class);
     }
 
     public function scopeId($query, $value)
     {
-        return $query->where('id', $value);
+        return $query->where($this->getTable() . '.id', $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn('users.id', $value);
+        return $query->whereIn($this->getTable() . '.id', $value);
     }
 
     public function scopeNameLike($query, $value)
     {
-        return $query->where('name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
     }
 }

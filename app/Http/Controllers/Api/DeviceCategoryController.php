@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\DeviceCategories\CreateDeviceCategoryAction;
-use App\Actions\DeviceCategories\DeleteMultipleDeviceCategoriesAction;
-use App\Actions\DeviceCategories\FilterDataTableDeviceCategoriesAction;
-use App\Actions\DeviceCategories\FilterDataTableDeviceCategoryDevicesAction;
-use App\Actions\DeviceCategories\FindDeviceCategoryByIdAction;
-use App\Actions\DeviceCategories\UpdateDeviceCategoryAction;
+use App\Actions\DeviceCategory\CreateDeviceCategoryAction;
+use App\Actions\DeviceCategory\DeleteMultipleDeviceCategoriesAction;
+use App\Actions\DeviceCategory\FilterDataTableDeviceCategoriesAction;
+use App\Actions\DeviceCategory\FilterDataTableDeviceCategoryDevicesAction;
+use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
+use App\Actions\DeviceCategory\UpdateDeviceCategoryAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceCategoryRequest;
 use App\Http\Requests\StoreDeviceCategoryRequest;

@@ -25,7 +25,7 @@ class DeviceJob extends Model
         'completed_at',
         'user_id',
         'device_group_id',
-        'saved_command_id',
+        'saved_device_command_id',
     ];
 
     /**
@@ -39,7 +39,7 @@ class DeviceJob extends Model
     ];
 
     /**
-     * Get the user that owns the job.
+     * Get the user that owns the device job.
      */
     public function user()
     {
@@ -47,7 +47,7 @@ class DeviceJob extends Model
     }
 
     /**
-     * Get the device group that owns the job.
+     * Get the device group that owns the device job.
      */
     public function deviceGroup()
     {
@@ -55,75 +55,75 @@ class DeviceJob extends Model
     }
 
     /**
-     * Get the saved command for the job.
+     * Get the saved device command for the device job.
      */
-    public function savedCommand()
+    public function savedDeviceCommand()
     {
-        return $this->belongsTo(SavedCommand::class);
+        return $this->belongsTo(SavedDeviceCommand::class);
     }
 
     /**
-     * Get the command histories for the job.
+     * Get the device commands for the device job.
      */
-    public function commandHistories()
+    public function deviceCommands()
     {
-        return $this->hasMany(CommandHistory::class);
+        return $this->hasMany(DeviceCommand::class);
     }
 
     public function scopeId($query, $value)
     {
-        return $query->where('id', $value);
+        return $query->where($this->getTable() . '.id', $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn('device_jobs.id', $value);
+        return $query->whereIn($this->getTable() . '.id', $value);
     }
 
     public function scopeNameLike($query, $value)
     {
-        return $query->where('name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
     }
 
     public function scopeStartedAtBetween($query, $dates)
     {
-        return $query->whereBetween('started_at', $dates);
+        return $query->whereBetween($this->getTable() . '.started_at', $dates);
     }
 
     public function scopeCompletedAtBetween($query, $dates)
     {
-        return $query->whereBetween('completed_at', $dates);
+        return $query->whereBetween($this->getTable() . '.completed_at', $dates);
     }
 
     public function scopeUserId($query, $value)
     {
-        return $query->where('user_id', $value);
+        return $query->where($this->getTable() . '.user_id', $value);
     }
 
     public function scopePending($query)
     {
-        return $query->whereNull('error')
-            ->whereNull('started_at')
-            ->whereNull('completed_at');
+        return $query->whereNull($this->getTable() . '.error')
+            ->whereNull($this->getTable() . '.started_at')
+            ->whereNull($this->getTable() . '.completed_at');
     }
 
     public function scopeProcessing($query)
     {
-        return $query->whereNull('error')
-            ->whereNotNull('started_at')
-            ->whereNull('completed_at');
+        return $query->whereNull($this->getTable() . '.error')
+            ->whereNotNull($this->getTable() . '.started_at')
+            ->whereNull($this->getTable() . '.completed_at');
     }
 
     public function scopeSuccessful($query)
     {
-        return $query->whereNull('error')
-            ->whereNotNull('started_at')
-            ->whereNotNull('completed_at');
+        return $query->whereNull($this->getTable() . '.error')
+            ->whereNotNull($this->getTable() . '.started_at')
+            ->whereNotNull($this->getTable() . '.completed_at');
     }
 
     public function scopeFailed($query)
     {
-        return $query->whereNotNull('error');
+        return $query->whereNotNull($this->getTable() . '.error');
     }
 
     public function scopeStatus($query, $value)
@@ -138,14 +138,14 @@ class DeviceJob extends Model
     public function scopeDeviceGroupNameLike($query, $value)
     {
         return $query->whereHas('deviceGroup', function (Builder $query) use ($value) {
-            $query->where('name', 'like', "%{$value}%");
+            $query->where('name', 'LIKE', "%{$value}%");
         });
     }
 
     public function scopeSavedCommandNameLike($query, $value)
     {
-        return $query->whereHas('savedCommand', function (Builder $query) use ($value) {
-            $query->where('name', 'like', "%{$value}%");
+        return $query->whereHas('savedDeviceCommand', function (Builder $query) use ($value) {
+            $query->where('name', 'LIKE', "%{$value}%");
         });
     }
 }

@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Actions\Mqtt\PublishMqttToDeviceAction;
 use App\Exceptions\DeviceTimeoutException;
-use App\Models\CommandHistory;
+use App\Models\DeviceCommand;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -18,11 +18,11 @@ class SendDeviceCommandJob implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The CommandHistory instance.
+     * The DeviceCommand instance.
      *
-     * @var CommandHistory
+     * @var DeviceCommand
      */
-    protected CommandHistory $commandHistory;
+    protected DeviceCommand $commandHistory;
 
     /**
      * The string instance.
@@ -34,19 +34,19 @@ class SendDeviceCommandJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param CommandHistory $commandHistory
+     * @param DeviceCommand $commandHistory
      * @param string $payloadJson
      */
-    public function __construct(CommandHistory $commandHistory, string $payloadJson)
+    public function __construct(DeviceCommand $commandHistory, string $payloadJson)
     {
         $this->commandHistory = $commandHistory;
         $this->payloadJson = $payloadJson;
     }
 
     /**
-     * @return CommandHistory
+     * @return DeviceCommand
      */
-    public function getCommandHistory(): CommandHistory
+    public function getCommandHistory(): DeviceCommand
     {
         return $this->commandHistory;
     }

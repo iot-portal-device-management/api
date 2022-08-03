@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\DeviceGroups\CreateDeviceGroupAction;
-use App\Actions\DeviceGroups\DeleteMultipleDeviceGroupsAction;
-use App\Actions\DeviceGroups\FilterDataTableDeviceGroupAction;
-use App\Actions\DeviceGroups\FilterDataTableDeviceGroupDevicesAction;
-use App\Actions\DeviceGroups\FindDeviceGroupByIdAction;
-use App\Actions\DeviceGroups\UpdateDeviceGroupAction;
+use App\Actions\DeviceGroup\CreateDeviceGroupAction;
+use App\Actions\DeviceGroup\DeleteMultipleDeviceGroupsAction;
+use App\Actions\DeviceGroup\FilterDataTableDeviceGroupsAction;
+use App\Actions\DeviceGroup\FilterDataTableDeviceGroupDevicesAction;
+use App\Actions\DeviceGroup\FindDeviceGroupByIdAction;
+use App\Actions\DeviceGroup\UpdateDeviceGroupAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceGroupRequest;
 use App\Http\Requests\StoreDeviceGroupRequest;
@@ -40,10 +40,10 @@ class DeviceGroupController extends Controller
      * Return a listing of the device group.
      *
      * @param Request $request
-     * @param FilterDataTableDeviceGroupAction $filterDataTableDeviceGroupAction
+     * @param FilterDataTableDeviceGroupsAction $filterDataTableDeviceGroupAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDeviceGroupAction $filterDataTableDeviceGroupAction): JsonResponse
+    public function index(Request $request, FilterDataTableDeviceGroupsAction $filterDataTableDeviceGroupAction): JsonResponse
     {
         $deviceGroups = $filterDataTableDeviceGroupAction->execute($request->all());
 

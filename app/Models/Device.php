@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
-use App\Traits\HasBaseCommandRecords;
-use App\Traits\HasBaseEventRecords;
+use App\Traits\HasBaseDeviceCommandTypeRecords;
+use App\Traits\HasBaseDeviceEventTypeRecords;
 use App\Traits\HasMqttCredentials;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid, HasMqttCredentials, HasBaseCommandRecords, HasBaseEventRecords;
+    use HasFactory, EloquentGetTableName, Uuid, HasMqttCredentials, HasBaseDeviceCommandTypeRecords, HasBaseDeviceEventTypeRecords;
 
     /**
      * The attributes that are mass assignable.
@@ -59,7 +59,7 @@ class Device extends Model
 
     public function notFoundMessage()
     {
-        return 'Device id not found.';
+        return 'Device not found.';
     }
 
     /**
@@ -95,83 +95,83 @@ class Device extends Model
     }
 
     /**
-     * Get the commands for the device.
+     * Get the device command types for the device.
      */
-    public function commands()
+    public function deviceCommandTypes()
     {
-        return $this->hasMany(Command::class);
+        return $this->hasMany(DeviceCommandType::class);
     }
 
     /**
-     * Get all of the command histories for the device.
+     * Get all of the device commands for the device.
      */
-    public function commandHistories()
+    public function deviceCommands()
     {
-        return $this->hasManyThrough(CommandHistory::class, Command::class);
+        return $this->hasManyThrough(DeviceCommand::class, DeviceCommandType::class);
     }
 
     /**
-     * Get the events for the device.
+     * Get the device event types for the device.
      */
-    public function events()
+    public function deviceEventTypes()
     {
-        return $this->hasMany(Event::class);
+        return $this->hasMany(DeviceEventType::class);
     }
 
     /**
-     * Get the event histories for the device.
+     * Get the device events for the device.
      */
-    public function eventHistories()
+    public function deviceEvents()
     {
-        return $this->hasManyThrough(EventHistory::class, Event::class);
+        return $this->hasManyThrough(DeviceEvent::class, DeviceEventType::class);
     }
 
     /**
      * Get the temperature statistics for the device.
      */
-    public function temperatureStatistics()
+    public function deviceTemperatureStatistics()
     {
-        return $this->hasMany(TemperatureStatistic::class);
+        return $this->hasMany(DeviceTemperatureStatistic::class);
     }
 
     /**
      * Get the memory statistics for the device.
      */
-    public function memoryStatistics()
+    public function deviceMemoryStatistics()
     {
-        return $this->hasMany(MemoryStatistic::class);
+        return $this->hasMany(DeviceMemoryStatistic::class);
     }
 
     /**
      * Get the disk statistics for the device.
      */
-    public function diskStatistics()
+    public function deviceDiskStatistics()
     {
-        return $this->hasMany(DiskStatistic::class);
+        return $this->hasMany(DeviceDiskStatistic::class);
     }
 
     /**
      * Get the network statistics for the device.
      */
-    public function networkStatistics()
+    public function deviceNetworkStatistics()
     {
-        return $this->hasMany(NetworkStatistic::class);
+        return $this->hasMany(DeviceNetworkStatistic::class);
     }
 
     /**
      * Get the container statistics for the device.
      */
-    public function containerStatistics()
+    public function deviceContainerStatistics()
     {
-        return $this->hasMany(ContainerStatistic::class);
+        return $this->hasMany(DeviceContainerStatistic::class);
     }
 
     /**
      * Get the cpu statistics for the device.
      */
-    public function cpuStatistics()
+    public function deviceCpuStatistics()
     {
-        return $this->hasMany(CpuStatistic::class);
+        return $this->hasMany(DeviceCpuStatistic::class);
     }
 
     public function scopeId($query, $value)

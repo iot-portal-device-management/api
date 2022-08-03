@@ -21,12 +21,12 @@ return new class extends Migration {
             $table->timestamp('completed_at')->nullable();
             $table->uuid('user_id');
             $table->uuid('device_group_id');
-            $table->uuid('saved_command_id');
+            $table->uuid('saved_device_command_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('device_group_id')->references('id')->on('device_groups')->onDelete('cascade');
-            $table->foreign('saved_command_id')->references('id')->on('saved_commands')->onDelete('cascade');
+            $table->foreign('saved_device_command_id')->references('id')->on('saved_device_commands')->onDelete('cascade');
         });
     }
 

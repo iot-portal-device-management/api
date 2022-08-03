@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\DeviceGroups\CreateDeviceGroupAction;
+use App\Actions\DeviceGroup\CreateDeviceGroupAction;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;

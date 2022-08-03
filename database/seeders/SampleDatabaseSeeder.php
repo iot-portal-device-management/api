@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\CommandHistory;
-use App\Models\CpuStatistic;
 use App\Models\Device;
+use App\Models\DeviceCommand;
+use App\Models\DeviceCpuStatistic;
+use App\Models\DeviceDiskStatistic;
+use App\Models\DeviceEvent;
+use App\Models\DeviceMemoryStatistic;
 use App\Models\DeviceStatus;
-use App\Models\DiskStatistic;
-use App\Models\EventHistory;
-use App\Models\MemoryStatistic;
-use App\Models\TemperatureStatistic;
+use App\Models\DeviceTemperatureStatistic;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
@@ -62,7 +62,7 @@ class SampleDatabaseSeeder extends Seeder
                 foreach (range(1, 2) as $day) {
                     foreach (range(1, 1440) as $minute) {
 
-                        TemperatureStatistic::factory()
+                        DeviceTemperatureStatistic::factory()
                             ->for($device)
                             ->state([
                                 'created_at' => $currentTime,
@@ -70,7 +70,7 @@ class SampleDatabaseSeeder extends Seeder
                             ])
                             ->create();
 
-                        CpuStatistic::factory()
+                        DeviceCpuStatistic::factory()
                             ->for($device)
                             ->state([
                                 'created_at' => $currentTime,
@@ -78,7 +78,7 @@ class SampleDatabaseSeeder extends Seeder
                             ])
                             ->create();
 
-                        DiskStatistic::factory()
+                        DeviceDiskStatistic::factory()
                             ->for($device)
                             ->state([
                                 'created_at' => $currentTime,
@@ -86,7 +86,7 @@ class SampleDatabaseSeeder extends Seeder
                             ])
                             ->create();
 
-                        MemoryStatistic::factory()
+                        DeviceMemoryStatistic::factory()
                             ->for($device)
                             ->state([
                                 'created_at' => $currentTime,
@@ -99,12 +99,12 @@ class SampleDatabaseSeeder extends Seeder
                 }
 
                 for ($a = 0; $a < 20; $a++) {
-                    CommandHistory::factory()
-                        ->for(Arr::random($device->commands->all()))
+                    DeviceCommand::factory()
+                        ->for(Arr::random($device->deviceCommandTypes->all()))
                         ->create();
 
-                    EventHistory::factory()
-                        ->for(Arr::random($device->events->all()))
+                    DeviceEvent::factory()
+                        ->for(Arr::random($device->deviceEventTypes->all()))
                         ->create();
                 }
             }

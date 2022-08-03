@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Mqtt;
 
-use App\Actions\Devices\UpdateDeviceLastSeenToNowAction;
-use App\Actions\Devices\UpdateDeviceStatusToOfflineAction;
-use App\Actions\Devices\UpdateDeviceStatusToOnlineAction;
+use App\Actions\Device\UpdateDeviceLastSeenToNowAction;
+use App\Actions\Device\UpdateDeviceStatusToOfflineAction;
+use App\Actions\Device\UpdateDeviceStatusToOnlineAction;
 use App\Actions\Mqtt\CheckIfValidPortalMqttClientId;
 use App\Actions\Mqtt\CheckIfValidPortalMqttCredentials;
 use App\Actions\Mqtt\CheckIfValidPortalMqttTopics;
@@ -235,7 +235,7 @@ class EndpointController extends Controller
      */
     protected function messagesEvents(Device $device, ?string $payload): JsonResponse
     {
-        Log::debug('[MQTT Message Event] ' . $payload);
+        Log::debug('[MQTT Message DeviceEventType] ' . $payload);
 
         $eventHistory = $device->eventHistories()->create([
             'raw_data' => Helper::isJson($payload) ? $payload : json_encode($payload),

@@ -34,22 +34,22 @@ class DeviceStatus extends Model
 
     public function scopeId($query, $value)
     {
-        return $query->where('id', $value);
+        return $query->where($this->getTable() . '.id', $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn('device_statuses.id', $value);
+        return $query->whereIn($this->getTable() . '.id', $value);
     }
 
     public function scopeName($query, $value)
     {
-        return $query->where('name', $value);
+        return $query->where($this->getTable() . '.name', $value);
     }
 
     public function scopeNameLike($query, $value)
     {
-        return $query->where('name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
     }
 
     public function scopeRegistered()

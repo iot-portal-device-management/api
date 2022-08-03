@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Actions\DeviceCategories\FindDeviceCategoryByIdAction;
+use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
 use App\Rules\ExistsDeviceIdForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;

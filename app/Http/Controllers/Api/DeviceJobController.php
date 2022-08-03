@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\DeviceJobs\CreateDeviceJobAction;
-use App\Actions\DeviceJobs\DeleteMultipleDeviceJobsAction;
-use App\Actions\DeviceJobs\FilterDataTableDeviceJobsAction;
-use App\Actions\DeviceJobs\FindDeviceJobByIdOrUniqueIdAction;
+use App\Actions\DeviceJob\CreateDeviceJobAction;
+use App\Actions\DeviceJob\DeleteMultipleDeviceJobsAction;
+use App\Actions\DeviceJob\FilterDataTableDeviceJobsAction;
+use App\Actions\DeviceJob\FindDeviceJobByIdOrUniqueIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceJobRequest;
 use App\Http\Requests\StoreDeviceJobRequest;

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\Statistics\FilterOnlineDeviceAvailableMemoriesChartAction;
-use App\Actions\Statistics\FilterOnlineDeviceCpuTemperaturesChartAction;
-use App\Actions\Statistics\FilterOnlineDeviceCpuUsagesChartAction;
-use App\Actions\Statistics\FilterOnlineDeviceDiskUsagesChartAction;
-use App\Actions\Statistics\GetLastSevenDaysNewDeviceCategoryCountAction;
-use App\Actions\Statistics\GetLastSevenDaysNewDeviceCountAction;
-use App\Actions\Statistics\GetLastSevenDaysNewDeviceGroupCountAction;
-use App\Actions\Statistics\GetLastSevenDaysNewDeviceJobCountAction;
+use App\Actions\DeviceStatistic\FilterOnlineDeviceAvailableMemoriesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDeviceCpuTemperaturesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDeviceCpuUsagesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDeviceDiskUsagesChartAction;
+use App\Actions\DeviceStatistic\GetLastSevenDaysNewDeviceCategoryCountAction;
+use App\Actions\DeviceStatistic\GetLastSevenDaysNewDeviceCountAction;
+use App\Actions\DeviceStatistic\GetLastSevenDaysNewDeviceGroupCountAction;
+use App\Actions\DeviceStatistic\GetLastSevenDaysNewDeviceJobCountAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class DashboardController extends Controller
                                    GetLastSevenDaysNewDeviceCategoryCountAction $getLastSevenDaysNewDeviceCategoryCountAction,
                                    GetLastSevenDaysNewDeviceJobCountAction $getLastSevenDaysNewDeviceJobCountAction): JsonResponse
     {
-        // Devices
+        // Device
         $totalDeviceCount = Auth::user()->devices()->count();
         $lastSevenDaysNewDeviceCount = $getLastSevenDaysNewDeviceCountAction->execute();
 

@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\SavedCommand;
+use App\Models\SavedDeviceCommand;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -25,10 +25,10 @@ class SavedCommandPolicy
      * Determine whether the user can view the model.
      *
      * @param User $user
-     * @param SavedCommand $savedCommand
+     * @param SavedDeviceCommand $savedCommand
      * @return mixed
      */
-    public function view(User $user, SavedCommand $savedCommand): mixed
+    public function view(User $user, SavedDeviceCommand $savedCommand): mixed
     {
         return $user->id === $savedCommand->user_id;
     }

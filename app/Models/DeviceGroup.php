@@ -47,22 +47,22 @@ class DeviceGroup extends Model
 
     public function scopeId($query, $value)
     {
-        return $query->where('id', $value);
+        return $query->where($this->getTable() . '.id', $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn('device_groups.id', $value);
+        return $query->whereIn($this->getTable() . '.id', $value);
     }
 
     public function scopeNameLike($query, $value)
     {
-        return $query->where('name', 'like', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
     }
 
     public function scopeUserId($query, $value)
     {
-        return $query->where('user_id', $value);
+        return $query->where($this->getTable() . '.user_id', $value);
     }
 
     public function scopeGetOptions($query)

@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\Event;
+use App\Models\DeviceEventType;
 
 return [
     'index_max_rows' => 500,
 
-    'command_records' => [
+    'base_device_command_type_records' => [
         ['name' => 'OTA', 'method_name' => 'triggerota'],
         ['name' => 'AOTA', 'method_name' => 'triggeraota'],
         ['name' => 'FOTA', 'method_name' => 'triggerfota'],
@@ -17,9 +17,9 @@ return [
         ['name' => 'FILE_UPLOAD', 'method_name' => 'file_upload'],
     ],
 
-    'event_records' => [
-        ['name' => Event::EVENT_PROPERTY],
-        ['name' => Event::EVENT_TELEMETRY],
+    'base_device_event_type_records' => [
+        ['name' => DeviceEventType::EVENT_PROPERTY],
+        ['name' => DeviceEventType::EVENT_TELEMETRY],
     ],
 
     'commands' => [
