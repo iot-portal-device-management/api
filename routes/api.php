@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\DeviceEventController;
 use App\Http\Controllers\Api\DeviceGroupController;
 use App\Http\Controllers\Api\DeviceMetricController;
+use App\Http\Controllers\Api\SavedDeviceCommandController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +76,22 @@ Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceC
     ->whereUuid('deviceCategoryId');
 
 Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
+
+
+// Saved Device Commands
+Route::get('/device/commands/saved', [SavedDeviceCommandController::class, 'index']);
+
+Route::post('/device/commands/saved', [SavedDeviceCommandController::class, 'store']);
+
+Route::get('/device/commands/saved/{savedDeviceCommandId}', [SavedDeviceCommandController::class, 'show'])
+    ->whereUuid('savedDeviceCommandId');
+
+
+//TODO: REMOVE
+Route::match(['put', 'patch'], '/device/commands/saved/{savedDeviceCommandId}', [SavedDeviceCommandController::class, 'update'])
+    ->whereUuid('savedDeviceCommandId');
+
+Route::delete('/device/commands/saved', [SavedDeviceCommandController::class, 'destroySelected']);
 
 
 // Device OTA Command trigger endpoint

@@ -11,7 +11,7 @@ class CreateSavedDeviceCommandAction
     {
         return SavedDeviceCommand::create([
             'name' => $data['name'],
-            'device_command_type_name' => $data['command'],
+            'device_command_type_name' => $data['deviceCommandTypeName'],
             'payload' => is_null($data['payload']) ? null : json_encode($data['payload']),
             'user_id' => $user->id,
         ]);

@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\SavedDeviceCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class StoreSavedCommandRequest extends BaseFormRequest
+class StoreSavedDeviceCommandRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,11 +30,11 @@ class StoreSavedCommandRequest extends BaseFormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('saved_commands', 'name')->where(function ($query) {
+                Rule::unique(SavedDeviceCommand::getTableName(), 'name')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
                 }),
             ],
-            'command' => 'required|string|max:255',
+            'deviceCommandTypeName' => 'required|string|max:255',
             'payload' => 'nullable',
         ];
     }

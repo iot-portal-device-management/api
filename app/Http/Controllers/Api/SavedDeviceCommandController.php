@@ -8,7 +8,7 @@ use App\Actions\SavedDeviceCommand\FilterDataTableSavedDeviceCommandsAction;
 use App\Actions\SavedDeviceCommand\FindSavedCommandByIdOrUniqueIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedSavedCommandRequest;
-use App\Http\Requests\StoreSavedCommandRequest;
+use App\Http\Requests\StoreSavedDeviceCommandRequest;
 use App\Http\Requests\ValidateSavedCommandFieldsRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -48,15 +48,15 @@ class SavedDeviceCommandController extends Controller
     /**
      * Store a newly created saved command in storage.
      *
-     * @param StoreSavedCommandRequest $request
-     * @param CreateSavedDeviceCommandAction $createSavedCommandAction
+     * @param StoreSavedDeviceCommandRequest $request
+     * @param CreateSavedDeviceCommandAction $createSavedDeviceCommandAction
      * @return JsonResponse
      */
-    public function store(StoreSavedCommandRequest $request, CreateSavedDeviceCommandAction $createSavedCommandAction): JsonResponse
+    public function store(StoreSavedDeviceCommandRequest $request, CreateSavedDeviceCommandAction $createSavedDeviceCommandAction): JsonResponse
     {
-        $savedCommand = $createSavedCommandAction->execute($request->user(), $request->validated());
+        $savedDeviceCommand = $createSavedDeviceCommandAction->execute($request->user(), $request->validated());
 
-        return $this->apiOk(['savedCommand' => $savedCommand]);
+        return $this->apiOk(['savedDeviceCommand' => $savedDeviceCommand]);
     }
 
     /**
