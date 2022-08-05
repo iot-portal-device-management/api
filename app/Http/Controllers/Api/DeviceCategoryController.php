@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceCategory\CreateDeviceCategoryAction;
-use App\Actions\DeviceCategory\DeleteMultipleDeviceCategoriesAction;
+use App\Actions\DeviceCategory\DeleteDeviceCategoriesAction;
 use App\Actions\DeviceCategory\FilterDataTableDeviceCategoriesAction;
 use App\Actions\DeviceCategory\FilterDataTableDeviceCategoryDevicesAction;
 use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
@@ -103,12 +103,12 @@ class DeviceCategoryController extends Controller
      * Remove the specified device categories from storage.
      *
      * @param DestroySelectedDeviceCategoryRequest $request
-     * @param DeleteMultipleDeviceCategoriesAction $deleteMultipleDeviceCategoriesAction
+     * @param DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceCategoryRequest $request, DeleteMultipleDeviceCategoriesAction $deleteMultipleDeviceCategoriesAction): JsonResponse
+    public function destroySelected(DestroySelectedDeviceCategoryRequest $request, DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction): JsonResponse
     {
-        $success = $deleteMultipleDeviceCategoriesAction->execute($request->ids);
+        $success = $deleteDeviceCategoriesAction->execute($request->ids);
 
         return $success
             ? $this->apiOk()

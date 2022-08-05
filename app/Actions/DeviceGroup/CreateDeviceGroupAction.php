@@ -14,13 +14,15 @@ class CreateDeviceGroupAction
             'user_id' => $user->id,
         ]);
 
-        $deviceRows = [];
+        if (isset($data['deviceIds']) && $data['deviceIds']) {
+            $deviceRows = [];
 
-        foreach ($data['deviceIds'] as $deviceId) {
-            $deviceRows[$deviceId] = ['id' => DeviceGroup::generateId()];
+            foreach ($data['deviceIds'] as $deviceId) {
+                $deviceRows[$deviceId] = ['id' => DeviceGroup::generateId()];
+            }
+
+            $deviceGroup->devices()->attach($deviceRows);
         }
-
-        $deviceGroup->devices()->attach($deviceRows);
 
         return $deviceGroup;
     }

@@ -25,7 +25,7 @@ class SampleDatabaseSeeder extends Seeder
     {
         $deviceStatuses = DeviceStatus::all()->all();
 
-        for ($i = 0; $i < 1; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $user = User::factory()->create();
 
             $this->command->info('User ' . $i + 1 . ': Email: ' . $user->email);

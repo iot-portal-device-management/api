@@ -31,7 +31,7 @@ class StoreDeviceRequest extends BaseFormRequest
                 'max:255',
                 new UniqueDeviceNameForAuthUser,
             ],
-            'deviceCategory' => [
+            'deviceCategoryId' => [
                 'required',
                 new ExistsDeviceCategoryIdForAuthUser,
             ],

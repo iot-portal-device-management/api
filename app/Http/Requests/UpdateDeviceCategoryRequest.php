@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
-use App\Rules\ExistsDeviceIdForAuthUser;
+use App\Rules\ExistsDeviceIdsForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -41,7 +41,7 @@ class UpdateDeviceCategoryRequest extends BaseFormRequest
             'deviceIds' => [
                 'nullable',
                 'array',
-                new ExistsDeviceIdForAuthUser,
+                new ExistsDeviceIdsForAuthUser,
             ],
         ];
     }

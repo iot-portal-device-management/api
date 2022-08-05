@@ -4,7 +4,7 @@ namespace App\Actions\DeviceCategory;
 
 use App\Models\DeviceCategory;
 
-class DeleteMultipleDeviceCategoriesAction
+class DeleteDeviceCategoriesAction
 {
     public function execute(array $ids): bool
     {

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceGroup\CreateDeviceGroupAction;
-use App\Actions\DeviceGroup\DeleteMultipleDeviceGroupsAction;
-use App\Actions\DeviceGroup\FilterDataTableDeviceGroupsAction;
+use App\Actions\DeviceGroup\DeleteDeviceGroupsAction;
 use App\Actions\DeviceGroup\FilterDataTableDeviceGroupDevicesAction;
+use App\Actions\DeviceGroup\FilterDataTableDeviceGroupsAction;
 use App\Actions\DeviceGroup\FindDeviceGroupByIdAction;
 use App\Actions\DeviceGroup\UpdateDeviceGroupAction;
 use App\Http\Controllers\Controller;
@@ -103,12 +103,12 @@ class DeviceGroupController extends Controller
      * Remove the specified device groups from storage.
      *
      * @param DestroySelectedDeviceGroupRequest $request
-     * @param DeleteMultipleDeviceGroupsAction $deleteMultipleDeviceGroupsAction
+     * @param DeleteDeviceGroupsAction $deleteDeviceGroupsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceGroupRequest $request, DeleteMultipleDeviceGroupsAction $deleteMultipleDeviceGroupsAction): JsonResponse
+    public function destroySelected(DestroySelectedDeviceGroupRequest $request, DeleteDeviceGroupsAction $deleteDeviceGroupsAction): JsonResponse
     {
-        $success = $deleteMultipleDeviceGroupsAction->execute($request->ids);
+        $success = $deleteDeviceGroupsAction->execute($request->ids);
 
         return $success
             ? $this->apiOk()

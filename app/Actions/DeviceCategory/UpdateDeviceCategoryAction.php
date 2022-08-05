@@ -23,7 +23,7 @@ class UpdateDeviceCategoryAction
             ]);
         }
 
-        if (isset($data['deviceIds'])) {
+        if (isset($data['deviceIds']) && $data['deviceIds']) {
             Device::idIn($data['deviceIds'])->update([
                 'device_category_id' => $deviceCategory->id,
             ]);

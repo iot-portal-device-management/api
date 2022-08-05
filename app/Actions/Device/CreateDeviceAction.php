@@ -12,7 +12,7 @@ class CreateDeviceAction
     {
         return Device::create([
             'name' => $data['name'] ?? null,
-            'device_category_id' => $data['deviceCategory'] ?? $user->deviceCategories()->getUncategorized()->id,
+            'device_category_id' => $data['deviceCategoryId'] ?? $user->deviceCategories()->getUncategorized()->id,
             'device_status_id' => DeviceStatus::getRegistered()->id,
         ]);
     }

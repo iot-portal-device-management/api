@@ -9,6 +9,7 @@ class FilterDeviceCpuTemperaturesAction
 {
     public function execute(string $deviceId, array $data): Collection
     {
+        //TODO: implement max time range protection
         $timeRange = (int)($data['timeRange'] ?? 1);
 
         $cpuTemperatures = DeviceTemperatureStatistic::deviceId($deviceId)

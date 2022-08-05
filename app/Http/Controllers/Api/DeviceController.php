@@ -3,18 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Device\CreateDeviceAction;
-use App\Actions\Device\DeleteMultipleDevicesAction;
+use App\Actions\Device\DeleteDevicesAction;
 use App\Actions\Device\FilterDataTableDevicesAction;
 use App\Actions\Device\FindDeviceByIdAction;
 use App\Actions\Device\RegisterDeviceAction;
 use App\Actions\Device\UpdateDeviceAction;
-use App\Actions\DeviceCommandType\TriggerCommandAction;
 use App\Exceptions\InvalidDeviceConnectionKeyException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDevicesRequest;
 use App\Http\Requests\RegisterDeviceRequest;
 use App\Http\Requests\StoreDeviceRequest;
-use App\Http\Requests\TriggerCommandRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Http\Requests\ValidateDeviceFieldsRequest;
 use App\Http\Resources\DeviceResource;
@@ -107,12 +105,12 @@ class DeviceController extends Controller
      * Remove the specified devices from storage.
      *
      * @param DestroySelectedDevicesRequest $request
-     * @param DeleteMultipleDevicesAction $deleteMultipleDevicesAction
+     * @param DeleteDevicesAction $deleteDevicesAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDevicesRequest $request, DeleteMultipleDevicesAction $deleteMultipleDevicesAction): JsonResponse
+    public function destroySelected(DestroySelectedDevicesRequest $request, DeleteDevicesAction $deleteDevicesAction): JsonResponse
     {
-        $success = $deleteMultipleDevicesAction->execute($request->ids);
+        $success = $deleteDevicesAction->execute($request->ids);
 
         return $success
             ? $this->apiOk()
@@ -128,21 +126,6 @@ class DeviceController extends Controller
     public function validateField(ValidateDeviceFieldsRequest $request): JsonResponse
     {
         return $this->apiOk();
-    }
-
-    /**
-     * Handle device command and trigger command.
-     *
-     * @param TriggerCommandRequest $request
-     * @param TriggerCommandAction $triggerCommandAction
-     * @param string $id
-     * @return JsonResponse
-     */
-    public function commands(TriggerCommandRequest $request, TriggerCommandAction $triggerCommandAction, string $id): JsonResponse
-    {
-        $commandHistory = $triggerCommandAction->execute($id, $request->validated());
-
-        return $this->apiOk(['commandHistory' => $commandHistory]);
     }
 
     /**

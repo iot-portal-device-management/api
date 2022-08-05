@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceCommand\FilterDataTableDeviceCommandsAction;
+use App\Actions\DeviceCommandType\TriggerDeviceCommandAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TriggerDeviceCommandRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,7 +24,7 @@ class DeviceCommandController extends Controller
 //    }
 
     /**
-     * Return a listing of the command histories.
+     * Return a listing of the device commands.
      *
      * @param Request $request
      * @param FilterDataTableDeviceCommandsAction $filterDataTableDeviceCommandsAction
@@ -34,5 +36,20 @@ class DeviceCommandController extends Controller
         $deviceCommands = $filterDataTableDeviceCommandsAction->execute($deviceId, $request->all());
 
         return $this->apiOk(['deviceCommands' => $deviceCommands]);
+    }
+
+    /**
+     * Trigger device command.
+     *
+     * @param TriggerDeviceCommandRequest $request
+     * @param TriggerDeviceCommandAction $triggerDeviceCommandAction
+     * @param string $deviceId
+     * @return JsonResponse
+     */
+    public function triggerDeviceCommand(TriggerDeviceCommandRequest $request, TriggerDeviceCommandAction $triggerDeviceCommandAction, string $deviceId): JsonResponse
+    {
+        $deviceCommand = $triggerDeviceCommandAction->execute($deviceId, $request->validated());
+
+        return $this->apiOk(['deviceCommand' => $deviceCommand]);
     }
 }

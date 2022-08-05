@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Actions\DeviceGroup\FindDeviceGroupByIdAction;
-use App\Rules\ExistsDeviceIdForAuthUser;
+use App\Rules\ExistsDeviceIdsForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -22,6 +22,7 @@ class UpdateDeviceGroupRequest extends BaseFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * @param FindDeviceGroupByIdAction $findDeviceGroupByIdAction
      * @return array
      */
     public function rules(FindDeviceGroupByIdAction $findDeviceGroupByIdAction)
@@ -38,9 +39,9 @@ class UpdateDeviceGroupRequest extends BaseFormRequest
                 })->ignore($existingDeviceGroup->id),
             ],
             'deviceIds' => [
-                'required',
+                'nullable',
                 'array',
-                new ExistsDeviceIdForAuthUser,
+                new ExistsDeviceIdsForAuthUser,
             ],
         ];
     }

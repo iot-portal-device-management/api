@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceIdForAuthUser;
+use App\Rules\ExistsDeviceIdsForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -37,7 +37,7 @@ class StoreDeviceCategoryRequest extends BaseFormRequest
             'deviceIds' => [
                 'nullable',
                 'array',
-                new ExistsDeviceIdForAuthUser,
+                new ExistsDeviceIdsForAuthUser,
             ],
         ];
     }

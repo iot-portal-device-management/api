@@ -4,11 +4,11 @@ namespace App\Actions\DeviceCommand;
 
 use App\Models\DeviceCommand;
 
-class MarkCommandHistoryAsCompletedAction
+class MarkDeviceCommandAsCompletedAction
 {
-    public function execute(DeviceCommand $commandHistory): bool
+    public function execute(DeviceCommand $deviceCommand): bool
     {
-        return $commandHistory->update([
+        return $deviceCommand->update([
             'completed_at' => now(),
             'responded_at' => now(),
         ]);

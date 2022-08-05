@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use App\Rules\ExistsDeviceCategoryIdsForAuthUser;
 
 class DestroySelectedDeviceCategoryRequest extends BaseFormRequest
 {
@@ -28,9 +27,7 @@ class DestroySelectedDeviceCategoryRequest extends BaseFormRequest
             'ids' => [
                 'required',
                 'array',
-                Rule::exists('device_categories', 'id')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
-                }),
+                new ExistsDeviceCategoryIdsForAuthUser,
             ],
         ];
     }

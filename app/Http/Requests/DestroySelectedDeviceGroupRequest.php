@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use App\Rules\ExistsDeviceGroupIdsForAuthUser;
 
 class DestroySelectedDeviceGroupRequest extends BaseFormRequest
 {
@@ -28,9 +27,7 @@ class DestroySelectedDeviceGroupRequest extends BaseFormRequest
             'ids' => [
                 'required',
                 'array',
-                Rule::exists('device_groups', 'id')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
-                }),
+                new ExistsDeviceGroupIdsForAuthUser,
             ],
         ];
     }

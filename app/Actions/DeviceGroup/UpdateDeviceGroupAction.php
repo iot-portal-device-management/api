@@ -13,9 +13,9 @@ class UpdateDeviceGroupAction
         $this->findDeviceGroupByIdAction = $findDeviceGroupByIdAction;
     }
 
-    public function execute(string $deviceGroupId, array $data): bool
+    public function execute(string $id, array $data): bool
     {
-        $deviceGroup = $this->findDeviceGroupByIdAction->execute($deviceGroupId);
+        $deviceGroup = $this->findDeviceGroupByIdAction->execute($id);
 
         if (isset($data['name'])) {
             $deviceGroup->update([
@@ -23,7 +23,7 @@ class UpdateDeviceGroupAction
             ]);
         }
 
-        if (isset($data['deviceIds'])) {
+        if (isset($data['deviceIds']) && $data['deviceIds']) {
             $deviceRows = [];
 
             foreach ($data['deviceIds'] as $deviceId) {

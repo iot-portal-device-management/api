@@ -1,12 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\DeviceCommandController;
 use App\Http\Controllers\Api\DeviceCategoryController;
+use App\Http\Controllers\Api\DeviceCommandController;
 use App\Http\Controllers\Api\DeviceController;
-use App\Http\Controllers\Api\DeviceGroupController;
 use App\Http\Controllers\Api\DeviceEventController;
+use App\Http\Controllers\Api\DeviceGroupController;
 use App\Http\Controllers\Api\DeviceMetricController;
-use App\Http\Controllers\Api\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +40,9 @@ Route::delete('/devices', [DeviceController::class, 'destroySelected']);
 
 
 // Device Groups
+//TODO: Add uuid validation https://laravel.com/docs/9.x/routing#parameters-regular-expression-constraints
+Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex']);
+
 Route::get('/device/groups', [DeviceGroupController::class, 'index']);
 
 Route::post('/device/groups', [DeviceGroupController::class, 'store']);
@@ -51,10 +53,12 @@ Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupCon
 
 Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected']);
 
-Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex']);
-
 
 // Device Categories
+Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
+
+Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex']);
+
 Route::get('/device/categories', [DeviceCategoryController::class, 'index']);
 
 Route::post('/device/categories', [DeviceCategoryController::class, 'store']);
@@ -65,16 +69,12 @@ Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceC
 
 Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
 
-Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex']);
 
-Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
-
-
-// Device OTA commands trigger endpoint
-Route::post('/devices/{id}/commands', [DeviceController::class, 'commands']);
+// Device OTA command trigger endpoint
+Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand']);
 
 
-// Device DeviceMetric aka. Device Charts
+// Device metrics aka. Device metrics charts
 Route::get('/devices/{deviceId}/metrics/cpu/temperatures', [DeviceMetricController::class, 'cpuTemperatures']);
 
 Route::get('/devices/{deviceId}/metrics/cpu/usages', [DeviceMetricController::class, 'cpuUsages']);

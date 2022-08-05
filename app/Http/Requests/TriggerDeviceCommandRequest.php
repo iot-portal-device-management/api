@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\Device\FindDeviceByIdAction;
+use App\Models\DeviceCommandType;
 use Illuminate\Validation\Rule;
 
-class TriggerCommandRequest extends BaseFormRequest
+class TriggerDeviceCommandRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,17 +21,18 @@ class TriggerCommandRequest extends BaseFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * @param FindDeviceByIdAction $findDeviceByIdAction
      * @return array
      */
-    public function rules()
+    public function rules(FindDeviceByIdAction $findDeviceByIdAction)
     {
-        $deviceId = $this->route('id');
+        $deviceId = $findDeviceByIdAction->execute($this->route('deviceId'))->id;
 
         return [
-            'command' => [
+            'device_command_type_name' => [
                 'required',
                 'string',
-                Rule::exists('commands', 'name')->where(function ($query) use ($deviceId) {
+                Rule::exists(DeviceCommandType::getTableName(), 'name')->where(function ($query) use ($deviceId) {
                     return $query->where('device_id', $deviceId);
                 }),
             ],

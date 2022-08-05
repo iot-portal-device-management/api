@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\Device\FindDeviceByIdAction;
 use App\Rules\ExistsDeviceCategoryIdForAuthUser;
 use App\Rules\UniqueDeviceNameExcludeOldForAuthUser;
 
@@ -20,18 +21,21 @@ class UpdateDeviceRequest extends BaseFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * @param FindDeviceByIdAction $findDeviceByIdAction
      * @return array
      */
-    public function rules()
+    public function rules(FindDeviceByIdAction $findDeviceByIdAction)
     {
+        $existingDevice = $findDeviceByIdAction->execute($this->route('deviceId'));
+
         return [
             'name' => [
                 'nullable',
                 'string',
                 'max:255',
-                new UniqueDeviceNameExcludeOldForAuthUser($this->route('id')),
+                new UniqueDeviceNameExcludeOldForAuthUser($existingDevice->id),
             ],
-            'deviceCategory' => [
+            'deviceCategoryId' => [
                 'nullable',
                 new ExistsDeviceCategoryIdForAuthUser,
             ],
