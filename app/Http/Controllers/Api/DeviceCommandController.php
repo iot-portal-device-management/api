@@ -6,6 +6,7 @@ use App\Actions\DeviceCommand\FilterDataTableDeviceCommandsAction;
 use App\Actions\DeviceCommandType\TriggerDeviceCommandAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TriggerDeviceCommandRequest;
+use App\Http\Resources\DeviceCommandResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -50,6 +51,6 @@ class DeviceCommandController extends Controller
     {
         $deviceCommand = $triggerDeviceCommandAction->execute($deviceId, $request->validated());
 
-        return $this->apiOk(['deviceCommand' => $deviceCommand]);
+        return $this->apiOk(['deviceCommand' => new DeviceCommandResource($deviceCommand)]);
     }
 }

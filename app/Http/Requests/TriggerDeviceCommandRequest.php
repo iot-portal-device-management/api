@@ -29,7 +29,7 @@ class TriggerDeviceCommandRequest extends BaseFormRequest
         $deviceId = $findDeviceByIdAction->execute($this->route('deviceId'))->id;
 
         return [
-            'device_command_type_name' => [
+            'deviceCommandTypeName' => [
                 'required',
                 'string',
                 Rule::exists(DeviceCommandType::getTableName(), 'name')->where(function ($query) use ($deviceId) {

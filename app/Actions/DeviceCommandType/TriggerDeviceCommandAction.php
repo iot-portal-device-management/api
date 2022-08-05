@@ -39,7 +39,7 @@ class TriggerDeviceCommandAction
 
     public function execute(string $deviceId, array $data): DeviceCommand
     {
-        $deviceCommandType = $this->findDeviceCommandTypeByNameForDeviceAction->execute($deviceId, $data['device_command_type_name']);
+        $deviceCommandType = $this->findDeviceCommandTypeByNameForDeviceAction->execute($deviceId, $data['deviceCommandTypeName']);
 
         $payloadJson = json_encode($data['payload']);
 

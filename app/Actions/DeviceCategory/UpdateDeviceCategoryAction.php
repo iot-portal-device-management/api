@@ -13,9 +13,9 @@ class UpdateDeviceCategoryAction
         $this->findDeviceCategoryByIdAction = $findDeviceCategoryByIdAction;
     }
 
-    public function execute(string $deviceCategoryId, array $data): bool
+    public function execute(string $id, array $data): bool
     {
-        $deviceCategory = $this->findDeviceCategoryByIdAction->execute($deviceCategoryId);
+        $deviceCategory = $this->findDeviceCategoryByIdAction->execute($id);
 
         if (isset($data['name'])) {
             $deviceCategory->update([

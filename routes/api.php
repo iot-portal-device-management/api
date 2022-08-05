@@ -32,24 +32,28 @@ Route::get('/devices', [DeviceController::class, 'index']);
 
 Route::post('/devices', [DeviceController::class, 'store']);
 
-Route::get('/devices/{deviceId}', [DeviceController::class, 'show']);
+Route::get('/devices/{deviceId}', [DeviceController::class, 'show'])
+    ->whereUuid('deviceId');
 
-Route::match(['put', 'patch'], '/devices/{deviceId}', [DeviceController::class, 'update']);
+Route::match(['put', 'patch'], '/devices/{deviceId}', [DeviceController::class, 'update'])
+    ->whereUuid('deviceId');
 
 Route::delete('/devices', [DeviceController::class, 'destroySelected']);
 
 
 // Device Groups
-//TODO: Add uuid validation https://laravel.com/docs/9.x/routing#parameters-regular-expression-constraints
-Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex']);
+Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex'])
+    ->whereUuid('deviceGroupId');
 
 Route::get('/device/groups', [DeviceGroupController::class, 'index']);
 
 Route::post('/device/groups', [DeviceGroupController::class, 'store']);
 
-Route::get('/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'show']);
+Route::get('/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'show'])
+    ->whereUuid('deviceGroupId');
 
-Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'update']);
+Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'update'])
+    ->whereUuid('deviceGroupId');
 
 Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected']);
 
@@ -57,37 +61,49 @@ Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected'
 // Device Categories
 Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
 
-Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex']);
+Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex'])
+    ->whereUuid('deviceCategoryId');
 
 Route::get('/device/categories', [DeviceCategoryController::class, 'index']);
 
 Route::post('/device/categories', [DeviceCategoryController::class, 'store']);
 
-Route::get('/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'show']);
+Route::get('/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'show'])
+    ->whereUuid('deviceCategoryId');
 
-Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'update']);
+Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'update'])
+    ->whereUuid('deviceCategoryId');
 
 Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
 
 
-// Device OTA command trigger endpoint
-Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand']);
+// Device OTA Command trigger endpoint
+Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
+    ->whereUuid('deviceId');
 
 
-// Device metrics aka. Device metrics charts
-Route::get('/devices/{deviceId}/metrics/cpu/temperatures', [DeviceMetricController::class, 'cpuTemperatures']);
+// Device Metrics aka. Device metrics charts
+Route::get('/devices/{deviceId}/metrics/cpu/temperatures', [DeviceMetricController::class, 'cpuTemperatures'])
+    ->whereUuid('deviceId');
 
-Route::get('/devices/{deviceId}/metrics/cpu/usages', [DeviceMetricController::class, 'cpuUsages']);
+Route::get('/devices/{deviceId}/metrics/cpu/usages', [DeviceMetricController::class, 'cpuUsages'])
+    ->whereUuid('deviceId');
 
-Route::get('/devices/{deviceId}/metrics/disk/usages', [DeviceMetricController::class, 'diskUsages']);
+Route::get('/devices/{deviceId}/metrics/disk/usages', [DeviceMetricController::class, 'diskUsages'])
+    ->whereUuid('deviceId');
 
-Route::get('/devices/{deviceId}/metrics/memory/availables', [DeviceMetricController::class, 'memoryAvailables']);
+Route::get('/devices/{deviceId}/metrics/memory/availables', [DeviceMetricController::class, 'memoryAvailables'])
+    ->whereUuid('deviceId');
 
 
-// Device commands and Device events
-Route::get('/devices/{deviceId}/commands', [DeviceCommandController::class, 'index']);
+// Device Commands
+Route::get('/devices/{deviceId}/commands', [DeviceCommandController::class, 'index'])
+    ->whereUuid('deviceId');
 
-Route::get('/devices/{deviceId}/events', [DeviceEventController::class, 'index']);
+
+// Device Events
+Route::get('/devices/{deviceId}/events', [DeviceEventController::class, 'index'])
+    ->whereUuid('deviceId');
 
 
 
