@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\SavedDeviceCommand\CreateSavedDeviceCommandAction;
 use App\Actions\SavedDeviceCommand\DeleteMultipleSavedDeviceCommandsAction;
 use App\Actions\SavedDeviceCommand\FilterDataTableSavedDeviceCommandsAction;
-use App\Actions\SavedDeviceCommand\FindSavedCommandByIdOrUniqueIdAction;
+use App\Actions\SavedDeviceCommand\FindSavedDeviceCommandByIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedSavedCommandRequest;
 use App\Http\Requests\StoreSavedDeviceCommandRequest;
@@ -40,9 +40,9 @@ class SavedDeviceCommandController extends Controller
      */
     public function index(Request $request, FilterDataTableSavedDeviceCommandsAction $filterDataTableSavedCommandsAction): JsonResponse
     {
-        $savedCommands = $filterDataTableSavedCommandsAction->execute($request->all());
+        $savedDeviceCommands = $filterDataTableSavedCommandsAction->execute($request->all());
 
-        return $this->apiOk(['savedCommands' => $savedCommands]);
+        return $this->apiOk(['savedDeviceCommands' => $savedDeviceCommands]);
     }
 
     /**
@@ -62,18 +62,20 @@ class SavedDeviceCommandController extends Controller
     /**
      * Return the specified saved command.
      *
-     * @param FindSavedCommandByIdOrUniqueIdAction $findSavedCommandByIdOrUniqueIdAction
+     * @param FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction
      * @param string $id
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindSavedCommandByIdOrUniqueIdAction $findSavedCommandByIdOrUniqueIdAction, string $id): JsonResponse
+    public function show(FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction, string $id): JsonResponse
     {
-        $savedCommand = $findSavedCommandByIdOrUniqueIdAction->execute($id);
 
-        $this->authorize('view', $savedCommand);
+        //TODO: show ot showing due to authrization issue
+        $savedDeviceCommand = $findSavedDeviceCommandByIdAction->execute($id);
 
-        return $this->apiOk(['savedCommand' => $savedCommand]);
+        $this->authorize('view', $savedDeviceCommand);
+
+        return $this->apiOk(['savedDeviceCommand' => $savedDeviceCommand]);
     }
 
     /**
