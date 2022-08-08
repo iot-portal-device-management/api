@@ -9,7 +9,7 @@ use App\Actions\DeviceCategory\FilterDataTableDeviceCategoryDevicesAction;
 use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
 use App\Actions\DeviceCategory\UpdateDeviceCategoryAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DestroySelectedDeviceCategoryRequest;
+use App\Http\Requests\DestroySelectedDeviceCategoriesRequest;
 use App\Http\Requests\StoreDeviceCategoryRequest;
 use App\Http\Requests\UpdateDeviceCategoryRequest;
 use App\Http\Requests\ValidateDeviceCategoryFieldsRequest;
@@ -102,11 +102,11 @@ class DeviceCategoryController extends Controller
     /**
      * Remove the specified device categories from storage.
      *
-     * @param DestroySelectedDeviceCategoryRequest $request
+     * @param DestroySelectedDeviceCategoriesRequest $request
      * @param DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceCategoryRequest $request, DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction): JsonResponse
+    public function destroySelected(DestroySelectedDeviceCategoriesRequest $request, DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction): JsonResponse
     {
         $success = $deleteDeviceCategoriesAction->execute($request->ids);
 

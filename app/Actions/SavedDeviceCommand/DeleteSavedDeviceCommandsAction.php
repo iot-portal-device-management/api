@@ -4,7 +4,7 @@ namespace App\Actions\SavedDeviceCommand;
 
 use App\Models\SavedDeviceCommand;
 
-class DeleteMultipleSavedDeviceCommandsAction
+class DeleteSavedDeviceCommandsAction
 {
     public function execute(array $ids): bool
     {

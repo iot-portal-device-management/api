@@ -41,14 +41,19 @@ class SavedDeviceCommand extends Model
         return $query->whereIn($this->getTable() . '.id', $value);
     }
 
-    public function scopeNameLike($query, $value)
+    public function scopeNameILike($query, $value)
     {
-        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
     }
 
-    public function scopeCommandNameLike($query, $value)
+    public function scopeDeviceCommandTypeNameLike($query, $value)
     {
-        return $query->where($this->getTable() . '.command_name', 'LIKE', "%{$value}%");
+        return $query->where($this->getTable() . '.device_command_type_name', 'LIKE', "%{$value}%");
+    }
+
+    public function scopeUserId($query, $value)
+    {
+        return $query->where($this->getTable() . '.user_id', $value);
     }
 
     public function scopeGetOptions($query)

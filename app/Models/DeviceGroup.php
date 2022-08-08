@@ -55,9 +55,9 @@ class DeviceGroup extends Model
         return $query->whereIn($this->getTable() . '.id', $value);
     }
 
-    public function scopeNameLike($query, $value)
+    public function scopeNameILike($query, $value)
     {
-        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
+        return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
     }
 
     public function scopeUserId($query, $value)

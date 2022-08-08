@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceCategoryIdsForAuthUser;
+use App\Rules\ExistsSavedDeviceCommandIdsForAuthUser;
 
-class DestroySelectedDeviceCategoryRequest extends BaseFormRequest
+class DestroySelectedSavedDeviceCommandsRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class DestroySelectedDeviceCategoryRequest extends BaseFormRequest
             'ids' => [
                 'required',
                 'array',
-                new ExistsDeviceCategoryIdsForAuthUser,
+                new ExistsSavedDeviceCommandIdsForAuthUser,
             ],
         ];
     }

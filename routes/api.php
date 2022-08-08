@@ -43,6 +43,8 @@ Route::delete('/devices', [DeviceController::class, 'destroySelected']);
 
 
 // Device Groups
+Route::get('/device/groups/options', [DeviceGroupController::class, 'options']);
+
 Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex'])
     ->whereUuid('deviceGroupId');
 
@@ -79,16 +81,13 @@ Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySe
 
 
 // Saved Device Commands
+Route::get('/device/commands/saved/options', [SavedDeviceCommandController::class, 'options']);
+
 Route::get('/device/commands/saved', [SavedDeviceCommandController::class, 'index']);
 
 Route::post('/device/commands/saved', [SavedDeviceCommandController::class, 'store']);
 
 Route::get('/device/commands/saved/{savedDeviceCommandId}', [SavedDeviceCommandController::class, 'show'])
-    ->whereUuid('savedDeviceCommandId');
-
-
-//TODO: REMOVE
-Route::match(['put', 'patch'], '/device/commands/saved/{savedDeviceCommandId}', [SavedDeviceCommandController::class, 'update'])
     ->whereUuid('savedDeviceCommandId');
 
 Route::delete('/device/commands/saved', [SavedDeviceCommandController::class, 'destroySelected']);

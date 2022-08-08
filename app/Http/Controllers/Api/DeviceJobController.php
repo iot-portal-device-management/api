@@ -7,7 +7,7 @@ use App\Actions\DeviceJob\DeleteMultipleDeviceJobsAction;
 use App\Actions\DeviceJob\FilterDataTableDeviceJobsAction;
 use App\Actions\DeviceJob\FindDeviceJobByIdOrUniqueIdAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DestroySelectedDeviceJobRequest;
+use App\Http\Requests\DestroySelectedDeviceJobsRequest;
 use App\Http\Requests\StoreDeviceJobRequest;
 use App\Http\Requests\ValidateDeviceJobFieldsRequest;
 use App\Jobs\ProcessDeviceJobJob;
@@ -84,11 +84,11 @@ class DeviceJobController extends Controller
     /**
      * Remove the specified device jobs from storage.
      *
-     * @param DestroySelectedDeviceJobRequest $request
+     * @param DestroySelectedDeviceJobsRequest $request
      * @param DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceJobRequest $request, DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction): JsonResponse
+    public function destroySelected(DestroySelectedDeviceJobsRequest $request, DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction): JsonResponse
     {
         $success = $deleteMultipleDeviceJobsAction->execute($request->ids);
 

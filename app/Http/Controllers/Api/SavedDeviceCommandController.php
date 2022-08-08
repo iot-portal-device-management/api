@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\SavedDeviceCommand\CreateSavedDeviceCommandAction;
-use App\Actions\SavedDeviceCommand\DeleteMultipleSavedDeviceCommandsAction;
+use App\Actions\SavedDeviceCommand\DeleteSavedDeviceCommandsAction;
 use App\Actions\SavedDeviceCommand\FilterDataTableSavedDeviceCommandsAction;
 use App\Actions\SavedDeviceCommand\FindSavedDeviceCommandByIdAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DestroySelectedSavedCommandRequest;
+use App\Http\Requests\DestroySelectedSavedDeviceCommandsRequest;
 use App\Http\Requests\StoreSavedDeviceCommandRequest;
 use App\Http\Requests\ValidateSavedCommandFieldsRequest;
+use App\Http\Resources\SavedDeviceCommandResource;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class SavedDeviceCommandController extends Controller
 //    }
 
     /**
-     * Return a listing of the saved commands.
+     * Return a listing of the saved device commands.
      *
      * @param Request $request
      * @param FilterDataTableSavedDeviceCommandsAction $filterDataTableSavedCommandsAction
@@ -46,7 +47,7 @@ class SavedDeviceCommandController extends Controller
     }
 
     /**
-     * Store a newly created saved command in storage.
+     * Store a newly created saved device command in storage.
      *
      * @param StoreSavedDeviceCommandRequest $request
      * @param CreateSavedDeviceCommandAction $createSavedDeviceCommandAction
@@ -56,61 +57,61 @@ class SavedDeviceCommandController extends Controller
     {
         $savedDeviceCommand = $createSavedDeviceCommandAction->execute($request->user(), $request->validated());
 
-        return $this->apiOk(['savedDeviceCommand' => $savedDeviceCommand]);
+        return $this->apiOk(['savedDeviceCommand' => new SavedDeviceCommandResource($savedDeviceCommand)]);
     }
 
     /**
-     * Return the specified saved command.
+     * Return the specified saved device command.
      *
      * @param FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction
-     * @param string $id
+     * @param string $savedDeviceCommandId
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction, string $id): JsonResponse
+    public function show(FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction, string $savedDeviceCommandId): JsonResponse
     {
-
-        //TODO: show ot showing due to authrization issue
-        $savedDeviceCommand = $findSavedDeviceCommandByIdAction->execute($id);
+        $savedDeviceCommand = $findSavedDeviceCommandByIdAction->execute($savedDeviceCommandId);
 
         $this->authorize('view', $savedDeviceCommand);
 
-        return $this->apiOk(['savedDeviceCommand' => $savedDeviceCommand]);
+        return $this->apiOk(['savedDeviceCommand' => new SavedDeviceCommandResource($savedDeviceCommand)]);
     }
 
     /**
-     * Remove the specified saved commands from storage.
+     * Remove the specified saved device commands from storage.
      *
-     * @param DestroySelectedSavedCommandRequest $request
-     * @param DeleteMultipleSavedDeviceCommandsAction $deleteMultipleSavedCommandsAction
+     * @param DestroySelectedSavedDeviceCommandsRequest $request
+     * @param DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedSavedCommandRequest $request, DeleteMultipleSavedDeviceCommandsAction $deleteMultipleSavedCommandsAction): JsonResponse
+    public function destroySelected(DestroySelectedSavedDeviceCommandsRequest $request, DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction): JsonResponse
     {
-        $success = $deleteMultipleSavedCommandsAction->execute($request->ids);
+        $success = $deleteSavedDeviceCommandsAction->execute($request->ids);
 
-        return $this->apiOk([], $success);
+        return $success
+            ? $this->apiOk()
+            : $this->apiInternalServerError('Failed to delete saved device commands');
     }
 
     /**
-     * Return the saved command options available for user.
+     * Return the saved device command options available for user.
      *
      * @param Request $request
      * @return JsonResponse
      */
     public function options(Request $request): JsonResponse
     {
-        $query = Auth::user()->savedCommands();
+        $query = Auth::user()->savedDeviceCommands();
 
         if ($request->has('name')) {
-            $query->nameLike($request->name);
+            $query->nameILike($request->name);
         }
 
-        return $this->apiOk(['savedCommands' => $query->getOptions()]);
+        return $this->apiOk(['savedDeviceCommands' => $query->getOptions()]);
     }
 
     /**
-     * Validate the saved command form fields.
+     * Validate the saved device command form fields.
      *
      * @param ValidateSavedCommandFieldsRequest $request
      * @return JsonResponse

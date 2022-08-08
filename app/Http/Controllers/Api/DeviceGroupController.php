@@ -9,7 +9,7 @@ use App\Actions\DeviceGroup\FilterDataTableDeviceGroupsAction;
 use App\Actions\DeviceGroup\FindDeviceGroupByIdAction;
 use App\Actions\DeviceGroup\UpdateDeviceGroupAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DestroySelectedDeviceGroupRequest;
+use App\Http\Requests\DestroySelectedDeviceGroupsRequest;
 use App\Http\Requests\StoreDeviceGroupRequest;
 use App\Http\Requests\UpdateDeviceGroupRequest;
 use App\Http\Requests\ValidateDeviceGroupFieldsRequest;
@@ -102,11 +102,11 @@ class DeviceGroupController extends Controller
     /**
      * Remove the specified device groups from storage.
      *
-     * @param DestroySelectedDeviceGroupRequest $request
+     * @param DestroySelectedDeviceGroupsRequest $request
      * @param DeleteDeviceGroupsAction $deleteDeviceGroupsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceGroupRequest $request, DeleteDeviceGroupsAction $deleteDeviceGroupsAction): JsonResponse
+    public function destroySelected(DestroySelectedDeviceGroupsRequest $request, DeleteDeviceGroupsAction $deleteDeviceGroupsAction): JsonResponse
     {
         $success = $deleteDeviceGroupsAction->execute($request->ids);
 
@@ -142,7 +142,7 @@ class DeviceGroupController extends Controller
         $query = Auth::user()->deviceGroups();
 
         if ($request->has('name')) {
-            $query->nameLike($request->name);
+            $query->nameILike($request->name);
         }
 
         return $this->apiOk(['deviceGroups' => $query->getOptions()]);
