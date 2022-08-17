@@ -78,14 +78,14 @@ class DeviceCategory extends Model
         return $query->where($this->getTable() . '.user_id', $value);
     }
 
-    public function scopeUncategorized()
+    public function scopeOfCategory($query, $value)
     {
-        return $this->name(self::CATEGORY_UNCATEGORIZED);
+        return $this->name($value);
     }
 
-    public function scopeGetUncategorized()
+    public function scopeGetCategory($query, $value)
     {
-        return $this->uncategorized()->firstOrFail();
+        return $this->ofCategory($value)->firstOrFail();
     }
 
     public function scopeGetOptions($query)

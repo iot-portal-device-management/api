@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Actions\DeviceJob\CreateDeviceJobAction;
 use App\Actions\DeviceJob\DeleteMultipleDeviceJobsAction;
 use App\Actions\DeviceJob\FilterDataTableDeviceJobsAction;
-use App\Actions\DeviceJob\FindDeviceJobByIdOrUniqueIdAction;
+use App\Actions\DeviceJob\FindDeviceJobByIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceJobsRequest;
 use App\Http\Requests\StoreDeviceJobRequest;
 use App\Http\Requests\ValidateDeviceJobFieldsRequest;
+use App\Http\Resources\DeviceJobResource;
 use App\Jobs\ProcessDeviceJobJob;
+use App\Models\DeviceCommandErrorType;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,7 +60,7 @@ class DeviceJobController extends Controller
 
         if ($deviceJob->exists) {
             ProcessDeviceJobJob::dispatch($deviceJob);
-            return $this->apiOk(['deviceJob' => $deviceJob]);
+            return $this->apiOk(['deviceJob' => new DeviceJobResource($deviceJob)]);
         }
 
         return $this->apiInternalServerError('Failed to create device job.');
@@ -67,14 +69,14 @@ class DeviceJobController extends Controller
     /**
      * Return the specified device job.
      *
-     * @param FindDeviceJobByIdOrUniqueIdAction $findDeviceJobByIdOrUniqueIdAction
-     * @param string $id
+     * @param FindDeviceJobByIdAction $findDeviceJobByIdAction
+     * @param string $deviceJobId
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindDeviceJobByIdOrUniqueIdAction $findDeviceJobByIdOrUniqueIdAction, string $id): JsonResponse
+    public function show(FindDeviceJobByIdAction $findDeviceJobByIdAction, string $deviceJobId): JsonResponse
     {
-        $deviceJob = $findDeviceJobByIdOrUniqueIdAction->execute($id);
+        $deviceJob = $findDeviceJobByIdAction->execute($deviceJobId);
 
         $this->authorize('view', $deviceJob);
 

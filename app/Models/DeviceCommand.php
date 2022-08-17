@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
+use App\Traits\HasDefaultDeviceCommandStatus;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DeviceCommand extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid;
+    use HasFactory, EloquentGetTableName, Uuid, HasDefaultDeviceCommandStatus;
 
     /**
      * The attributes that are mass assignable.
@@ -19,12 +20,15 @@ class DeviceCommand extends Model
      */
     protected $fillable = [
         'payload',
-        'error',
-        'started_at',
-        'completed_at',
-        'responded_at',
+        'job_id',
+        'device_command_error_type_id',
+        'device_command_status_id',
         'device_command_type_id',
         'device_job_id',
+        'started_at',
+        'completed_at',
+        'failed_at',
+        'responded_at',
     ];
 
     /**
@@ -35,8 +39,17 @@ class DeviceCommand extends Model
     protected $casts = [
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
+        'failed_at' => 'datetime',
         'responded_at' => 'datetime',
     ];
+
+    /**
+     * Get the device command status that owns the device command.
+     */
+    public function deviceCommandStatus()
+    {
+        return $this->belongsTo(DeviceCommandStatus::class);
+    }
 
     /**
      * Get the device command type that owns the device command.

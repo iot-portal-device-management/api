@@ -14,7 +14,7 @@ trait HasDeviceConnectionKey
     protected static function bootHasDeviceConnectionKey()
     {
         /**
-         * Listen for the creating event on the user model.
+         * Listen for the creating event on the User model.
          * Sets the 'device_connection_key' on the instance being created
          */
         static::creating(function ($model) {

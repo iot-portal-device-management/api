@@ -3,6 +3,7 @@
 namespace App\Actions\Device;
 
 use App\Models\Device;
+use App\Models\DeviceCategory;
 use App\Models\DeviceStatus;
 use App\Models\User;
 
@@ -12,7 +13,7 @@ class CreateDeviceAction
     {
         return Device::create([
             'name' => $data['name'] ?? null,
-            'device_category_id' => $data['deviceCategoryId'] ?? $user->deviceCategories()->getUncategorized()->id,
+            'device_category_id' => $data['deviceCategoryId'] ?? $user->deviceCategories()->getCategory(DeviceCategory::CATEGORY_UNCATEGORIZED)->id,
             'device_status_id' => DeviceStatus::getRegistered()->id,
         ]);
     }

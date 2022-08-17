@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\Actions\Mqtt\PublishMqttToDeviceAction;
 use App\Exceptions\DeviceTimeoutException;
 use App\Models\DeviceCommand;
+use App\Models\DeviceCommandErrorType;
+use App\Models\DeviceCommandStatus;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -12,6 +14,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use PhpMqtt\Client\Exceptions\ConnectingToBrokerFailedException;
+use Throwable;
 
 class SendDeviceCommandJob implements ShouldQueue
 {
@@ -22,33 +26,25 @@ class SendDeviceCommandJob implements ShouldQueue
      *
      * @var DeviceCommand
      */
-    protected DeviceCommand $commandHistory;
+    protected DeviceCommand $deviceCommand;
 
     /**
      * The string instance.
      *
      * @var string
      */
-    protected string $payloadJson;
+    protected string $payload;
 
     /**
      * Create a new job instance.
      *
-     * @param DeviceCommand $commandHistory
-     * @param string $payloadJson
+     * @param DeviceCommand $deviceCommand
+     * @param string $payload
      */
-    public function __construct(DeviceCommand $commandHistory, string $payloadJson)
+    public function __construct(DeviceCommand $deviceCommand, string $payload)
     {
-        $this->commandHistory = $commandHistory;
-        $this->payloadJson = $payloadJson;
-    }
-
-    /**
-     * @return DeviceCommand
-     */
-    public function getCommandHistory(): DeviceCommand
-    {
-        return $this->commandHistory;
+        $this->deviceCommand = $deviceCommand;
+        $this->payload = $payload;
     }
 
     /**
@@ -63,22 +59,69 @@ class SendDeviceCommandJob implements ShouldQueue
         if ($this->batch()->cancelled()) {
             return;
         }
+        $deviceCommand = $this->deviceCommand;
 
-        $this->commandHistory->update([
+        $deviceCommand->update([
+            'job_id' => $this->job->getJobId(),
+            'device_command_status_id' => DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_PROCESSING)->id,
             'started_at' => now(),
         ]);
 
-        $publishMqttToDeviceAction->execute($this->commandHistory->command->device->unique_id, $this->commandHistory->command->method_name, $this->commandHistory->id, $this->payloadJson);
+        $publishMqttToDeviceAction->execute(
+            $deviceCommand->deviceCommandType->device->id,
+            $deviceCommand->deviceCommandType->method_name,
+            $deviceCommand->id,
+            $this->payload
+        );
 
-        $this->commandHistory->refresh();
-        $startedAt = new Carbon($this->commandHistory->started_at);
-        while (!$this->commandHistory->responded_at && $startedAt->diffInSeconds() <= 30) {
+        $deviceCommand->refresh();
+        $startedAt = new Carbon($deviceCommand->started_at);
+
+        while (!$deviceCommand->responded_at && $startedAt->diffInSeconds() <= 30) {
             sleep(1);
-            $this->commandHistory->refresh();
+            $deviceCommand->refresh();
         }
 
-        if (!$this->commandHistory->responded_at) {
+        if (!$deviceCommand->responded_at) {
             throw new DeviceTimeoutException('Timeout waiting for device to respond.');
+        }
+
+        $deviceCommand->update([
+            'device_command_status_id' => DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_SUCCESSFUL)->id,
+            'completed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param Throwable $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        $deviceCommand = $this->deviceCommand;
+
+        $failedDeviceCommandStatusId = DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_FAILED)->id;
+
+        if ($exception instanceof ConnectingToBrokerFailedException) {
+            $deviceCommand->update([
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_MQTT_BROKER_CONNECTION_REFUSED)->id,
+                'device_command_status_id' => $failedDeviceCommandStatusId,
+                'failed_at' => now(),
+            ]);
+        } else if ($exception instanceof DeviceTimeoutException) {
+            $deviceCommand->update([
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_TIMEOUT)->id,
+                'device_command_status_id' => $failedDeviceCommandStatusId,
+                'failed_at' => now(),
+            ]);
+        } else {
+            $deviceCommand->update([
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
+                'device_command_status_id' => $failedDeviceCommandStatusId,
+                'failed_at' => now(),
+            ]);
         }
     }
 }

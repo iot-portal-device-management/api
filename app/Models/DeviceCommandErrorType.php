@@ -7,12 +7,14 @@ use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceEventType extends Model
+class DeviceCommandErrorType extends Model
 {
     use HasFactory, EloquentGetTableName, Uuid;
 
-    const TYPE_PROPERTY = 'PROPERTY';
-    const TYPE_TELEMETRY = 'TELEMETRY';
+    const TYPE_MQTT_BROKER_CONNECTION_REFUSED = 'MQTT_BROKER_CONNECTION_REFUSED';
+    const TYPE_DEVICE_COMMAND_TYPE_NOT_SUPPORTED = 'DEVICE_COMMAND_TYPE_NOT_SUPPORTED';
+    const TYPE_DEVICE_TIMEOUT = 'DEVICE_TIMEOUT';
+    const TYPE_OTHERS = 'OTHERS';
 
     /**
      * The attributes that are mass assignable.
@@ -21,22 +23,16 @@ class DeviceEventType extends Model
      */
     protected $fillable = [
         'name',
+        'error_code',
+        'description',
     ];
 
     /**
-     * Get the device that owns the device event type.
+     * Get the device commands for the device command type.
      */
-    public function device()
+    public function deviceCommands()
     {
-        return $this->belongsTo(Device::class);
-    }
-
-    /**
-     * Get the device events for the device event type.
-     */
-    public function deviceEvents()
-    {
-        return $this->hasMany(DeviceEvent::class);
+        return $this->hasMany(DeviceCommand::class);
     }
 
     public function scopeName($query, $value)
@@ -54,11 +50,6 @@ class DeviceEventType extends Model
         return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
     }
 
-    public function scopeDeviceId($query, $value)
-    {
-        return $query->where($this->getTable() . '.device_id', $value);
-    }
-
     public function scopeOfType($query, $value)
     {
         return $this->name($value);
@@ -67,10 +58,5 @@ class DeviceEventType extends Model
     public function scopeGetType($query, $value)
     {
         return $this->ofType($value)->firstOrFail();
-    }
-
-    public function scopeGetOptions($query)
-    {
-        return $query->get(['id as value', 'name as label']);
     }
 }

@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DeviceStatusSeeder::class,
+            DeviceCommandErrorTypeSeeder::class,
+            DeviceCommandStatusSeeder::class,
+            DeviceJobErrorTypeSeeder::class,
+            DeviceJobStatusSeeder::class,
+            DeviceCommandStatusSeeder::class,
         ]);
     }
 }

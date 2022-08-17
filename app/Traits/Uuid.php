@@ -14,7 +14,7 @@ trait Uuid
     protected static function bootUuid()
     {
         /**
-         * Listen for the creating event on the user model.
+         * Listen for the creating event on the User model.
          * Sets the 'id' to a UUID using Str::uuid() on the instance being created
          */
         static::creating(function ($model) {

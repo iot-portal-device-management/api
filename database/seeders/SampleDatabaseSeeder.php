@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Device;
 use App\Models\DeviceCommand;
+use App\Models\DeviceCommandStatus;
 use App\Models\DeviceCpuStatistic;
 use App\Models\DeviceDiskStatistic;
 use App\Models\DeviceEvent;
@@ -100,6 +101,7 @@ class SampleDatabaseSeeder extends Seeder
 
                 for ($a = 0; $a < 20; $a++) {
                     DeviceCommand::factory()
+                        ->for(Arr::random(DeviceCommandStatus::all()->all()))
                         ->for(Arr::random($device->deviceCommandTypes->all()))
                         ->create();
 

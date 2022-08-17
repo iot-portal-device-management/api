@@ -13,7 +13,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid, HasMqttCredentials, HasBaseDeviceCommandTypeRecords, HasBaseDeviceEventTypeRecords;
+    use HasFactory,
+        EloquentGetTableName,
+        Uuid,
+        HasMqttCredentials,
+        HasBaseDeviceCommandTypeRecords,
+        HasBaseDeviceEventTypeRecords;
 
     /**
      * The attributes that are mass assignable.
@@ -127,7 +132,7 @@ class Device extends Model
     }
 
     /**
-     * Get the temperature statistics for the device.
+     * Get the device temperature statistics for the device.
      */
     public function deviceTemperatureStatistics()
     {
@@ -135,7 +140,7 @@ class Device extends Model
     }
 
     /**
-     * Get the memory statistics for the device.
+     * Get the device memory statistics for the device.
      */
     public function deviceMemoryStatistics()
     {
@@ -143,7 +148,7 @@ class Device extends Model
     }
 
     /**
-     * Get the disk statistics for the device.
+     * Get the device disk statistics for the device.
      */
     public function deviceDiskStatistics()
     {
@@ -151,7 +156,7 @@ class Device extends Model
     }
 
     /**
-     * Get the network statistics for the device.
+     * Get the device network statistics for the device.
      */
     public function deviceNetworkStatistics()
     {
@@ -159,7 +164,7 @@ class Device extends Model
     }
 
     /**
-     * Get the container statistics for the device.
+     * Get the device container statistics for the device.
      */
     public function deviceContainerStatistics()
     {
@@ -167,7 +172,7 @@ class Device extends Model
     }
 
     /**
-     * Get the cpu statistics for the device.
+     * Get the device CPU statistics for the device.
      */
     public function deviceCpuStatistics()
     {
@@ -182,6 +187,11 @@ class Device extends Model
     public function scopeIdIn($query, $value)
     {
         return $query->whereIn($this->getTable() . '.id', $value);
+    }
+
+    public function scopeExcludeId($query, $value)
+    {
+        return $query->where($this->getTable() . '.id', '!=', $value);
     }
 
     public function scopeName($query, $value)
@@ -219,11 +229,6 @@ class Device extends Model
         return $query->whereHas('deviceGroups', function (Builder $query) use ($value) {
             $query->where('device_groups.id', $value);
         });
-    }
-
-    public function scopeExcludeId($query, $value)
-    {
-        return $query->where($this->getTable() . '.id', '!=', $value);
     }
 
     public function scopeUserId($query, $value)

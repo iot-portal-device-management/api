@@ -14,7 +14,7 @@ trait HasMqttCredentials
     protected static function bootHasMqttCredentials()
     {
         /**
-         * Listen for the creating event on the user model.
+         * Listen for the creating event on the User model.
          * Sets the 'mqtt_password' on the instance being created
          */
         static::creating(function ($model) {

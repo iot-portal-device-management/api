@@ -18,8 +18,8 @@ return [
     ],
 
     'base_device_event_type_records' => [
-        ['name' => DeviceEventType::EVENT_PROPERTY],
-        ['name' => DeviceEventType::EVENT_TELEMETRY],
+        ['name' => DeviceEventType::TYPE_PROPERTY],
+        ['name' => DeviceEventType::TYPE_TELEMETRY],
     ],
 
     'commands' => [

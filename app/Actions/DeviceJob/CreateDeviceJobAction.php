@@ -12,8 +12,8 @@ class CreateDeviceJobAction
         return DeviceJob::create([
             'name' => $data['name'],
             'user_id' => $user->id,
-            'device_group_id' => $data['device_group'],
-            'saved_command_id' => $data['saved_command'],
+            'device_group_id' => $data['deviceGroupId'],
+            'saved_device_command_id' => $data['savedDeviceCommandId'],
         ]);
     }
 }

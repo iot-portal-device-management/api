@@ -7,13 +7,14 @@ use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceStatus extends Model
+class DeviceJobStatus extends Model
 {
     use HasFactory, EloquentGetTableName, Uuid;
 
-    const STATUS_REGISTERED = 'REGISTERED';
-    const STATUS_ONLINE = 'ONLINE';
-    const STATUS_OFFLINE = 'OFFLINE';
+    const STATUS_PENDING = 'PENDING';
+    const STATUS_PROCESSING = 'PROCESSING';
+    const STATUS_SUCCESSFUL = 'SUCCESSFUL';
+    const STATUS_FAILED = 'FAILED';
 
     /**
      * The attributes that are mass assignable.
@@ -25,11 +26,11 @@ class DeviceStatus extends Model
     ];
 
     /**
-     * Get the devices for the device status.
+     * Get the device jobs for the device job status.
      */
-    public function devices()
+    public function deviceJobs()
     {
-        return $this->hasMany(Device::class);
+        return $this->hasMany(DeviceJob::class);
     }
 
     public function scopeId($query, $value)

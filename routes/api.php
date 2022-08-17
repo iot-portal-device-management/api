@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\DeviceCommandController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\DeviceEventController;
 use App\Http\Controllers\Api\DeviceGroupController;
+use App\Http\Controllers\Api\DeviceJobController;
 use App\Http\Controllers\Api\DeviceMetricController;
 use App\Http\Controllers\Api\SavedDeviceCommandController;
 use Illuminate\Http\Request;
@@ -78,6 +79,17 @@ Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceC
     ->whereUuid('deviceCategoryId');
 
 Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
+
+
+// Device Jobs
+Route::get('/device/jobs', [DeviceJobController::class, 'index']);
+
+Route::post('/device/jobs', [DeviceJobController::class, 'store']);
+
+Route::get('/device/jobs/{deviceJobId}', [DeviceJobController::class, 'show'])
+    ->whereUuid('deviceJobId');
+
+Route::delete('/device/jobs', [DeviceJobController::class, 'destroySelected']);
 
 
 // Saved Device Commands

@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DeviceGroup;
+use App\Models\DeviceJob;
+use App\Models\SavedDeviceCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -29,19 +32,19 @@ class StoreDeviceJobRequest extends BaseFormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('device_jobs', 'name')->where(function ($query) {
+                Rule::unique(DeviceJob::getTableName(), 'name')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
                 }),
             ],
-            'device_group' => [
+            'deviceGroupId' => [
                 'required',
-                Rule::exists('device_groups', 'id')->where(function ($query) {
+                Rule::exists(DeviceGroup::getTableName(), 'id')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
                 }),
             ],
-            'saved_command' => [
+            'savedDeviceCommandId' => [
                 'required',
-                Rule::exists('saved_commands', 'id')->where(function ($query) {
+                Rule::exists(SavedDeviceCommand::getTableName(), 'id')->where(function ($query) {
                     return $query->where('user_id', Auth::user()->id);
                 }),
             ],

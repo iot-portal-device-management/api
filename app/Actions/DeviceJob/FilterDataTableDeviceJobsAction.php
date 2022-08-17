@@ -3,7 +3,12 @@
 namespace App\Actions\DeviceJob;
 
 use App\Actions\DataTable\CalculateDataTableFinalRowCountAction;
+use App\Http\Resources\DeviceJobCollectionPagination;
+use App\Models\DeviceJob;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class FilterDataTableDeviceJobsAction
 {
@@ -16,52 +21,86 @@ class FilterDataTableDeviceJobsAction
 
     public function execute(array $data)
     {
-        $query = Auth::user()->deviceJobs()->with(['deviceGroup', 'savedCommand']);
+        $query = Auth::user()->deviceJobs()->with(['deviceGroup', 'savedDeviceCommand']);
 
-        if (isset($data['filters'])) {
-            $filters = json_decode($data['filters']);
+        $relations = [];
 
-            foreach ($filters as $key => $value) {
-                if ($key === 'unique_id') $query->uniqueIdLike($value->value);
+        if (isset($data['sortModel'])) {
+            foreach ($data['sortModel'] as $sortCriterion) {
+                $sortCriterionObject = json_decode($sortCriterion);
 
-                if ($key === 'name') $query->nameLike($value->value);
+                if (Str::contains($sortCriterionObject->field, '.')) {
+                    $relationAndColumn = explode('.', $sortCriterionObject->field);
+                    $relation = $relationAndColumn[0];
+                    $column = $relationAndColumn[1];
 
-                if ($key === 'device_group_name') $query->deviceGroupNameLike($value->value);
+                    if (in_array($relation, $relations)) {
+                        $query->orderBy(function (QueryBuilder $query) use ($relation, $column) {
+                            $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
 
-                if ($key === 'saved_command_name') $query->savedCommandNameLike($value->value);
-
-                if ($key === 'status') $query->status($value->value);
-
-                if ($key === 'started_at') {
-                    $dates = explode(" - ", $value->value);
-                    $query->startedAtBetween($dates);
-                }
-
-                if ($key === 'completed_at') {
-                    $dates = explode(" - ", $value->value);
-                    $query->completedAtBetween($dates);
-                }
-
-                if ($key === 'globalFilter') {
-                    $query->where(function ($query) use ($value) {
-                        $query->uniqueIdLike($value->value)
-                            ->orWhere->nameLike($value->value)
-                            ->orWhere->deviceGroupNameLike($value->value)
-                            ->orWhere->savedCommandNameLike($value->value);
-                    });
+                            $query->select(Str::snake($column))
+                                ->from($modelQualifiedName::getTableName())
+                                ->whereColumn($modelQualifiedName::getTableName() . '.id', DeviceJob::getTableName() . '.' . Str::snake($relation) . '_id')
+                                ->limit(1);
+                        }, $sortCriterionObject->sort);
+                    }
+                } else {
+                    $snakeCaseField = Str::snake($sortCriterionObject->field);
+                    $query->orderBy($snakeCaseField, $sortCriterionObject->sort);
                 }
             }
         }
 
-        if (isset($data['sortField'])) {
-            if ($data['sortOrder'] === '1')
-                $query->orderBy($data['sortField']);
-            else
-                $query->orderByDesc($data['sortField']);
+        if (isset($data['filterModel'])) {
+            $filterOptions = json_decode($data['filterModel']);
+
+            if (isset($filterOptions->items)) {
+                foreach ($filterOptions->items as $filterItem) {
+                    if (isset($filterItem->value) && $filterItem->value !== '') {
+                        if (Str::contains($filterItem->columnField, '.')) {
+                            $relationAndColumn = explode('.', $filterItem->columnField);
+
+                            $query->whereHas(Str::camel($relationAndColumn[0]), function (EloquentBuilder $query) use ($relationAndColumn, $filterItem) {
+                                $modelQualifiedName = 'App\Models\\' . Str::studly($relationAndColumn[0]);
+                                $query->where($modelQualifiedName::getTableName() . '.' . Str::snake($relationAndColumn[1]), 'ILIKE', "%{$filterItem->value}%");
+                            });
+                        } else {
+                            $query->where(DeviceJob::getTableName() . '.' . Str::snake($filterItem->columnField), 'ILIKE', "%{$filterItem->value}%");
+                        }
+                    }
+                }
+            }
+
+            if (isset($filterOptions->quickFilterValues)) {
+                $quickFilterColumns = ['id', 'name'];
+
+                foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
+                    if (isset($quickFilterValue)) {
+                        $query->where(function (EloquentBuilder $query) use ($quickFilterColumns, $quickFilterValue) {
+                            foreach ($quickFilterColumns as $quickFilterColumn) {
+                                if (Str::contains($quickFilterColumn, ':')) {
+                                    $relationAndColumnsString = explode(':', $quickFilterColumn);
+                                    $relation = $relationAndColumnsString[0];
+                                    $columns = explode(',', $relationAndColumnsString[1]);
+
+                                    foreach ($columns as $column) {
+                                        $query->orWhere->whereHas($relation, function (EloquentBuilder $query) use ($quickFilterValue, $relation, $column) {
+                                            $modelQualifiedName = 'App\Models\\' . Str::studly($relation);
+                                            $query->where($modelQualifiedName::getTableName() . '.' . $column, 'ILIKE', "%{$quickFilterValue}%");
+                                        });
+                                    }
+                                } else {
+                                    $query->orWhere->where(DeviceJob::getTableName() . '.' . $quickFilterColumn, 'ILIKE', "%{$quickFilterValue}%");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         }
 
-        $rows = $this->calculateDataTableFinalRowCountAction->execute($data['rows'] ?? null);
+        $pageSize = $this->calculateDataTableFinalRowCountAction->execute($data['pageSize'] ?? null);
 
-        return $query->paginate($rows);
+        return new DeviceJobCollectionPagination($query->paginate($pageSize));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\EloquentGetTableName;
+use App\Traits\HasDefaultDeviceJobStatus;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DeviceJob extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid;
+    use HasFactory, EloquentGetTableName, Uuid, HasDefaultDeviceJobStatus;
 
     /**
      * The attributes that are mass assignable.
@@ -19,13 +20,16 @@ class DeviceJob extends Model
      */
     protected $fillable = [
         'name',
-        'error',
+        'job_id',
         'job_batch_id',
-        'started_at',
-        'completed_at',
+        'device_job_error_type_id',
+        'device_job_status_id',
         'user_id',
         'device_group_id',
         'saved_device_command_id',
+        'started_at',
+        'completed_at',
+        'failed_at',
     ];
 
     /**
@@ -36,7 +40,16 @@ class DeviceJob extends Model
     protected $casts = [
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
+        'failed_at' => 'datetime',
     ];
+
+    /**
+     * Get the device job status that owns the device job.
+     */
+    public function deviceJobStatus()
+    {
+        return $this->belongsTo(DeviceJobStatus::class);
+    }
 
     /**
      * Get the user that owns the device job.
@@ -85,6 +98,18 @@ class DeviceJob extends Model
         return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
     }
 
+    public function scopeOfStatus($query, $value)
+    {
+        return $query->whereHas('deviceJobStatus', function (Builder $query) use ($value) {
+            $query->ofStatus($value);
+        });
+    }
+
+    public function scopeUserId($query, $value)
+    {
+        return $query->where($this->getTable() . '.user_id', $value);
+    }
+
     public function scopeStartedAtBetween($query, $dates)
     {
         return $query->whereBetween($this->getTable() . '.started_at', $dates);
@@ -95,57 +120,17 @@ class DeviceJob extends Model
         return $query->whereBetween($this->getTable() . '.completed_at', $dates);
     }
 
-    public function scopeUserId($query, $value)
-    {
-        return $query->where($this->getTable() . '.user_id', $value);
-    }
-
-    public function scopePending($query)
-    {
-        return $query->whereNull($this->getTable() . '.error')
-            ->whereNull($this->getTable() . '.started_at')
-            ->whereNull($this->getTable() . '.completed_at');
-    }
-
-    public function scopeProcessing($query)
-    {
-        return $query->whereNull($this->getTable() . '.error')
-            ->whereNotNull($this->getTable() . '.started_at')
-            ->whereNull($this->getTable() . '.completed_at');
-    }
-
-    public function scopeSuccessful($query)
-    {
-        return $query->whereNull($this->getTable() . '.error')
-            ->whereNotNull($this->getTable() . '.started_at')
-            ->whereNotNull($this->getTable() . '.completed_at');
-    }
-
-    public function scopeFailed($query)
-    {
-        return $query->whereNotNull($this->getTable() . '.error');
-    }
-
-    public function scopeStatus($query, $value)
-    {
-        if ($value === 'pending') return $query->pending();
-        if ($value === 'processing') return $query->processing();
-        if ($value === 'successful') return $query->successful();
-        if ($value === 'failed') return $query->failed();
-        return $query;
-    }
-
-    public function scopeDeviceGroupNameLike($query, $value)
+    public function scopeDeviceGroupNameILike($query, $value)
     {
         return $query->whereHas('deviceGroup', function (Builder $query) use ($value) {
-            $query->where('name', 'LIKE', "%{$value}%");
+            $query->nameILike($value);
         });
     }
 
-    public function scopeSavedCommandNameLike($query, $value)
+    public function scopeSavedDeviceCommandNameILike($query, $value)
     {
         return $query->whereHas('savedDeviceCommand', function (Builder $query) use ($value) {
-            $query->where('name', 'LIKE', "%{$value}%");
+            $query->nameILike($value);
         });
     }
 }

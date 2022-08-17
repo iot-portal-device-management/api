@@ -6,6 +6,7 @@ use App\Actions\DeviceCommand\CreateDeviceCommandForDeviceCommandTypeAction;
 use App\Actions\DeviceCommand\MarkDeviceCommandAsCompletedAction;
 use App\Actions\Mqtt\PublishMqttToDeviceAction;
 use App\Models\DeviceCommand;
+use App\Models\DeviceCommandStatus;
 
 class TriggerDeviceCommandAction
 {
@@ -41,15 +42,15 @@ class TriggerDeviceCommandAction
     {
         $deviceCommandType = $this->findDeviceCommandTypeByNameForDeviceAction->execute($deviceId, $data['deviceCommandTypeName']);
 
-        $payloadJson = json_encode($data['payload']);
+        $payloadString = json_encode($data['payload']);
 
         $deviceCommand = $this->createDeviceCommandForDeviceCommandTypeAction->execute([
-            'payload' => $payloadJson,
+            'payload' => $payloadString,
             'started_at' => now(),
-            'device_command_type_id' => $deviceCommandType->id,
+            'device_command_status_id' => DeviceCommandStatus::getProcessing()->id,
         ]);
 
-        $this->publishMqttToDeviceAction->execute($deviceId, $deviceCommandType->method_name, $deviceCommand->id, $payloadJson);
+        $this->publishMqttToDeviceAction->execute($deviceId, $deviceCommandType->method_name, $deviceCommand->id, $payloadString);
 
         $this->markDeviceCommandAsCompletedAction->execute($deviceCommand);
 
