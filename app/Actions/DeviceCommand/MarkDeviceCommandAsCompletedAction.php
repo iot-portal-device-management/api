@@ -12,7 +12,7 @@ class MarkDeviceCommandAsCompletedAction
         return $deviceCommand->update([
             'completed_at' => now(),
             'responded_at' => now(),
-            'device_command_status_id' => DeviceCommandStatus::getSuccessful()->id,
+            'device_command_status_id' => DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_SUCCESSFUL)->id,
         ]);
     }
 }

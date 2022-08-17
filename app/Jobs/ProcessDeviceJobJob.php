@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Exceptions\DeviceTimeoutException;
 use App\Models\Device;
 use App\Models\DeviceCommandErrorType;
-use App\Models\DeviceCommandStatus;
 use App\Models\DeviceJob;
 use App\Models\DeviceJobErrorType;
 use App\Models\DeviceJobStatus;
@@ -32,11 +31,11 @@ class ProcessDeviceJobJob implements ShouldQueue
     protected DeviceJob $deviceJob;
 
     /**
-     * The failedDeviceCommandStatusId instance.
+     * The failedDeviceJobStatusId instance.
      *
      * @var string
      */
-    protected string $failedDeviceCommandStatusId;
+    protected string $failedDeviceJobStatusId;
 
 
     /**
@@ -47,7 +46,7 @@ class ProcessDeviceJobJob implements ShouldQueue
     public function __construct(DeviceJob $deviceJob)
     {
         $this->deviceJob = $deviceJob;
-        $this->failedDeviceCommandStatusId = DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_FAILED)->id;
+        $this->failedDeviceJobStatusId = DeviceJobStatus::getStatus(DeviceJobStatus::STATUS_FAILED)->id;
     }
 
     /**
@@ -60,7 +59,7 @@ class ProcessDeviceJobJob implements ShouldQueue
     public function handle()
     {
         $deviceJob = $this->deviceJob;
-        $failedDeviceJobStatusId = $this->failedDeviceCommandStatusId;
+        $failedDeviceJobStatusId = $this->failedDeviceJobStatusId;
 
         $deviceJob->update([
             'job_id' => $this->job->getJobId(),
@@ -126,7 +125,7 @@ class ProcessDeviceJobJob implements ShouldQueue
     {
         $this->deviceJob->update([
             'device_job_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
-            'device_job_status_id' => $this->failedDeviceCommandStatusId,
+            'device_job_status_id' => $this->failedDeviceJobStatusId,
             'failed_at' => now(),
         ]);
     }
@@ -146,13 +145,13 @@ class ProcessDeviceJobJob implements ShouldQueue
             $deviceCommand = $deviceCommandType->deviceCommands()->create([
                 'payload' => $payload ?? null,
                 'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_COMMAND_TYPE_NOT_SUPPORTED)->id,
-                'device_command_status_id' => $this->failedDeviceCommandStatusId,
+                'device_command_status_id' => $this->failedDeviceJobStatusId,
                 'device_job_id' => $this->deviceJob->id,
                 'failed_at' => now(),
             ]);
         }
 
-        return $deviceCommand->deviceCommandStatus->id === $this->failedDeviceCommandStatusId
+        return $deviceCommand->deviceCommandStatus->id === $this->failedDeviceJobStatusId
             ? null
             : new SendDeviceCommandJob($deviceCommand, $payload);
     }

@@ -19,7 +19,7 @@ trait HasDefaultDeviceCommandStatus
          */
         static::creating(function ($model) {
             if ($model->device_command_status_id === null) {
-                $pendingDeviceCommandStatusId = DeviceCommandStatus::getPending()->id;
+                $pendingDeviceCommandStatusId = DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_PENDING)->id;
 
                 $model->setAttribute('device_command_status_id', $pendingDeviceCommandStatusId);
             }

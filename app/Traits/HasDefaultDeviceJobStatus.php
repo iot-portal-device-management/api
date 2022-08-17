@@ -19,7 +19,7 @@ trait HasDefaultDeviceJobStatus
          */
         static::creating(function ($model) {
             if ($model->device_job_status_id === null) {
-                $pendingDeviceJobStatusId = DeviceJobStatus::getPending()->id;
+                $pendingDeviceJobStatusId = DeviceJobStatus::getStatus(DeviceJobStatus::STATUS_PENDING)->id;
 
                 $model->setAttribute('device_job_status_id', $pendingDeviceJobStatusId);
             }
