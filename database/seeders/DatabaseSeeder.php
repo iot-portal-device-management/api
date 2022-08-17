@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             DeviceCommandStatusSeeder::class,
             DeviceJobErrorTypeSeeder::class,
             DeviceJobStatusSeeder::class,
-            DeviceCommandStatusSeeder::class,
         ]);
     }
 }
