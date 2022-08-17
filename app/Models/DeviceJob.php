@@ -20,13 +20,13 @@ class DeviceJob extends Model
      */
     protected $fillable = [
         'name',
-        'job_id',
-        'job_batch_id',
-        'device_job_error_type_id',
-        'device_job_status_id',
         'user_id',
         'device_group_id',
         'saved_device_command_id',
+        'device_job_status_id',
+        'device_job_error_type_id',
+        'job_id',
+        'job_batch_id',
         'started_at',
         'completed_at',
         'failed_at',

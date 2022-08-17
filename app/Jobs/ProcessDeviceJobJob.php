@@ -62,8 +62,8 @@ class ProcessDeviceJobJob implements ShouldQueue
         $failedDeviceJobStatusId = $this->failedDeviceJobStatusId;
 
         $deviceJob->update([
-            'job_id' => $this->job->getJobId(),
             'device_job_status_id' => DeviceJobStatus::getStatus(DeviceJobStatus::STATUS_PROCESSING)->id,
+            'job_id' => $this->job->getJobId(),
             'started_at' => now(),
         ]);
 
@@ -88,20 +88,20 @@ class ProcessDeviceJobJob implements ShouldQueue
             ->catch(function (Batch $batch, Throwable $exception) use ($deviceJob, $failedDeviceJobStatusId) {
                 if ($exception instanceof ConnectingToBrokerFailedException) {
                     $deviceJob->update([
-                        'device_job_error_type_id' => DeviceJobErrorType::getType(DeviceJobErrorType::TYPE_MQTT_BROKER_CONNECTION_REFUSED)->id,
                         'device_job_status_id' => $failedDeviceJobStatusId,
+                        'device_job_error_type_id' => DeviceJobErrorType::getType(DeviceJobErrorType::TYPE_MQTT_BROKER_CONNECTION_REFUSED)->id,
                         'failed_at' => now(),
                     ]);
                 } else if ($exception instanceof DeviceTimeoutException) {
                     $deviceJob->update([
-                        'device_job_error_type_id' => DeviceJobErrorType::getType(DeviceJobErrorType::TYPE_DEVICE_TIMEOUT)->id,
                         'device_job_status_id' => $failedDeviceJobStatusId,
+                        'device_job_error_type_id' => DeviceJobErrorType::getType(DeviceJobErrorType::TYPE_DEVICE_TIMEOUT)->id,
                         'failed_at' => now(),
                     ]);
                 } else {
                     $deviceJob->update([
-                        'device_job_error_type_id' => DeviceJobErrorType::getType(DeviceJobErrorType::TYPE_OTHERS)->id,
                         'device_job_status_id' => $failedDeviceJobStatusId,
+                        'device_job_error_type_id' => DeviceJobErrorType::getType(DeviceJobErrorType::TYPE_OTHERS)->id,
                         'failed_at' => now(),
                     ]);
                 }
@@ -124,8 +124,8 @@ class ProcessDeviceJobJob implements ShouldQueue
     public function failed(Throwable $exception)
     {
         $this->deviceJob->update([
-            'device_job_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
             'device_job_status_id' => $this->failedDeviceJobStatusId,
+            'device_job_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
             'failed_at' => now(),
         ]);
     }
@@ -144,8 +144,8 @@ class ProcessDeviceJobJob implements ShouldQueue
         } else {
             $deviceCommand = $deviceCommandType->deviceCommands()->create([
                 'payload' => $payload ?? null,
-                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_COMMAND_TYPE_NOT_SUPPORTED)->id,
                 'device_command_status_id' => $this->failedDeviceJobStatusId,
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_COMMAND_TYPE_NOT_SUPPORTED)->id,
                 'device_job_id' => $this->deviceJob->id,
                 'failed_at' => now(),
             ]);

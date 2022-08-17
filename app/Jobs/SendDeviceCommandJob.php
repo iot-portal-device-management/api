@@ -62,8 +62,8 @@ class SendDeviceCommandJob implements ShouldQueue
         $deviceCommand = $this->deviceCommand;
 
         $deviceCommand->update([
-            'job_id' => $this->job->getJobId(),
             'device_command_status_id' => DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_PROCESSING)->id,
+            'job_id' => $this->job->getJobId(),
             'started_at' => now(),
         ]);
 
@@ -106,20 +106,20 @@ class SendDeviceCommandJob implements ShouldQueue
 
         if ($exception instanceof ConnectingToBrokerFailedException) {
             $deviceCommand->update([
-                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_MQTT_BROKER_CONNECTION_REFUSED)->id,
                 'device_command_status_id' => $failedDeviceCommandStatusId,
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_MQTT_BROKER_CONNECTION_REFUSED)->id,
                 'failed_at' => now(),
             ]);
         } else if ($exception instanceof DeviceTimeoutException) {
             $deviceCommand->update([
-                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_TIMEOUT)->id,
                 'device_command_status_id' => $failedDeviceCommandStatusId,
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_TIMEOUT)->id,
                 'failed_at' => now(),
             ]);
         } else {
             $deviceCommand->update([
-                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
                 'device_command_status_id' => $failedDeviceCommandStatusId,
+                'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
                 'failed_at' => now(),
             ]);
         }

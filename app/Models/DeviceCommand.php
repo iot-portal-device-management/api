@@ -20,11 +20,11 @@ class DeviceCommand extends Model
      */
     protected $fillable = [
         'payload',
-        'job_id',
-        'device_command_error_type_id',
-        'device_command_status_id',
         'device_command_type_id',
+        'device_command_status_id',
+        'device_command_error_type_id',
         'device_job_id',
+        'job_id',
         'started_at',
         'completed_at',
         'failed_at',
