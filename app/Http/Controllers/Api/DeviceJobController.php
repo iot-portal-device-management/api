@@ -12,7 +12,6 @@ use App\Http\Requests\StoreDeviceJobRequest;
 use App\Http\Requests\ValidateDeviceJobFieldsRequest;
 use App\Http\Resources\DeviceJobResource;
 use App\Jobs\ProcessDeviceJobJob;
-use App\Models\DeviceCommandErrorType;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

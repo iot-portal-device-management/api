@@ -21,9 +21,9 @@ class FilterDataTableDeviceJobsAction
 
     public function execute(array $data)
     {
-        $query = Auth::user()->deviceJobs()->with(['deviceGroup', 'savedDeviceCommand']);
+        $query = Auth::user()->deviceJobs()->with(['deviceGroup', 'savedDeviceCommand', 'deviceJobStatus']);
 
-        $relations = [];
+        $relations = ['deviceGroup', 'savedDeviceCommand', 'deviceJobStatus'];
 
         if (isset($data['sortModel'])) {
             foreach ($data['sortModel'] as $sortCriterion) {
@@ -72,7 +72,7 @@ class FilterDataTableDeviceJobsAction
             }
 
             if (isset($filterOptions->quickFilterValues)) {
-                $quickFilterColumns = ['id', 'name'];
+                $quickFilterColumns = ['id', 'name', 'deviceGroup:name', 'savedDeviceCommand:name', 'deviceJobStatus:name'];
 
                 foreach ($filterOptions->quickFilterValues as $quickFilterValue) {
                     if (isset($quickFilterValue)) {
