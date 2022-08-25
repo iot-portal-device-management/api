@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-use App\Traits\EloquentGetTableName;
+use App\Traits\EloquentTableHelpers;
 use App\Traits\HasDefaultDeviceCommandStatus;
+use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceCommand extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid, HasDefaultDeviceCommandStatus;
+    use HasFactory, PowerJoins, Searchable, EloquentTableHelpers, Uuid, HasDefaultDeviceCommandStatus;
 
     /**
      * The attributes that are mass assignable.
@@ -44,6 +46,45 @@ class DeviceCommand extends Model
     ];
 
     /**
+     * The attributes that are sortable.
+     *
+     * JSON columns cannot be sorted at the moment.
+     *
+     * @var array
+     */
+    protected array $sortableColumns = [
+        'id',
+        'device_command_type_id',
+        'device_command_status_id',
+        'device_command_error_type_id',
+        'device_job_id',
+        'job_id',
+        'started_at',
+        'completed_at',
+        'failed_at',
+        'responded_at',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * The attributes that are filterable.
+     *
+     * Timestamp columns cannot be filtered at the moment.
+     *
+     * @var array
+     */
+    protected array $filterableColumns = [
+        'id',
+        'payload',
+        'device_command_type_id',
+        'device_command_status_id',
+        'device_command_error_type_id',
+        'device_job_id',
+        'job_id',
+    ];
+
+    /**
      * Get the device command status that owns the device command.
      */
     public function deviceCommandStatus()
@@ -69,22 +110,27 @@ class DeviceCommand extends Model
 
     public function scopePayloadLike($query, $value)
     {
-        return $query->where($this->getTable() . '.payload', 'LIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('payload'), 'LIKE', "%{$value}%");
+    }
+
+    public function scopeDeviceJobId($query, $value)
+    {
+        return $query->where($this->qualifyColumn('device_job_id'), $value);
     }
 
     public function scopeDeviceCommandTypeId($query, $value)
     {
-        return $query->where($this->getTable() . '.device_command_type_id', $value);
+        return $query->where($this->qualifyColumn('device_command_type_id'), $value);
     }
 
     public function scopeRespondedAtBetween($query, $dates)
     {
-        return $query->whereBetween($this->getTable() . '.responded_at', $dates);
+        return $query->whereBetween($this->qualifyColumn('responded_at'), $dates);
     }
 
     public function scopeCreatedAtBetween($query, $dates)
     {
-        return $query->whereBetween($this->getTable() . '.created_at', $dates);
+        return $query->whereBetween($this->qualifyColumn('created_at'), $dates);
     }
 
     public function scopeDeviceId($query, $value)

@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\EloquentGetTableName;
+use App\Traits\EloquentTableHelpers;
+use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceDiskStatistic extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid;
+    use HasFactory, PowerJoins, Searchable, EloquentTableHelpers, Uuid;
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +20,34 @@ class DeviceDiskStatistic extends Model
      */
     protected $fillable = [
         'disk_percentage_used',
+    ];
+
+    /**
+     * The attributes that are sortable.
+     *
+     * JSON columns cannot be sorted at the moment.
+     *
+     * @var array
+     */
+    protected array $sortableColumns = [
+        'id',
+        'disk_percentage_used',
+        'device_id',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * The attributes that are filterable.
+     *
+     * Timestamp columns cannot be filtered at the moment.
+     *
+     * @var array
+     */
+    protected array $filterableColumns = [
+        'id',
+        'disk_percentage_used',
+        'device_id',
     ];
 
     /**
@@ -30,6 +60,6 @@ class DeviceDiskStatistic extends Model
 
     public function scopeDeviceId($query, $value)
     {
-        return $query->where($this->getTable() . '.device_id', $value);
+        return $query->where($this->qualifyColumn('device_id'), $value);
     }
 }

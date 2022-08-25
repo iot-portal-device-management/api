@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\EloquentGetTableName;
+use App\Traits\EloquentTableHelpers;
+use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Kirschbaum\PowerJoins\PowerJoins;
 
 class SavedDeviceCommand extends Model
 {
-    use HasFactory, EloquentGetTableName, Uuid;
+    use HasFactory, PowerJoins, Searchable, EloquentTableHelpers, Uuid;
 
     /**
      * The attributes that are mass assignable.
@@ -17,6 +19,38 @@ class SavedDeviceCommand extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'name',
+        'device_command_type_name',
+        'payload',
+        'user_id',
+    ];
+
+    /**
+     * The attributes that are sortable.
+     *
+     * JSON columns cannot be sorted at the moment.
+     *
+     * @var array
+     */
+    protected array $sortableColumns = [
+        'id',
+        'name',
+        'device_command_type_name',
+        'payload',
+        'user_id',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * The attributes that are filterable.
+     *
+     * Timestamp columns cannot be filtered at the moment.
+     *
+     * @var array
+     */
+    protected array $filterableColumns = [
+        'id',
         'name',
         'device_command_type_name',
         'payload',
@@ -33,27 +67,27 @@ class SavedDeviceCommand extends Model
 
     public function scopeId($query, $value)
     {
-        return $query->where($this->getTable() . '.id', $value);
+        return $query->where($this->qualifyColumn('id'), $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn($this->getTable() . '.id', $value);
+        return $query->whereIn($this->qualifyColumn('id'), $value);
     }
 
     public function scopeNameILike($query, $value)
     {
-        return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('name'), 'ILIKE', "%{$value}%");
     }
 
     public function scopeDeviceCommandTypeNameLike($query, $value)
     {
-        return $query->where($this->getTable() . '.device_command_type_name', 'LIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('device_command_type_name'), 'LIKE', "%{$value}%");
     }
 
     public function scopeUserId($query, $value)
     {
-        return $query->where($this->getTable() . '.user_id', $value);
+        return $query->where($this->qualifyColumn('user_id'), $value);
     }
 
     public function scopeGetOptions($query)

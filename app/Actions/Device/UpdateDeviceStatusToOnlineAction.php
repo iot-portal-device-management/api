@@ -22,7 +22,7 @@ class UpdateDeviceStatusToOnlineAction
         $this->updateDeviceLastSeenToNowAction->execute($device);
 
         if (!$device->isOnline()) {
-            $device->deviceStatus()->associate(DeviceStatus::getOnline());
+            $device->deviceStatus()->associate(DeviceStatus::getStatus(DeviceStatus::STATUS_ONLINE));
             return $device->save();
         }
 

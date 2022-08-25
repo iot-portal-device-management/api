@@ -22,7 +22,7 @@ class UpdateDeviceStatusToOfflineAction
         $this->updateDeviceLastSeenToNowAction->execute($device);
 
         if (!$device->isOffline()) {
-            $device->deviceStatus()->associate(DeviceStatus::getOffline());
+            $device->deviceStatus()->associate(DeviceStatus::getStatus(DeviceStatus::STATUS_OFFLINE));
             return $device->save();
         }
 

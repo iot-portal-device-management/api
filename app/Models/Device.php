@@ -2,19 +2,23 @@
 
 namespace App\Models;
 
-use App\Traits\EloquentGetTableName;
+use App\Traits\EloquentTableHelpers;
 use App\Traits\HasBaseDeviceCommandTypeRecords;
 use App\Traits\HasBaseDeviceEventTypeRecords;
 use App\Traits\HasMqttCredentials;
+use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Kirschbaum\PowerJoins\PowerJoins;
 
 class Device extends Model
 {
     use HasFactory,
-        EloquentGetTableName,
+        PowerJoins,
+        Searchable,
+        EloquentTableHelpers,
         Uuid,
         HasMqttCredentials,
         HasBaseDeviceCommandTypeRecords,
@@ -49,6 +53,57 @@ class Device extends Model
      */
     protected $hidden = [
         'laravel_through_key',
+    ];
+
+    /**
+     * The attributes that are sortable.
+     *
+     * JSON columns cannot be sorted at the moment.
+     *
+     * @var array
+     */
+    protected array $sortableColumns = [
+        'id',
+        'name',
+        'bios_release_date',
+        'bios_vendor',
+        'bios_version',
+        'cpu',
+        'disk_information',
+        'os_information',
+        'system_manufacturer',
+        'system_product_name',
+        'total_memory',
+        'mqtt_password',
+        'last_seen',
+        'device_category_id',
+        'device_status_id',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * The attributes that are filterable.
+     *
+     * Timestamp columns cannot be filtered at the moment.
+     *
+     * @var array
+     */
+    protected array $filterableColumns = [
+        'id',
+        'name',
+        'bios_release_date',
+        'bios_vendor',
+        'bios_version',
+        'cpu',
+        'disk_information',
+        'os_information',
+        'system_manufacturer',
+        'system_product_name',
+        'total_memory',
+        'mqtt_password',
+        'device_category_id',
+        'device_status_id',
     ];
 
     public static function boot()
@@ -181,53 +236,53 @@ class Device extends Model
 
     public function scopeId($query, $value)
     {
-        return $query->where($this->getTable() . '.id', $value);
+        return $query->where($this->qualifyColumn('id'), $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn($this->getTable() . '.id', $value);
+        return $query->whereIn($this->qualifyColumn('id'), $value);
     }
 
     public function scopeExcludeId($query, $value)
     {
-        return $query->where($this->getTable() . '.id', '!=', $value);
+        return $query->where($this->qualifyColumn('id'), '!=', $value);
     }
 
     public function scopeName($query, $value)
     {
-        return $query->where($this->getTable() . '.name', $value);
+        return $query->where($this->qualifyColumn('name'), $value);
     }
 
     public function scopeNameILike($query, $value)
     {
-        return $query->where($this->getTable() . '.name', 'ILIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('name'), 'ILIKE', "%{$value}%");
     }
 
     public function scopeBiosVendorILike($query, $value)
     {
-        return $query->where($this->getTable() . '.bios_vendor', 'ILIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('bios_vendor'), 'ILIKE', "%{$value}%");
     }
 
     public function scopeBiosVersionILike($query, $value)
     {
-        return $query->where($this->getTable() . '.bios_version', 'ILIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('bios_version'), 'ILIKE', "%{$value}%");
     }
 
     public function scopeDeviceCategoryId($query, $value)
     {
-        return $query->where($this->getTable() . '.device_category_id', $value);
+        return $query->where($this->qualifyColumn('device_category_id'), $value);
     }
 
     public function scopeDeviceStatusId($query, $value)
     {
-        return $query->where($this->getTable() . '.device_status_id', $value);
+        return $query->where($this->qualifyColumn('device_status_id'), $value);
     }
 
     public function scopeDeviceGroupId($query, $value)
     {
         return $query->whereHas('deviceGroups', function (Builder $query) use ($value) {
-            $query->where('device_groups.id', $value);
+            $query->id($value);
         });
     }
 

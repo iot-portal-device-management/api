@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DeviceGroupController;
 use App\Http\Controllers\Api\DeviceJobController;
 use App\Http\Controllers\Api\DeviceMetricController;
 use App\Http\Controllers\Api\SavedDeviceCommandController;
+use App\Http\Controllers\Api\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,9 @@ Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySe
 
 
 // Device Jobs
+Route::get('/device/jobs/{deviceJobId}/deviceCommands', [DeviceJobController::class, 'deviceJobDeviceCommandsIndex'])
+    ->whereUuid('deviceJobId');
+
 Route::get('/device/jobs', [DeviceJobController::class, 'index']);
 
 Route::post('/device/jobs', [DeviceJobController::class, 'store']);
@@ -135,4 +139,4 @@ Route::get('/devices/{deviceId}/events', [DeviceEventController::class, 'index']
 
 
 
-//Route::get('/test', [TestController::class, 'index']);
+Route::get('/test', [TestController::class, 'index']);

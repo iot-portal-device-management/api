@@ -2,17 +2,26 @@
 
 namespace App\Models;
 
-use App\Traits\EloquentGetTableName;
+use App\Traits\EloquentTableHelpers;
 use App\Traits\HasDeviceConnectionKey;
+use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Kirschbaum\PowerJoins\PowerJoins;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, EloquentGetTableName, Uuid, HasDeviceConnectionKey;
+    use HasApiTokens,
+        HasFactory,
+        Notifiable,
+        PowerJoins,
+        Searchable,
+        EloquentTableHelpers,
+        Uuid,
+        HasDeviceConnectionKey;
 
     /**
      * The attributes that are mass assignable.
@@ -42,6 +51,34 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+    ];
+
+    /**
+     * The attributes that are sortable.
+     *
+     * JSON columns cannot be sorted at the moment.
+     *
+     * @var array
+     */
+    protected array $sortableColumns = [
+        'id',
+        'name',
+        'email',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * The attributes that are filterable.
+     *
+     * Timestamp columns cannot be filtered at the moment.
+     *
+     * @var array
+     */
+    protected array $filterableColumns = [
+        'id',
+        'name',
+        'email',
     ];
 
     /**
@@ -127,16 +164,16 @@ class User extends Authenticatable
 
     public function scopeId($query, $value)
     {
-        return $query->where($this->getTable() . '.id', $value);
+        return $query->where($this->qualifyColumn('id'), $value);
     }
 
     public function scopeIdIn($query, $value)
     {
-        return $query->whereIn($this->getTable() . '.id', $value);
+        return $query->whereIn($this->qualifyColumn('id'), $value);
     }
 
     public function scopeNameLike($query, $value)
     {
-        return $query->where($this->getTable() . '.name', 'LIKE', "%{$value}%");
+        return $query->where($this->qualifyColumn('name'), 'LIKE', "%{$value}%");
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceJob\CreateDeviceJobAction;
 use App\Actions\DeviceJob\DeleteMultipleDeviceJobsAction;
+use App\Actions\DeviceJob\FilterDataTableDeviceJobDeviceCommandsAction;
 use App\Actions\DeviceJob\FilterDataTableDeviceJobsAction;
 use App\Actions\DeviceJob\FindDeviceJobByIdAction;
 use App\Http\Controllers\Controller;
@@ -79,7 +80,7 @@ class DeviceJobController extends Controller
 
         $this->authorize('view', $deviceJob);
 
-        return $this->apiOk(['deviceJob' => $deviceJob]);
+        return $this->apiOk(['deviceJob' => new DeviceJobResource($deviceJob)]);
     }
 
     /**
@@ -94,6 +95,21 @@ class DeviceJobController extends Controller
         $success = $deleteMultipleDeviceJobsAction->execute($request->ids);
 
         return $this->apiOk([], $success);
+    }
+
+    /**
+     * Return a listing of the device group device commands.
+     *
+     * @param Request $request
+     * @param FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction
+     * @param string $deviceJobId
+     * @return JsonResponse
+     */
+    public function deviceJobDeviceCommandsIndex(Request $request, FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction, string $deviceJobId): JsonResponse
+    {
+        $deviceJobDeviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($deviceJobId, $request->all());
+
+        return $this->apiOk(['deviceJobDeviceCommands' => $deviceJobDeviceCommands]);
     }
 
     /**
