@@ -88,15 +88,27 @@ class FilterDataTableAction
                         $latestRelationModel = $this->findLatestRelation($relationName)->getModel();
 
                         if ($latestRelationModel::isColumnFilterable(Str::snake($column))) {
-                            $this->query->whereHas($relationName, function (EloquentBuilder $query) use ($latestRelationModel, $column, $filter) {
-                                $query->where($latestRelationModel->qualifyColumn(Str::snake($column)), 'ILIKE', "%{$filter['value']}%");
-                            });
+                            $this->query
+                                ->whereHas($relationName,
+                                    function (EloquentBuilder $query) use ($latestRelationModel, $column, $filter) {
+                                        $query
+                                            ->where(
+                                                $latestRelationModel->qualifyColumn(Str::snake($column)),
+                                                'ILIKE',
+                                                "%{$filter['value']}%",
+                                            );
+                                    });
                         }
                     } else {
                         $currentModel = $this->query->getModel();
 
                         if ($currentModel::isColumnFilterable(Str::snake($filter['columnField']))) {
-                            $this->query->where($currentModel->qualifyColumn(Str::snake($filter['columnField'])), 'ILIKE', "%{$filter['value']}%");
+                            $this->query
+                                ->where(
+                                    $currentModel->qualifyColumn(Str::snake($filter['columnField'])),
+                                    'ILIKE',
+                                    "%{$filter['value']}%",
+                                );
                         }
                     }
                 }
@@ -113,25 +125,45 @@ class FilterDataTableAction
 
             foreach ($quickFilterValues as $quickFilterValue) {
                 if (isset($quickFilterValue)) {
-                    $this->query->where(function (EloquentBuilder $query) use ($quickFilterableColumns, $quickFilterValue) {
-                        foreach ($this->quickFilterableColumns as $quickFilterableColumn) {
-                            if (Str::contains($quickFilterableColumn, ':')) {
-                                $relationNameAndColumnString = explode(':', $quickFilterableColumn);
-                                $relationName = $relationNameAndColumnString[0];
-                                $columns = explode(',', $relationNameAndColumnString[1]);
+                    $this->query
+                        ->where(
+                            function (EloquentBuilder $query) use ($quickFilterableColumns, $quickFilterValue) {
+                                foreach ($this->quickFilterableColumns as $quickFilterableColumn) {
+                                    if (Str::contains($quickFilterableColumn, ':')) {
+                                        $relationNameAndColumnString = explode(':', $quickFilterableColumn);
+                                        $relationName = $relationNameAndColumnString[0];
+                                        $columns = explode(',', $relationNameAndColumnString[1]);
 
-                                $latestRelationModel = $this->findLatestRelation($relationName)->getModel();
+                                        $latestRelationModel = $this->findLatestRelation($relationName)->getModel();
 
-                                foreach ($columns as $column) {
-                                    $query->orWhere->whereHas($relationName, function (EloquentBuilder $query) use ($latestRelationModel, $column, $quickFilterValue) {
-                                        $query->where($latestRelationModel->qualifyColumn(Str::snake($column)), 'ILIKE', "%{$quickFilterValue}%");
-                                    });
+                                        foreach ($columns as $column) {
+                                            $query
+                                                ->orWhere
+                                                ->whereHas(
+                                                    $relationName,
+                                                    function (EloquentBuilder $query) use (
+                                                        $latestRelationModel,
+                                                        $column,
+                                                        $quickFilterValue
+                                                    ) {
+                                                        $query->where(
+                                                            $latestRelationModel->qualifyColumn(Str::snake($column)),
+                                                            'ILIKE',
+                                                            "%{$quickFilterValue}%",
+                                                        );
+                                                    });
+                                        }
+                                    } else {
+                                        $query
+                                            ->orWhere
+                                            ->where(
+                                                $query->getModel()->qualifyColumn(Str::snake($quickFilterableColumn)),
+                                                'ILIKE',
+                                                "%{$quickFilterValue}%",
+                                            );
+                                    }
                                 }
-                            } else {
-                                $query->orWhere->where($query->getModel()->qualifyColumn(Str::snake($quickFilterableColumn)), 'ILIKE', "%{$quickFilterValue}%");
-                            }
-                        }
-                    });
+                            });
                 }
             }
         }
@@ -152,13 +184,21 @@ class FilterDataTableAction
                     $latestRelation = $this->findLatestRelation($relationName);
 
                     if ($latestRelation->getModel()::isColumnSortable(Str::snake($column))) {
-                        $this->query->orderByLeftPowerJoins($relationName . '.' . Str::snake($column), $sort['sort']);
+                        $this->query
+                            ->orderByLeftPowerJoins(
+                                $relationName . '.' . Str::snake($column),
+                                $sort['sort'],
+                            );
                     }
                 } else {
                     $currentModel = $this->query->getModel();
 
                     if ($currentModel::isColumnSortable(Str::snake($sort['field']))) {
-                        $this->query->orderBy($currentModel->qualifyColumn(Str::snake($sort['field'])), $sort['sort']);
+                        $this->query
+                            ->orderBy(
+                                $currentModel->qualifyColumn(Str::snake($sort['field'])),
+                                $sort['sort'],
+                            );
                     }
                 }
             }
