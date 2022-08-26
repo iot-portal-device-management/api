@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\DataTable\FilterDataTableAction;
 use App\Http\Controllers\Controller;
+use App\Models\Device;
 use App\Models\DeviceCommand;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,15 @@ class TestController extends Controller
 //        $this->middleware('can:deleteMany,App\Models\DeviceGroup')->only('destroySelected');
 //    }
 
+
+    private array|null $quickFilterableColumns = [
+        'id',
+        'name',
+        'bios_vendor',
+        'bios_version',
+        'deviceCategory:name',
+        'deviceStatus:name',
+    ];
     /**
      * Return a listing of the device group.
      *
@@ -36,17 +46,34 @@ class TestController extends Controller
     public function index(Request $request): JsonResponse
     {
 
-        $data = App::makeWith(FilterDataTableAction::class, [
-            'query' => 'fffff',
-            'sortModel' => [],
-            'filterModel' => [],
-        ]);
-
-        dd($data);
-
         DB::connection()->enableQueryLog();
 
-        $query = DeviceCommand::query();
+        $query = Device::joinRelationship('deviceCategory.user', [
+            'user' => function ($join)  {
+                $join->where('users.id', 'cdc26291-c2c4-4b8d-a138-1bd5ab22653b');
+            },
+        ])->with('deviceCategory.user', 'deviceStatus:id,name');
+
+//        $filterDataTableAction = App::makeWith(FilterDataTableAction::class, [
+//            'query' => $query,
+//            'quickFilterableColumns' => $this->quickFilterableColumns,
+//            'sortModel' => $data['sortModel'] ?? null,
+//            'filterModel' => $data['filterModel'] ?? null,
+//        ]);
+
+
+//        $query = Device::powerJoinWhereHas('deviceCategory.user', [
+//            'user' => function ($join) {
+//                $join->where('users.id', 'ILIKE', "%6aa%");
+//            },
+//        ])->get();
+
+
+
+
+
+
+//        $query = DeviceCommand::query();
 
 //        $query->joinRelationship('deviceCommandType.device', [
 //            'device' => function ($join) {
@@ -55,7 +82,7 @@ class TestController extends Controller
 //        ]);
 
 
-        $query->powerJoinWhereHas('deviceCommandType');
+//        $query->powerJoinWhereHas('deviceCommandType');
 //
 //        $query->powerJoinWhereHas('deviceCommandType.device', function ($join) {
 //            $join->where('devices.name', 'ILIKE', "%0%");
@@ -105,10 +132,12 @@ class TestController extends Controller
 //        }, 'desc');
 //
 //
+//        $results = $filterDataTableAction->applySort()->applyFilters()->paginate();
+
         $results = $query->get();
 
         $queries = DB::getQueryLog();
 
-        dd($queries);
+        dd($results);
     }
 }

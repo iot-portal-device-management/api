@@ -3,7 +3,6 @@
 namespace App\Actions\DeviceJob;
 
 use App\Actions\DataTable\FilterDataTableAction;
-use App\Http\Resources\DeviceCommandCollectionPagination;
 use App\Models\DeviceCommand;
 use Illuminate\Support\Facades\App;
 
@@ -17,9 +16,9 @@ class FilterDataTableDeviceJobDeviceCommandsAction
         'deviceCommandStatus:name',
     ];
 
-    public function execute(string $deviceJobId, array $data)
+    public function execute(array $data)
     {
-        $query = DeviceCommand::deviceJobId($deviceJobId)->with(
+        $query = DeviceCommand::deviceJobId($data['deviceJobId'])->with(
             'deviceCommandStatus',
             'deviceCommandType.device.deviceCategory',
             'deviceCommandType.device.deviceStatus'
@@ -32,6 +31,6 @@ class FilterDataTableDeviceJobDeviceCommandsAction
             'filterModel' => $data['filterModel'] ?? null,
         ]);
 
-        return new DeviceCommandCollectionPagination($filterDataTableAction->applySort()->applyFilters()->paginate());
+        return $filterDataTableAction->applySort()->applyFilters()->paginate($data['pageSize']);
     }
 }

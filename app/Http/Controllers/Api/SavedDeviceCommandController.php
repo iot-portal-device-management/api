@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedSavedDeviceCommandsRequest;
 use App\Http\Requests\StoreSavedDeviceCommandRequest;
 use App\Http\Requests\ValidateSavedCommandFieldsRequest;
+use App\Http\Resources\SavedDeviceCommandCollectionPagination;
 use App\Http\Resources\SavedDeviceCommandResource;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -41,9 +42,12 @@ class SavedDeviceCommandController extends Controller
      */
     public function index(Request $request, FilterDataTableSavedDeviceCommandsAction $filterDataTableSavedCommandsAction): JsonResponse
     {
-        $savedDeviceCommands = $filterDataTableSavedCommandsAction->execute($request->all());
+        $data = $request->all();
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['savedDeviceCommands' => $savedDeviceCommands]);
+        $savedDeviceCommands = $filterDataTableSavedCommandsAction->execute($data);
+
+        return $this->apiOk(['savedDeviceCommands' => new SavedDeviceCommandCollectionPagination($savedDeviceCommands)]);
     }
 
     /**

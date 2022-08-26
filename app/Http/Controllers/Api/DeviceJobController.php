@@ -11,11 +11,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceJobsRequest;
 use App\Http\Requests\StoreDeviceJobRequest;
 use App\Http\Requests\ValidateDeviceJobFieldsRequest;
+use App\Http\Resources\DeviceCommandCollectionPagination;
+use App\Http\Resources\DeviceJobCollectionPagination;
 use App\Http\Resources\DeviceJobResource;
 use App\Jobs\ProcessDeviceJobJob;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class DeviceJobController
@@ -42,9 +45,12 @@ class DeviceJobController extends Controller
      */
     public function index(Request $request, FilterDataTableDeviceJobsAction $filterDataTableDeviceJobsAction): JsonResponse
     {
-        $deviceJobs = $filterDataTableDeviceJobsAction->execute($request->all());
+        $data = $request->all();
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['deviceJobs' => $deviceJobs]);
+        $deviceJobs = $filterDataTableDeviceJobsAction->execute($data);
+
+        return $this->apiOk(['deviceJobs' => new DeviceJobCollectionPagination($deviceJobs)]);
     }
 
     /**
@@ -107,9 +113,12 @@ class DeviceJobController extends Controller
      */
     public function deviceJobDeviceCommandsIndex(Request $request, FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction, string $deviceJobId): JsonResponse
     {
-        $deviceJobDeviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($deviceJobId, $request->all());
+        $data = $request->all();
+        $data['deviceJobId'] = $deviceJobId;
 
-        return $this->apiOk(['deviceJobDeviceCommands' => $deviceJobDeviceCommands]);
+        $deviceJobDeviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($data);
+
+        return $this->apiOk(['deviceJobDeviceCommands' => new DeviceCommandCollectionPagination($deviceJobDeviceCommands)]);
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Actions\DeviceCommand\FilterDataTableDeviceCommandsAction;
 use App\Actions\DeviceCommandType\TriggerDeviceCommandAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TriggerDeviceCommandRequest;
+use App\Http\Resources\DeviceCommandCollectionPagination;
 use App\Http\Resources\DeviceCommandResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,9 +35,12 @@ class DeviceCommandController extends Controller
      */
     public function index(Request $request, FilterDataTableDeviceCommandsAction $filterDataTableDeviceCommandsAction, string $deviceId): JsonResponse
     {
-        $deviceCommands = $filterDataTableDeviceCommandsAction->execute($deviceId, $request->all());
+        $data = $request->all();
+        $data['deviceId'] = $deviceId;
 
-        return $this->apiOk(['deviceCommands' => $deviceCommands]);
+        $deviceCommands = $filterDataTableDeviceCommandsAction->execute($data);
+
+        return $this->apiOk(['deviceCommands' => new DeviceCommandCollectionPagination($deviceCommands)]);
     }
 
     /**

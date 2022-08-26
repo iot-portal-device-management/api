@@ -13,7 +13,9 @@ use App\Http\Requests\DestroySelectedDeviceCategoriesRequest;
 use App\Http\Requests\StoreDeviceCategoryRequest;
 use App\Http\Requests\UpdateDeviceCategoryRequest;
 use App\Http\Requests\ValidateDeviceCategoryFieldsRequest;
+use App\Http\Resources\DeviceCategoryCollectionPagination;
 use App\Http\Resources\DeviceCategoryResource;
+use App\Http\Resources\DeviceCollectionPagination;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,9 +47,12 @@ class DeviceCategoryController extends Controller
      */
     public function index(Request $request, FilterDataTableDeviceCategoriesAction $filterDataTableDeviceCategoriesAction): JsonResponse
     {
-        $deviceCategories = $filterDataTableDeviceCategoriesAction->execute($request->all());
+        $data = $request->all();
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['deviceCategories' => $deviceCategories]);
+        $deviceCategories = $filterDataTableDeviceCategoriesAction->execute($data);
+
+        return $this->apiOk(['deviceCategories' => new DeviceCategoryCollectionPagination($deviceCategories)]);
     }
 
     /**
@@ -125,9 +130,12 @@ class DeviceCategoryController extends Controller
      */
     public function deviceCategoryDevicesIndex(Request $request, FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction, string $deviceCategoryId): JsonResponse
     {
-        $deviceCategoryDevices = $filterDataTableDeviceCategoryDevicesAction->execute($deviceCategoryId, $request->all());
+        $data = $request->all();
+        $data['deviceCategoryId'] = $deviceCategoryId;
 
-        return $this->apiOk(['deviceCategoryDevices' => $deviceCategoryDevices]);
+        $deviceCategoryDevices = $filterDataTableDeviceCategoryDevicesAction->execute($data);
+
+        return $this->apiOk(['deviceCategoryDevices' => new DeviceCollectionPagination($deviceCategoryDevices)]);
     }
 
     /**

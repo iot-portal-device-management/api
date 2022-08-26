@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceEvent\FilterDataTableDeviceEventsAction;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DeviceEventCollectionPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -31,8 +32,11 @@ class DeviceEventController extends Controller
      */
     public function index(Request $request, FilterDataTableDeviceEventsAction $filterDataTableDeviceEventsAction, string $deviceId): JsonResponse
     {
-        $deviceEvents = $filterDataTableDeviceEventsAction->execute($deviceId, $request->all());
+        $data = $request->all();
+        $data['deviceId'] = $deviceId;
 
-        return $this->apiOk(['deviceEvents' => $deviceEvents]);
+        $deviceEvents = $filterDataTableDeviceEventsAction->execute($data);
+
+        return $this->apiOk(['deviceEvents' => new DeviceEventCollectionPagination($deviceEvents)]);
     }
 }

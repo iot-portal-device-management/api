@@ -13,6 +13,8 @@ use App\Http\Requests\DestroySelectedDeviceGroupsRequest;
 use App\Http\Requests\StoreDeviceGroupRequest;
 use App\Http\Requests\UpdateDeviceGroupRequest;
 use App\Http\Requests\ValidateDeviceGroupFieldsRequest;
+use App\Http\Resources\DeviceCollectionPagination;
+use App\Http\Resources\DeviceGroupCollectionPagination;
 use App\Http\Resources\DeviceGroupResource;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -45,9 +47,12 @@ class DeviceGroupController extends Controller
      */
     public function index(Request $request, FilterDataTableDeviceGroupsAction $filterDataTableDeviceGroupAction): JsonResponse
     {
-        $deviceGroups = $filterDataTableDeviceGroupAction->execute($request->all());
+        $data = $request->all();
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['deviceGroups' => $deviceGroups]);
+        $deviceGroups = $filterDataTableDeviceGroupAction->execute($data);
+
+        return $this->apiOk(['deviceGroups' => new DeviceGroupCollectionPagination($deviceGroups)]);
     }
 
     /**
@@ -125,9 +130,12 @@ class DeviceGroupController extends Controller
      */
     public function deviceGroupDevicesIndex(Request $request, FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction, string $deviceGroupId): JsonResponse
     {
-        $deviceGroupDevices = $filterDataTableDeviceGroupDevicesAction->execute($deviceGroupId, $request->all());
+        $data = $request->all();
+        $data['deviceGroupId'] = $deviceGroupId;
 
-        return $this->apiOk(['deviceGroupDevices' => $deviceGroupDevices]);
+        $deviceGroupDevices = $filterDataTableDeviceGroupDevicesAction->execute($data);
+
+        return $this->apiOk(['deviceGroupDevices' => new DeviceCollectionPagination($deviceGroupDevices)]);
     }
 
 

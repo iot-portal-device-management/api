@@ -3,7 +3,6 @@
 use App\Models\DeviceEventType;
 
 return [
-    'index_max_rows' => 500,
 
     'base_device_command_type_records' => [
         ['name' => 'OTA', 'method_name' => 'triggerota'],

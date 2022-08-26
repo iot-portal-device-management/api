@@ -4,15 +4,14 @@ namespace App\Actions\DataTable;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 
 class FilterDataTableAction
 {
-    private CalculateDataTableFinalRowCountAction $calculateDataTableFinalRowCountAction;
+    private CalculateDataTableFinalPageSizeAction $calculateDataTableFinalRowCountAction;
 
-    private EloquentBuilder $query;
-
-    private int|null $pageSize;
+    private EloquentBuilder|Relation $query;
 
     private array|null $quickFilterableColumns;
 
@@ -21,9 +20,8 @@ class FilterDataTableAction
     private array|null $filterModel;
 
     public function __construct(
-        CalculateDataTableFinalRowCountAction $calculateDataTableFinalRowCountAction,
-        EloquentBuilder $query,
-        int $pageSize = null,
+        CalculateDataTableFinalPageSizeAction $calculateDataTableFinalRowCountAction,
+        EloquentBuilder|Relation $query,
         array $quickFilterableColumns = null,
         array $sortModel = null,
         array|string $filterModel = null
@@ -31,7 +29,6 @@ class FilterDataTableAction
     {
         $this->calculateDataTableFinalRowCountAction = $calculateDataTableFinalRowCountAction;
         $this->query = $query;
-        $this->pageSize = $pageSize;
         $this->quickFilterableColumns = $quickFilterableColumns;
         $this->sortModel = $sortModel ? $this->decodeSortModel($sortModel) : $sortModel;
         $this->filterModel = $filterModel ? $this->decodeFilterModel($filterModel) : $filterModel;
@@ -185,7 +182,7 @@ class FilterDataTableAction
 
                     if ($latestRelation->getModel()::isColumnSortable(Str::snake($column))) {
                         $this->query
-                            ->orderByLeftPowerJoins(
+                            ->orderByPowerJoins(
                                 $relationName . '.' . Str::snake($column),
                                 $sort['sort'],
                             );
@@ -222,10 +219,10 @@ class FilterDataTableAction
         return $this;
     }
 
-    public function paginate(): LengthAwarePaginator
+    public function paginate(int $perPage = null, $columns = ['*'], $pageName = 'page', $page = null): LengthAwarePaginator
     {
-        $pageSize = $this->calculateDataTableFinalRowCountAction->execute($this->pageSize);
+        $pageSize = $this->calculateDataTableFinalRowCountAction->execute($perPage);
 
-        return $this->query->paginate($pageSize);
+        return $this->query->paginate($pageSize, $columns, $pageName, $page);
     }
 }

@@ -15,11 +15,13 @@ use App\Http\Requests\RegisterDeviceRequest;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
 use App\Http\Requests\ValidateDeviceFieldsRequest;
+use App\Http\Resources\DeviceCollectionPagination;
 use App\Http\Resources\DeviceResource;
 use App\Models\Device;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class DeviceController
@@ -48,9 +50,12 @@ class DeviceController extends Controller
      */
     public function index(Request $request, FilterDataTableDevicesAction $filterDataTableDevicesAction)
     {
-        $devices = $filterDataTableDevicesAction->execute($request->all());
+        $data = $request->all();
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['devices' => $devices]);
+        $devices = $filterDataTableDevicesAction->execute($data);
+
+        return $this->apiOk(['devices' => new DeviceCollectionPagination($devices)]);
     }
 
     /**
