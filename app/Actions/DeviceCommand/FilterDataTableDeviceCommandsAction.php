@@ -4,19 +4,19 @@ namespace App\Actions\DeviceCommand;
 
 use App\Actions\DataTable\FilterDataTableAction;
 use App\Models\DeviceCommand;
-use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class FilterDataTableDeviceCommandsAction
+class FilterDataTableDeviceCommandsAction extends FilterDataTableAction
 {
-    private array|null $quickFilterableColumns = [
+    protected array|null $quickFilterableColumns = [
         'id',
         'payload',
         'deviceCommandType:name',
     ];
 
-    public function execute(array $data)
+    public function execute(array $data): LengthAwarePaginator
     {
-        $query = DeviceCommand::joinRelationship('deviceCommandType.device', [
+        $this->query = DeviceCommand::joinRelationship('deviceCommandType.device', [
             'device' => function ($join) use ($data) {
                 $join->id($data['deviceId']);
             },
@@ -24,13 +24,6 @@ class FilterDataTableDeviceCommandsAction
             'deviceCommandType:id,name',
         );
 
-        $filterDataTableAction = App::makeWith(FilterDataTableAction::class, [
-            'query' => $query,
-            'quickFilterableColumns' => $this->quickFilterableColumns,
-            'sortModel' => $data['sortModel'] ?? null,
-            'filterModel' => $data['filterModel'] ?? null,
-        ]);
-
-        return $filterDataTableAction->applySort()->applyFilters()->paginate($data['pageSize']);
+        return $this->setData($data)->applySort()->applyFilters()->paginate();
     }
 }

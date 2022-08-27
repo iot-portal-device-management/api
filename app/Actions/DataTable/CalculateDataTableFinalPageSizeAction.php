@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Config;
 
 class CalculateDataTableFinalPageSizeAction
 {
-    public function execute(?int $pageSize = 15)
+    public function execute(?int $pageSize = 25): int
     {
         $defaultPageSize = Config::get('datatable.default_page_size');
 

@@ -4,19 +4,19 @@ namespace App\Actions\DeviceEvent;
 
 use App\Actions\DataTable\FilterDataTableAction;
 use App\Models\DeviceEvent;
-use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class FilterDataTableDeviceEventsAction
+class FilterDataTableDeviceEventsAction extends FilterDataTableAction
 {
-    private array|null $quickFilterableColumns = [
+    protected array|null $quickFilterableColumns = [
         'id',
         'raw_data',
         'deviceEventType:name',
     ];
 
-    public function execute(array $data)
+    public function execute(array $data): LengthAwarePaginator
     {
-        $query = DeviceEvent::joinRelationship('deviceEventType.device', [
+        $this->query = DeviceEvent::joinRelationship('deviceEventType.device', [
             'device' => function ($join) use ($data) {
                 $join->id($data['deviceId']);
             },
@@ -24,13 +24,6 @@ class FilterDataTableDeviceEventsAction
             'deviceEventType:id,name',
         );
 
-        $filterDataTableAction = App::makeWith(FilterDataTableAction::class, [
-            'query' => $query,
-            'quickFilterableColumns' => $this->quickFilterableColumns,
-            'sortModel' => $data['sortModel'] ?? null,
-            'filterModel' => $data['filterModel'] ?? null,
-        ]);
-
-        return $filterDataTableAction->applySort()->applyFilters()->paginate($data['pageSize']);
+        return $this->setData($data)->applySort()->applyFilters()->paginate();
     }
 }

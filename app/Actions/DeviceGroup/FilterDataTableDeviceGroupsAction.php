@@ -4,26 +4,19 @@ namespace App\Actions\DeviceGroup;
 
 use App\Actions\DataTable\FilterDataTableAction;
 use App\Models\DeviceGroup;
-use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class FilterDataTableDeviceGroupsAction
+class FilterDataTableDeviceGroupsAction extends FilterDataTableAction
 {
-    private array|null $quickFilterableColumns = [
+    protected array|null $quickFilterableColumns = [
         'id',
         'name',
     ];
 
-    public function execute(array $data)
+    public function execute(array $data): LengthAwarePaginator
     {
-        $query = DeviceGroup::userId($data['userId']);
+        $this->query = DeviceGroup::userId($data['userId']);
 
-        $filterDataTableAction = App::makeWith(FilterDataTableAction::class, [
-            'query' => $query,
-            'quickFilterableColumns' => $this->quickFilterableColumns,
-            'sortModel' => $data['sortModel'] ?? null,
-            'filterModel' => $data['filterModel'] ?? null,
-        ]);
-
-        return $filterDataTableAction->applySort()->applyFilters()->paginate($data['pageSize']);
+        return $this->setData($data)->applySort()->applyFilters()->paginate();
     }
 }

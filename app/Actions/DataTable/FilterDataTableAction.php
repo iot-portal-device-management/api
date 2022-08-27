@@ -9,32 +9,26 @@ use Illuminate\Support\Str;
 
 class FilterDataTableAction
 {
-    private CalculateDataTableFinalPageSizeAction $calculateDataTableFinalRowCountAction;
+    protected EloquentBuilder|Relation $query;
 
-    private EloquentBuilder|Relation $query;
+    protected array|null $quickFilterableColumns;
 
-    private array|null $quickFilterableColumns;
+    protected array|null $data;
 
-    private array|null $sortModel;
+    protected array|null $sortModel;
 
-    private array|null $filterModel;
+    protected array|null $filterModel;
 
-    public function __construct(
-        CalculateDataTableFinalPageSizeAction $calculateDataTableFinalRowCountAction,
-        EloquentBuilder|Relation $query,
-        array $quickFilterableColumns = null,
-        array $sortModel = null,
-        array|string $filterModel = null
-    )
+    public function setData(array $data = null): static
     {
-        $this->calculateDataTableFinalRowCountAction = $calculateDataTableFinalRowCountAction;
-        $this->query = $query;
-        $this->quickFilterableColumns = $quickFilterableColumns;
-        $this->sortModel = $sortModel ? $this->decodeSortModel($sortModel) : $sortModel;
-        $this->filterModel = $filterModel ? $this->decodeFilterModel($filterModel) : $filterModel;
+        $this->data = $data;
+        $this->sortModel = isset($data['sortModel']) ? $this->decodeSortModel($data['sortModel']) : null;
+        $this->filterModel = isset($data['filterModel']) ? $this->decodeFilterModel($data['filterModel']) : null;
+
+        return $this;
     }
 
-    public function getQuery()
+    public function getQuery(): Relation|EloquentBuilder
     {
         return $this->query;
     }
@@ -57,7 +51,7 @@ class FilterDataTableAction
         return $filterModel;
     }
 
-    public function findLatestRelation(string $relations)
+    public function findLatestRelation(string $relations): Relation
     {
         $relationNames = explode('.', $relations);
 
@@ -72,7 +66,7 @@ class FilterDataTableAction
         return $latestRelation;
     }
 
-    public function applyFieldFilters(array $filters)
+    public function applyFieldFilters(array $filters): static
     {
         if (isset($filters)) {
             foreach ($filters as $filter) {
@@ -115,7 +109,7 @@ class FilterDataTableAction
         return $this;
     }
 
-    public function applyQuickFilters(array $quickFilterValues)
+    public function applyQuickFilters(array $quickFilterValues): static
     {
         if ($this->quickFilterableColumns && $quickFilterValues) {
             $quickFilterableColumns = $this->quickFilterableColumns;
@@ -168,7 +162,7 @@ class FilterDataTableAction
         return $this;
     }
 
-    public function applySort()
+    public function applySort(): static
     {
         if (isset($this->sortModel)) {
             foreach ($this->sortModel as $sortCriterion) {
@@ -204,7 +198,7 @@ class FilterDataTableAction
         return $this;
     }
 
-    public function applyFilters()
+    public function applyFilters(): static
     {
         if (isset($this->filterModel)) {
             if (isset($this->filterModel['items'])) {
@@ -219,9 +213,21 @@ class FilterDataTableAction
         return $this;
     }
 
-    public function paginate(int $perPage = null, $columns = ['*'], $pageName = 'page', $page = null): LengthAwarePaginator
+    public function paginate(
+        int|null $perPage = null,
+        array $columns = ['*'],
+        string $pageName = 'page',
+        int $page = null
+    ): LengthAwarePaginator
     {
-        $pageSize = $this->calculateDataTableFinalRowCountAction->execute($perPage);
+        $perPage = $perPage ?? (isset($this->data['fetchAll']) && $this->data['fetchAll'] === 'true')
+                ? $this->query->count() : $this->data['pageSize'] ?? null;
+
+        if ($perPage === 0) {
+            $perPage = $this->query->count();
+        }
+
+        $pageSize = (new CalculateDataTableFinalPageSizeAction)->execute($perPage);
 
         return $this->query->paginate($pageSize, $columns, $pageName, $page);
     }

@@ -4,11 +4,11 @@ namespace App\Actions\DeviceCategory;
 
 use App\Actions\DataTable\FilterDataTableAction;
 use App\Models\Device;
-use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class FilterDataTableDeviceCategoryDevicesAction
+class FilterDataTableDeviceCategoryDevicesAction extends FilterDataTableAction
 {
-    private array|null $quickFilterableColumns = [
+    protected array|null $quickFilterableColumns = [
         'id',
         'name',
         'bios_vendor',
@@ -17,26 +17,15 @@ class FilterDataTableDeviceCategoryDevicesAction
         'deviceStatus:name',
     ];
 
-    public function execute(array $data)
+    public function execute(array $data): LengthAwarePaginator
     {
-        $query = Device::joinRelationship('deviceCategory', function ($join) use ($data) {
+        $this->query = Device::joinRelationship('deviceCategory', function ($join) use ($data) {
             $join->id($data['deviceCategoryId']);
         })->with(
             'deviceCategory:id,name',
             'deviceStatus:id,name',
         );
 
-        $filterDataTableAction = App::makeWith(FilterDataTableAction::class, [
-            'query' => $query,
-            'quickFilterableColumns' => $this->quickFilterableColumns,
-            'sortModel' => $data['sortModel'] ?? null,
-            'filterModel' => $data['filterModel'] ?? null,
-        ])->applySort()->applyFilters();
-
-        if (isset($data['fetchAll']) && $data['fetchAll'] === 'true') {
-            return $filterDataTableAction->paginate($filterDataTableAction->getQuery()->count());
-        }
-
-        return $filterDataTableAction->paginate($data['pageSize']);
+        return $this->setData($data)->applySort()->applyFilters()->paginate();
     }
 }

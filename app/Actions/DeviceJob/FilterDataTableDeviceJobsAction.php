@@ -4,11 +4,11 @@ namespace App\Actions\DeviceJob;
 
 use App\Actions\DataTable\FilterDataTableAction;
 use App\Models\DeviceJob;
-use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class FilterDataTableDeviceJobsAction
+class FilterDataTableDeviceJobsAction extends FilterDataTableAction
 {
-    private array|null $quickFilterableColumns = [
+    protected array|null $quickFilterableColumns = [
         'id',
         'name',
         'deviceGroup:name',
@@ -16,21 +16,14 @@ class FilterDataTableDeviceJobsAction
         'deviceJobStatus:name',
     ];
 
-    public function execute(array $data)
+    public function execute(array $data): LengthAwarePaginator
     {
-        $query = DeviceJob::userId($data['userId'])->with([
+        $this->query = DeviceJob::userId($data['userId'])->with([
             'deviceGroup',
             'savedDeviceCommand',
             'deviceJobStatus',
         ]);
 
-        $filterDataTableAction = App::makeWith(FilterDataTableAction::class, [
-            'query' => $query,
-            'quickFilterableColumns' => $this->quickFilterableColumns,
-            'sortModel' => $data['sortModel'] ?? null,
-            'filterModel' => $data['filterModel'] ?? null,
-        ]);
-
-        return $filterDataTableAction->applySort()->applyFilters()->paginate($data['pageSize']);
+        return $this->setData($data)->applySort()->applyFilters()->paginate();
     }
 }
