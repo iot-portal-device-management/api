@@ -19,7 +19,7 @@ class FilterDataTableAction
 
     protected array|null $filterModel;
 
-    public function setData(array $data = null): static
+    public function setData(array $data): static
     {
         $this->data = $data;
         $this->sortModel = isset($data['sortModel']) ? $this->decodeSortModel($data['sortModel']) : null;
