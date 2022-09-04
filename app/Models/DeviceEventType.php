@@ -91,12 +91,12 @@ class DeviceEventType extends Model
 
     public function scopeOfType($query, $value)
     {
-        return $this->name($value);
+        return $query->name($value);
     }
 
     public function scopeGetType($query, $value)
     {
-        return $this->ofType($value)->firstOrFail();
+        return $query->ofType($value)->firstOrFail();
     }
 
     public function scopeGetOptions($query)

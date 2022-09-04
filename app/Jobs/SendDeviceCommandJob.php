@@ -59,6 +59,7 @@ class SendDeviceCommandJob implements ShouldQueue
         if ($this->batch()->cancelled()) {
             return;
         }
+
         $deviceCommand = $this->deviceCommand;
 
         $deviceCommand->update([
@@ -71,7 +72,7 @@ class SendDeviceCommandJob implements ShouldQueue
             $deviceCommand->deviceCommandType->device->id,
             $deviceCommand->deviceCommandType->method_name,
             $deviceCommand->id,
-            $this->payload
+            $this->payload,
         );
 
         $deviceCommand->refresh();
@@ -100,27 +101,27 @@ class SendDeviceCommandJob implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
+        $now = now();
         $deviceCommand = $this->deviceCommand;
-
         $failedDeviceCommandStatusId = DeviceCommandStatus::getStatus(DeviceCommandStatus::STATUS_FAILED)->id;
 
         if ($exception instanceof ConnectingToBrokerFailedException) {
             $deviceCommand->update([
                 'device_command_status_id' => $failedDeviceCommandStatusId,
                 'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_MQTT_BROKER_CONNECTION_REFUSED)->id,
-                'failed_at' => now(),
+                'failed_at' => $now,
             ]);
         } else if ($exception instanceof DeviceTimeoutException) {
             $deviceCommand->update([
                 'device_command_status_id' => $failedDeviceCommandStatusId,
                 'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_DEVICE_TIMEOUT)->id,
-                'failed_at' => now(),
+                'failed_at' => $now,
             ]);
         } else {
             $deviceCommand->update([
                 'device_command_status_id' => $failedDeviceCommandStatusId,
                 'device_command_error_type_id' => DeviceCommandErrorType::getType(DeviceCommandErrorType::TYPE_OTHERS)->id,
-                'failed_at' => now(),
+                'failed_at' => $now,
             ]);
         }
     }

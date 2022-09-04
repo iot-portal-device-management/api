@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\DeviceJob\CalculateDeviceJobProgressStatusAction;
 use App\Actions\DeviceJob\CreateDeviceJobAction;
 use App\Actions\DeviceJob\DeleteMultipleDeviceJobsAction;
 use App\Actions\DeviceJob\FilterDataTableDeviceJobDeviceCommandsAction;
@@ -104,7 +105,21 @@ class DeviceJobController extends Controller
     }
 
     /**
-     * Return a listing of the device group device commands.
+     * Return the status of the device job.
+     *
+     * @param CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction
+     * @param string $deviceJobId
+     * @return JsonResponse
+     */
+    public function showProgressStatus(CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction, string $deviceJobId): JsonResponse
+    {
+        $deviceJobProgressStatus = $calculateDeviceJobProgressStatusAction->execute($deviceJobId);
+
+        return $this->apiOk(['progressStatus' => $deviceJobProgressStatus]);
+    }
+
+    /**
+     * Return a listing of the device job's device commands.
      *
      * @param Request $request
      * @param FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction

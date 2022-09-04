@@ -82,12 +82,12 @@ class DeviceStatus extends Model
 
     public function scopeOfStatus($query, $value)
     {
-        return $this->name($value);
+        return $query->name($value);
     }
 
     public function scopeGetStatus($query, $value)
     {
-        return $this->ofStatus($value)->firstOrFail();
+        return $query->ofStatus($value)->firstOrFail();
     }
 
     public function scopeGetOptions($query)

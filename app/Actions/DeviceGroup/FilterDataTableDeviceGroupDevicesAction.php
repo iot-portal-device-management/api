@@ -19,9 +19,11 @@ class FilterDataTableDeviceGroupDevicesAction extends FilterDataTableAction
 
     public function execute(array $data): LengthAwarePaginator
     {
-        $this->query = Device::joinRelationship('deviceGroups', function ($join) use ($data) {
-            $join->id($data['deviceGroupId']);
-        })->with(
+        $this->query = Device::joinRelationship('deviceGroups', [
+            'device_groups' => function ($join) use ($data) {
+                $join->id($data['deviceGroupId']);
+            },
+        ])->with(
             'deviceCategory:id,name',
             'deviceStatus:id,name',
         );

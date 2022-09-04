@@ -110,12 +110,12 @@ class DeviceCategory extends Model
 
     public function scopeOfCategory($query, $value)
     {
-        return $this->name($value);
+        return $query->name($value);
     }
 
     public function scopeGetCategory($query, $value)
     {
-        return $this->ofCategory($value)->firstOrFail();
+        return $query->ofCategory($value)->firstOrFail();
     }
 
     public function scopeGetOptions($query)

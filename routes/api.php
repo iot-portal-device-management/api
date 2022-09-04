@@ -30,7 +30,12 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 require __DIR__ . '/api_auth.php';
 
 
-// Device
+// DEVICE OTA COMMAND TRIGGER ENDPOINT
+Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
+    ->whereUuid('deviceId');
+
+
+// DEVICES
 Route::get('/devices', [DeviceController::class, 'index']);
 
 Route::post('/devices', [DeviceController::class, 'store']);
@@ -44,7 +49,7 @@ Route::match(['put', 'patch'], '/devices/{deviceId}', [DeviceController::class, 
 Route::delete('/devices', [DeviceController::class, 'destroySelected']);
 
 
-// Device Groups
+// DEVICE GROUPS
 Route::get('/device/groups/options', [DeviceGroupController::class, 'options']);
 
 Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex'])
@@ -63,7 +68,7 @@ Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupCon
 Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected']);
 
 
-// Device Categories
+// DEVICE CATEGORIES
 Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
 
 Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex'])
@@ -82,7 +87,10 @@ Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceC
 Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
 
 
-// Device Jobs
+// DEVICE JOBS
+Route::get('/device/jobs/{deviceJobId}/progressStatus', [DeviceJobController::class, 'showProgressStatus'])
+    ->whereUuid('deviceJobId');
+
 Route::get('/device/jobs/{deviceJobId}/deviceCommands', [DeviceJobController::class, 'deviceJobDeviceCommandsIndex'])
     ->whereUuid('deviceJobId');
 
@@ -96,7 +104,7 @@ Route::get('/device/jobs/{deviceJobId}', [DeviceJobController::class, 'show'])
 Route::delete('/device/jobs', [DeviceJobController::class, 'destroySelected']);
 
 
-// Saved Device Commands
+// SAVED DEVICE COMMANDS
 Route::get('/device/commands/saved/options', [SavedDeviceCommandController::class, 'options']);
 
 Route::get('/device/commands/saved', [SavedDeviceCommandController::class, 'index']);
@@ -109,12 +117,7 @@ Route::get('/device/commands/saved/{savedDeviceCommandId}', [SavedDeviceCommandC
 Route::delete('/device/commands/saved', [SavedDeviceCommandController::class, 'destroySelected']);
 
 
-// Device OTA Command trigger endpoint
-Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
-    ->whereUuid('deviceId');
-
-
-// Device Metrics aka. Device metrics charts
+// DEVICE METRICS AKA. DEVICE METRICS CHARTS
 Route::get('/devices/{deviceId}/metrics/cpu/temperatures', [DeviceMetricController::class, 'cpuTemperatures'])
     ->whereUuid('deviceId');
 
@@ -128,12 +131,12 @@ Route::get('/devices/{deviceId}/metrics/memory/availables', [DeviceMetricControl
     ->whereUuid('deviceId');
 
 
-// Device Commands
+// DEVICE COMMANDS
 Route::get('/devices/{deviceId}/commands', [DeviceCommandController::class, 'index'])
     ->whereUuid('deviceId');
 
 
-// Device Events
+// DEVICE EVENTS
 Route::get('/devices/{deviceId}/events', [DeviceEventController::class, 'index'])
     ->whereUuid('deviceId');
 
