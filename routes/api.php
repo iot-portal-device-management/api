@@ -30,11 +30,6 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 require __DIR__ . '/api_auth.php';
 
 
-// DEVICE OTA COMMAND TRIGGER ENDPOINT
-Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
-    ->whereUuid('deviceId');
-
-
 // DEVICES
 Route::get('/devices', [DeviceController::class, 'index']);
 
@@ -131,13 +126,18 @@ Route::get('/devices/{deviceId}/metrics/memory/availables', [DeviceMetricControl
     ->whereUuid('deviceId');
 
 
+// DEVICE OTA COMMAND TRIGGER ENDPOINT
+Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
+    ->whereUuid('deviceId');
+
+
 // DEVICE COMMANDS
-Route::get('/devices/{deviceId}/commands', [DeviceCommandController::class, 'index'])
+Route::get('/devices/{deviceId}/deviceCommands', [DeviceCommandController::class, 'index'])
     ->whereUuid('deviceId');
 
 
 // DEVICE EVENTS
-Route::get('/devices/{deviceId}/events', [DeviceEventController::class, 'index'])
+Route::get('/devices/{deviceId}/deviceEvents', [DeviceEventController::class, 'index'])
     ->whereUuid('deviceId');
 
 
