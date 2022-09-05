@@ -45,7 +45,10 @@ class DeviceCategoryController extends Controller
      * @param FilterDataTableDeviceCategoriesAction $filterDataTableDeviceCategoriesAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDeviceCategoriesAction $filterDataTableDeviceCategoriesAction): JsonResponse
+    public function index(
+        Request $request,
+        FilterDataTableDeviceCategoriesAction $filterDataTableDeviceCategoriesAction
+    ): JsonResponse
     {
         $data = $request->all();
         $data['userId'] = Auth::id();
@@ -62,7 +65,10 @@ class DeviceCategoryController extends Controller
      * @param CreateDeviceCategoryAction $createDeviceCategoryAction
      * @return JsonResponse
      */
-    public function store(StoreDeviceCategoryRequest $request, CreateDeviceCategoryAction $createDeviceCategoryAction): JsonResponse
+    public function store(
+        StoreDeviceCategoryRequest $request,
+        CreateDeviceCategoryAction $createDeviceCategoryAction
+    ): JsonResponse
     {
         $deviceCategory = $createDeviceCategoryAction->execute($request->user(), $request->validated());
 
@@ -77,7 +83,10 @@ class DeviceCategoryController extends Controller
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction, string $deviceCategoryId): JsonResponse
+    public function show(
+        FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction,
+        string $deviceCategoryId
+    ): JsonResponse
     {
         $deviceCategory = $findDeviceCategoryByIdAction->execute($deviceCategoryId);
 
@@ -95,7 +104,12 @@ class DeviceCategoryController extends Controller
      * @param string $deviceCategoryId
      * @return JsonResponse
      */
-    public function update(UpdateDeviceCategoryRequest $request, UpdateDeviceCategoryAction $updateDeviceCategoryAction, FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction, string $deviceCategoryId): JsonResponse
+    public function update(
+        UpdateDeviceCategoryRequest $request,
+        UpdateDeviceCategoryAction $updateDeviceCategoryAction,
+        FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction,
+        string $deviceCategoryId
+    ): JsonResponse
     {
         $success = $updateDeviceCategoryAction->execute($deviceCategoryId, $request->validated());
 
@@ -111,7 +125,10 @@ class DeviceCategoryController extends Controller
      * @param DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceCategoriesRequest $request, DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction): JsonResponse
+    public function destroySelected(
+        DestroySelectedDeviceCategoriesRequest $request,
+        DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction
+    ): JsonResponse
     {
         $success = $deleteDeviceCategoriesAction->execute($request->ids);
 
@@ -128,7 +145,11 @@ class DeviceCategoryController extends Controller
      * @param string $deviceCategoryId
      * @return JsonResponse
      */
-    public function deviceCategoryDevicesIndex(Request $request, FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction, string $deviceCategoryId): JsonResponse
+    public function deviceCategoryDevicesIndex(
+        Request $request,
+        FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction,
+        string $deviceCategoryId
+    ): JsonResponse
     {
         $data = $request->all();
         $data['deviceCategoryId'] = $deviceCategoryId;

@@ -33,7 +33,11 @@ class DeviceCommandController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDeviceCommandsAction $filterDataTableDeviceCommandsAction, string $deviceId): JsonResponse
+    public function index(
+        Request $request,
+        FilterDataTableDeviceCommandsAction $filterDataTableDeviceCommandsAction,
+        string $deviceId
+    ): JsonResponse
     {
         $data = $request->all();
         $data['deviceId'] = $deviceId;
@@ -51,7 +55,11 @@ class DeviceCommandController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function triggerDeviceCommand(TriggerDeviceCommandRequest $request, TriggerDeviceCommandAction $triggerDeviceCommandAction, string $deviceId): JsonResponse
+    public function triggerDeviceCommand(
+        TriggerDeviceCommandRequest $request,
+        TriggerDeviceCommandAction $triggerDeviceCommandAction,
+        string $deviceId
+    ): JsonResponse
     {
         $deviceCommand = $triggerDeviceCommandAction->execute($deviceId, $request->validated());
 

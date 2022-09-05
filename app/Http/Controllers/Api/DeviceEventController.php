@@ -30,7 +30,11 @@ class DeviceEventController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDeviceEventsAction $filterDataTableDeviceEventsAction, string $deviceId): JsonResponse
+    public function index(
+        Request $request,
+        FilterDataTableDeviceEventsAction $filterDataTableDeviceEventsAction,
+        string $deviceId
+    ): JsonResponse
     {
         $data = $request->all();
         $data['deviceId'] = $deviceId;

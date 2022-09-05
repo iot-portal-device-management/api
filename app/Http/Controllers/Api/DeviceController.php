@@ -97,7 +97,11 @@ class DeviceController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function update(UpdateDeviceRequest $request, UpdateDeviceAction $updateDeviceAction, string $deviceId): JsonResponse
+    public function update(
+        UpdateDeviceRequest $request,
+        UpdateDeviceAction $updateDeviceAction,
+        string $deviceId
+    ): JsonResponse
     {
         $success = $updateDeviceAction->execute($deviceId, $request->validated());
 
@@ -113,7 +117,10 @@ class DeviceController extends Controller
      * @param DeleteDevicesAction $deleteDevicesAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDevicesRequest $request, DeleteDevicesAction $deleteDevicesAction): JsonResponse
+    public function destroySelected(
+        DestroySelectedDevicesRequest $request,
+        DeleteDevicesAction $deleteDevicesAction
+    ): JsonResponse
     {
         $success = $deleteDevicesAction->execute($request->ids);
 

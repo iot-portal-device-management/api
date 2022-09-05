@@ -32,7 +32,11 @@ class DeviceMetricController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function cpuTemperatures(Request $request, FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction, string $deviceId): JsonResponse
+    public function cpuTemperatures(
+        Request $request,
+        FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction,
+        string $deviceId
+    ): JsonResponse
     {
         $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($deviceId, $request->only('timeRange'));
 
@@ -47,7 +51,11 @@ class DeviceMetricController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function cpuUsages(Request $request, FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction, string $deviceId): JsonResponse
+    public function cpuUsages(
+        Request $request,
+        FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction,
+        string $deviceId
+    ): JsonResponse
     {
         $cpuUsages = $filterDeviceCpuUsagesAction->execute($deviceId, $request->only('timeRange'));
 
@@ -62,7 +70,11 @@ class DeviceMetricController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function diskUsages(Request $request, FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction, string $deviceId): JsonResponse
+    public function diskUsages(
+        Request $request,
+        FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction,
+        string $deviceId
+    ): JsonResponse
     {
         $diskUsages = $filterDeviceDiskUsagesAction->execute($deviceId, $request->only('timeRange'));
 
@@ -77,7 +89,11 @@ class DeviceMetricController extends Controller
      * @param string $deviceId
      * @return JsonResponse
      */
-    public function memoryAvailables(Request $request, FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction, string $deviceId): JsonResponse
+    public function memoryAvailables(
+        Request $request,
+        FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction,
+        string $deviceId
+    ): JsonResponse
     {
         $availableMemories = $filterDeviceMemoryAvailablesAction->execute($deviceId, $request->only('timeRange'));
 

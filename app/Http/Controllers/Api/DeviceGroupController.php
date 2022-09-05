@@ -45,7 +45,10 @@ class DeviceGroupController extends Controller
      * @param FilterDataTableDeviceGroupsAction $filterDataTableDeviceGroupAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDeviceGroupsAction $filterDataTableDeviceGroupAction): JsonResponse
+    public function index(
+        Request $request,
+        FilterDataTableDeviceGroupsAction $filterDataTableDeviceGroupAction
+    ): JsonResponse
     {
         $data = $request->all();
         $data['userId'] = Auth::id();
@@ -62,7 +65,10 @@ class DeviceGroupController extends Controller
      * @param CreateDeviceGroupAction $createDeviceGroupAction
      * @return JsonResponse
      */
-    public function store(StoreDeviceGroupRequest $request, CreateDeviceGroupAction $createDeviceGroupAction): JsonResponse
+    public function store(
+        StoreDeviceGroupRequest $request,
+        CreateDeviceGroupAction $createDeviceGroupAction
+    ): JsonResponse
     {
         $deviceGroup = $createDeviceGroupAction->execute($request->user(), $request->validated());
 
@@ -95,7 +101,12 @@ class DeviceGroupController extends Controller
      * @param string $deviceGroupId
      * @return JsonResponse
      */
-    public function update(UpdateDeviceGroupRequest $request, UpdateDeviceGroupAction $updateDeviceGroupAction, FindDeviceGroupByIdAction $findDeviceGroupByIdAction, string $deviceGroupId): JsonResponse
+    public function update(
+        UpdateDeviceGroupRequest $request,
+        UpdateDeviceGroupAction $updateDeviceGroupAction,
+        FindDeviceGroupByIdAction $findDeviceGroupByIdAction,
+        string $deviceGroupId
+    ): JsonResponse
     {
         $success = $updateDeviceGroupAction->execute($deviceGroupId, $request->validated());
 
@@ -111,7 +122,10 @@ class DeviceGroupController extends Controller
      * @param DeleteDeviceGroupsAction $deleteDeviceGroupsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceGroupsRequest $request, DeleteDeviceGroupsAction $deleteDeviceGroupsAction): JsonResponse
+    public function destroySelected(
+        DestroySelectedDeviceGroupsRequest $request,
+        DeleteDeviceGroupsAction $deleteDeviceGroupsAction
+    ): JsonResponse
     {
         $success = $deleteDeviceGroupsAction->execute($request->ids);
 
@@ -128,7 +142,11 @@ class DeviceGroupController extends Controller
      * @param string $deviceGroupId
      * @return JsonResponse
      */
-    public function deviceGroupDevicesIndex(Request $request, FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction, string $deviceGroupId): JsonResponse
+    public function deviceGroupDevicesIndex(
+        Request $request,
+        FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction,
+        string $deviceGroupId
+    ): JsonResponse
     {
         $data = $request->all();
         $data['deviceGroupId'] = $deviceGroupId;

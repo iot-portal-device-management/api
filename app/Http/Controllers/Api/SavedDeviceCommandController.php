@@ -40,7 +40,10 @@ class SavedDeviceCommandController extends Controller
      * @param FilterDataTableSavedDeviceCommandsAction $filterDataTableSavedCommandsAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableSavedDeviceCommandsAction $filterDataTableSavedCommandsAction): JsonResponse
+    public function index(
+        Request $request,
+        FilterDataTableSavedDeviceCommandsAction $filterDataTableSavedCommandsAction
+    ): JsonResponse
     {
         $data = $request->all();
         $data['userId'] = Auth::id();
@@ -57,7 +60,10 @@ class SavedDeviceCommandController extends Controller
      * @param CreateSavedDeviceCommandAction $createSavedDeviceCommandAction
      * @return JsonResponse
      */
-    public function store(StoreSavedDeviceCommandRequest $request, CreateSavedDeviceCommandAction $createSavedDeviceCommandAction): JsonResponse
+    public function store(
+        StoreSavedDeviceCommandRequest $request,
+        CreateSavedDeviceCommandAction $createSavedDeviceCommandAction
+    ): JsonResponse
     {
         $savedDeviceCommand = $createSavedDeviceCommandAction->execute($request->user(), $request->validated());
 
@@ -72,7 +78,10 @@ class SavedDeviceCommandController extends Controller
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function show(FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction, string $savedDeviceCommandId): JsonResponse
+    public function show(
+        FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction,
+        string $savedDeviceCommandId
+    ): JsonResponse
     {
         $savedDeviceCommand = $findSavedDeviceCommandByIdAction->execute($savedDeviceCommandId);
 
@@ -88,7 +97,10 @@ class SavedDeviceCommandController extends Controller
      * @param DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedSavedDeviceCommandsRequest $request, DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction): JsonResponse
+    public function destroySelected(
+        DestroySelectedSavedDeviceCommandsRequest $request,
+        DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction
+    ): JsonResponse
     {
         $success = $deleteSavedDeviceCommandsAction->execute($request->ids);
 

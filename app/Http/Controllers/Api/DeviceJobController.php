@@ -44,7 +44,10 @@ class DeviceJobController extends Controller
      * @param FilterDataTableDeviceJobsAction $filterDataTableDeviceJobsAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDeviceJobsAction $filterDataTableDeviceJobsAction): JsonResponse
+    public function index(
+        Request $request,
+        FilterDataTableDeviceJobsAction $filterDataTableDeviceJobsAction
+    ): JsonResponse
     {
         $data = $request->all();
         $data['userId'] = Auth::id();
@@ -97,7 +100,10 @@ class DeviceJobController extends Controller
      * @param DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction
      * @return JsonResponse
      */
-    public function destroySelected(DestroySelectedDeviceJobsRequest $request, DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction): JsonResponse
+    public function destroySelected(
+        DestroySelectedDeviceJobsRequest $request,
+        DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction
+    ): JsonResponse
     {
         $success = $deleteMultipleDeviceJobsAction->execute($request->ids);
 
@@ -111,7 +117,10 @@ class DeviceJobController extends Controller
      * @param string $deviceJobId
      * @return JsonResponse
      */
-    public function showProgressStatus(CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction, string $deviceJobId): JsonResponse
+    public function showProgressStatus(
+        CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction,
+        string $deviceJobId
+    ): JsonResponse
     {
         $deviceJobProgressStatus = $calculateDeviceJobProgressStatusAction->execute($deviceJobId);
 
@@ -126,7 +135,11 @@ class DeviceJobController extends Controller
      * @param string $deviceJobId
      * @return JsonResponse
      */
-    public function deviceJobDeviceCommandsIndex(Request $request, FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction, string $deviceJobId): JsonResponse
+    public function deviceJobDeviceCommandsIndex(
+        Request $request,
+        FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction,
+        string $deviceJobId
+    ): JsonResponse
     {
         $data = $request->all();
         $data['deviceJobId'] = $deviceJobId;
