@@ -13,31 +13,36 @@ class CalculateDeviceJobProgressStatusAction
         $totalCount = DeviceCommand::deviceJobId($id)
             ->count();
 
-        $pendingCount = DeviceCommand::deviceJobId($id)
-            ->whereHas('deviceCommandStatus', function (Builder $query) {
-                $query->ofStatus(DeviceCommandStatus::STATUS_PENDING);
-            })
-            ->count();
+        if ($totalCount === 0) {
+            $pendingCount = $processingCount = $successfulCount = $failedCount = $progress = 0;
+        } else {
+            $pendingCount = DeviceCommand::deviceJobId($id)
+                ->whereHas('deviceCommandStatus', function (Builder $query) {
+                    $query->ofStatus(DeviceCommandStatus::STATUS_PENDING);
+                })
+                ->count();
 
-        $processingCount = DeviceCommand::deviceJobId($id)
-            ->whereHas('deviceCommandStatus', function (Builder $query) {
-                $query->ofStatus(DeviceCommandStatus::STATUS_PROCESSING);
-            })
-            ->count();
+            $processingCount = DeviceCommand::deviceJobId($id)
+                ->whereHas('deviceCommandStatus', function (Builder $query) {
+                    $query->ofStatus(DeviceCommandStatus::STATUS_PROCESSING);
+                })
+                ->count();
 
-        $successfulCount = DeviceCommand::deviceJobId($id)
-            ->whereHas('deviceCommandStatus', function (Builder $query) {
-                $query->ofStatus(DeviceCommandStatus::STATUS_SUCCESSFUL);
-            })
-            ->count();
+            $successfulCount = DeviceCommand::deviceJobId($id)
+                ->whereHas('deviceCommandStatus', function (Builder $query) {
+                    $query->ofStatus(DeviceCommandStatus::STATUS_SUCCESSFUL);
+                })
+                ->count();
 
-        $failedCount = DeviceCommand::deviceJobId($id)
-            ->whereHas('deviceCommandStatus', function (Builder $query) {
-                $query->ofStatus(DeviceCommandStatus::STATUS_FAILED);
-            })
-            ->count();
+            $failedCount = DeviceCommand::deviceJobId($id)
+                ->whereHas('deviceCommandStatus', function (Builder $query) {
+                    $query->ofStatus(DeviceCommandStatus::STATUS_FAILED);
+                })
+                ->count();
 
-        $progress = ($successfulCount + $failedCount) / $totalCount * 100 ?? 0;
+            // Prevent division by zero error
+            $progress = ($successfulCount + $failedCount) / ($totalCount ?? 1) * 100 ?? 0;
+        }
 
         return [
             'total' => $totalCount,

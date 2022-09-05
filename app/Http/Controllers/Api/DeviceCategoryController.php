@@ -154,9 +154,9 @@ class DeviceCategoryController extends Controller
         $data = $request->all();
         $data['deviceCategoryId'] = $deviceCategoryId;
 
-        $deviceCategoryDevices = $filterDataTableDeviceCategoryDevicesAction->execute($data);
+        $devices = $filterDataTableDeviceCategoryDevicesAction->execute($data);
 
-        return $this->apiOk(['deviceCategoryDevices' => new DeviceCollectionPagination($deviceCategoryDevices)]);
+        return $this->apiOk(['devices' => new DeviceCollectionPagination($devices)]);
     }
 
     /**

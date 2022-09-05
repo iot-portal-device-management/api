@@ -221,7 +221,7 @@ class FilterDataTableAction
     ): LengthAwarePaginator
     {
         $perPage = $perPage ?? (isset($this->data['fetchAll']) && $this->data['fetchAll'] === 'true')
-                ? $this->query->count() : $this->data['pageSize'] ?? null;
+                ? $this->query->count() : ($this->data['pageSize'] ?? null);
 
         if ($perPage === 0) {
             $perPage = $this->query->count();

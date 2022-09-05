@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceJob\CalculateDeviceJobProgressStatusAction;
 use App\Actions\DeviceJob\CreateDeviceJobAction;
-use App\Actions\DeviceJob\DeleteMultipleDeviceJobsAction;
 use App\Actions\DeviceJob\FilterDataTableDeviceJobDeviceCommandsAction;
 use App\Actions\DeviceJob\FilterDataTableDeviceJobsAction;
 use App\Actions\DeviceJob\FindDeviceJobByIdAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DestroySelectedDeviceJobsRequest;
 use App\Http\Requests\StoreDeviceJobRequest;
 use App\Http\Requests\ValidateDeviceJobFieldsRequest;
 use App\Http\Resources\DeviceCommandCollectionPagination;
@@ -94,23 +92,6 @@ class DeviceJobController extends Controller
     }
 
     /**
-     * Remove the specified device jobs from storage.
-     *
-     * @param DestroySelectedDeviceJobsRequest $request
-     * @param DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction
-     * @return JsonResponse
-     */
-    public function destroySelected(
-        DestroySelectedDeviceJobsRequest $request,
-        DeleteMultipleDeviceJobsAction $deleteMultipleDeviceJobsAction
-    ): JsonResponse
-    {
-        $success = $deleteMultipleDeviceJobsAction->execute($request->ids);
-
-        return $this->apiOk([], $success);
-    }
-
-    /**
      * Return the status of the device job.
      *
      * @param CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction
@@ -144,9 +125,9 @@ class DeviceJobController extends Controller
         $data = $request->all();
         $data['deviceJobId'] = $deviceJobId;
 
-        $deviceJobDeviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($data);
+        $deviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($data);
 
-        return $this->apiOk(['deviceJobDeviceCommands' => new DeviceCommandCollectionPagination($deviceJobDeviceCommands)]);
+        return $this->apiOk(['deviceCommands' => new DeviceCommandCollectionPagination($deviceCommands)]);
     }
 
     /**

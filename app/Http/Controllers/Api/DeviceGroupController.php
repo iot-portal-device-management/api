@@ -151,9 +151,9 @@ class DeviceGroupController extends Controller
         $data = $request->all();
         $data['deviceGroupId'] = $deviceGroupId;
 
-        $deviceGroupDevices = $filterDataTableDeviceGroupDevicesAction->execute($data);
+        $devices = $filterDataTableDeviceGroupDevicesAction->execute($data);
 
-        return $this->apiOk(['deviceGroupDevices' => new DeviceCollectionPagination($deviceGroupDevices)]);
+        return $this->apiOk(['devices' => new DeviceCollectionPagination($devices)]);
     }
 
 
