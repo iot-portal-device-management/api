@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Class ProfileController
+ * Class UserController
  * @package App\Http\Controllers\Api
  */
-class ProfileController extends Controller
+class UserController extends Controller
 {
     /**
      * Return the current logged in user data.
@@ -18,8 +19,8 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(Request $request): JsonResponse
+    public function user(Request $request): JsonResponse
     {
-        return $this->apiOk(['profile' => $request->user()]);
+        return $this->apiOk(['user' => new UserResource($request->user())]);
     }
 }

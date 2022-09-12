@@ -14,9 +14,9 @@ class JsonResource extends BaseJsonResource
      * Transform the resource into an array.
      *
      * @param Request $request
-     * @return array|Arrayable|JsonSerializable
+     * @return array|JsonSerializable|Arrayable|null
      */
-    public function toArray($request)
+    public function toArray($request): array|JsonSerializable|Arrayable|null
     {
         return $this->encodeJson($this->resource);
     }
@@ -33,11 +33,15 @@ class JsonResource extends BaseJsonResource
         } else if (is_object($value)) {
             return $this->encodeArray((array)$value);
         }
+
         return $value;
     }
 
     /**
      * Encode a Arrayable
+     *
+     * @param $arrayable
+     * @return array
      */
     public function encodeArrayable($arrayable): array
     {
@@ -47,13 +51,17 @@ class JsonResource extends BaseJsonResource
 
     /**
      * Encode an array
+     *
+     * @param $array
+     * @return array|null
      */
-    public function encodeArray($array): array
+    public function encodeArray($array): ?array
     {
         $newArray = [];
         foreach ($array as $key => $val) {
             $newArray[Str::camel($key)] = $this->encodeJson($val);
         }
+
         return $newArray;
     }
 }

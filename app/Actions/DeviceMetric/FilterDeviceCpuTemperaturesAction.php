@@ -10,7 +10,8 @@ class FilterDeviceCpuTemperaturesAction
     public function execute(string $deviceId, array $data): Collection
     {
         //TODO: implement max time range protection
-        $timeRange = (int)($data['timeRange'] ?? 1);
+//        $timeRange = (int)($data['timeRange'] ?? 1);
+        $timeRange = (int)(10000);
 
         $cpuTemperatures = DeviceTemperatureStatistic::deviceId($deviceId)
             ->whereBetween('created_at', [now()->subHours($timeRange), now()])
