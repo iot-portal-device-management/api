@@ -17,7 +17,7 @@ class GetLastSevenDayNewDeviceCountAction
         $deviceTableName = Device::getTableName();
 
         $newDeviceCountByDate = Auth::user()->devices()
-            ->where($deviceTableName . '.created_at', '>=', Carbon::today()->subDays(10000))
+            ->where($deviceTableName . '.created_at', '>=', Carbon::today()->subDays(7))
             ->groupBy('date')
             ->groupBy('user_id')
             ->orderBy('date')
