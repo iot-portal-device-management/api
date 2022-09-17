@@ -19,7 +19,16 @@ class DeviceDiskStatistic extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'disk_percentage_used',
+        'disk_usage_percentage',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'disk_usage_percentage' => 'float',
     ];
 
     /**
@@ -31,7 +40,7 @@ class DeviceDiskStatistic extends Model
      */
     protected array $sortableColumns = [
         'id',
-        'disk_percentage_used',
+        'disk_usage_percentage',
         'device_id',
         'created_at',
         'updated_at',
@@ -46,7 +55,7 @@ class DeviceDiskStatistic extends Model
      */
     protected array $filterableColumns = [
         'id',
-        'disk_percentage_used',
+        'disk_usage_percentage',
         'device_id',
     ];
 

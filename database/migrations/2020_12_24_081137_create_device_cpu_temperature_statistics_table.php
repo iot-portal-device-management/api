@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('device_temperature_statistics', function (Blueprint $table) {
+        Schema::create('device_cpu_temperature_statistics', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->float('temperature');
             $table->uuid('device_id');
@@ -29,6 +29,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('device_temperature_statistics');
+        Schema::dropIfExists('device_cpu_temperature_statistics');
     }
 };

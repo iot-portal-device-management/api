@@ -2,7 +2,7 @@
 
 namespace App\Actions\DeviceMetric;
 
-use App\Models\DeviceTemperatureStatistic;
+use App\Models\DeviceCpuTemperatureStatistic;
 use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceCpuTemperaturesAction
@@ -10,10 +10,9 @@ class FilterDeviceCpuTemperaturesAction
     public function execute(string $deviceId, array $data): Collection
     {
         //TODO: implement max time range protection
-//        $timeRange = (int)($data['timeRange'] ?? 1);
-        $timeRange = (int)(10000);
+        $timeRange = (int)($data['timeRange'] ?? 1);
 
-        $cpuTemperatures = DeviceTemperatureStatistic::deviceId($deviceId)
+        $cpuTemperatures = DeviceCpuTemperatureStatistic::deviceId($deviceId)
             ->whereBetween('created_at', [now()->subHours($timeRange), now()])
             ->orderBy('created_at')
             ->get(['id', 'temperature', 'created_at']);

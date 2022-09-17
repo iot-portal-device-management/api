@@ -4,35 +4,35 @@ namespace App\Actions\DeviceStatistic;
 
 use App\Models\Device;
 use App\Models\DeviceStatus;
-use App\Models\User;
 use Illuminate\Support\Collection;
 
-class FilterOnlineDeviceDiskUsagesChartAction
+class FilterOnlineDevicesDiskUsagesChartAction
 {
-    public function execute(User $user, array $data): Collection
+    public function execute(array $data): Collection
     {
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
-        $devices = $user->devices()
-            ->with(['diskStatistics' => function ($query) use ($timeRangeFilter) {
+        $devices = Device::userId($data['userId'])
+            ->with(['deviceDiskStatistics' => function ($query) use ($timeRangeFilter) {
                 $query->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
-                    ->select('disk_percentage_used', 'device_id', 'created_at');
+                    ->select('disk_usage_percentage', 'device_id', 'created_at');
             }])
             ->whereHas('deviceStatus', function ($query) {
-                $query->where('name', DeviceStatus::STATUS_ONLINE);
+                $query->ofStatus(DeviceStatus::STATUS_ONLINE);
             })
-            ->whereHas('diskStatistics', function ($query) use ($timeRangeFilter) {
+            ->whereHas('deviceDiskStatistics', function ($query) use ($timeRangeFilter) {
                 $query->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()]);
             })
+            ->limit(10)
             ->get([Device::getTableName() . '.id', Device::getTableName() . '.name']);
 
         $devices->transform(function ($item, $key) {
             return [
                 'name' => $item->name,
-                'data' => $item->diskStatistics->transform(function ($item, $key) {
+                'data' => $item->deviceDiskStatistics->transform(function ($item, $key) {
                     return [
-                        $item->created_at->getPreciseTimestamp(3),
-                        $item->disk_percentage_used,
+                        'timestamp' => $item->created_at->getPreciseTimestamp(3),
+                        'disk_usage_percentage' => $item->disk_usage_percentage,
                     ];
                 }),
             ];

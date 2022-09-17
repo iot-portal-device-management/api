@@ -14,7 +14,7 @@ class DeviceDiskStatisticFactory extends Factory
     public function definition()
     {
         return [
-            'disk_percentage_used' => $this->faker->randomFloat(2, 0, 100),
+            'disk_usage_percentage' => $this->faker->randomFloat(2, 0, 100),
         ];
     }
 }

@@ -45,6 +45,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // USER STATISTICS
     Route::get('/statistics', [StatisticController::class, 'showStatistics']);
 
+    // STATISTICS CPU TEMPERATURES
+    Route::get('/statistics/devices/online/cpu/temperatures', [StatisticController::class, 'onlineDevicesCpuTemperatures']);
+
+    // STATISTICS CPU USAGES
+    Route::get('/statistics/devices/online/cpu/usages', [StatisticController::class, 'onlineDevicesCpuUsages']);
+
+    // STATISTICS DISK USAGES
+    Route::get('/statistics/devices/online/disk/usages', [StatisticController::class, 'onlineDevicesDiskUsages']);
+
+    // STATISTICS MEMORY AVAILABLES
+    Route::get('/statistics/devices/online/memory/availables', [StatisticController::class, 'onlineDevicesMemoryAvailables']);
+
 
     // DEVICES
     Route::get('/devices', [DeviceController::class, 'index']);

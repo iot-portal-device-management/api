@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kirschbaum\PowerJoins\PowerJoins;
 
-class DeviceTemperatureStatistic extends Model
+class DeviceCpuTemperatureStatistic extends Model
 {
     use HasFactory, PowerJoins, Searchable, EloquentTableHelpers, Uuid;
 
@@ -20,6 +20,15 @@ class DeviceTemperatureStatistic extends Model
      */
     protected $fillable = [
         'temperature',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'temperature' => 'float',
     ];
 
     /**

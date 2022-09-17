@@ -249,7 +249,7 @@ class EndpointController extends Controller
                 switch ($key) {
                     case 'systemCpuPercent':
                         $device->cpuStatistics()->create([
-                            'system_cpu_percentage' => $value,
+                            'cpu_usage_percentage' => $value,
                         ]);
                         break;
                     case 'containersCpuPercent':
@@ -264,7 +264,7 @@ class EndpointController extends Controller
                         break;
                     case 'percentDiskUsed':
                         $device->diskStatistics()->create([
-                            'disk_percentage_used' => $value,
+                            'disk_usage_percentage' => $value,
                         ]);
                         break;
                     case 'coreTempCelsius':

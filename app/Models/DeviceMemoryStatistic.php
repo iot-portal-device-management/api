@@ -23,6 +23,15 @@ class DeviceMemoryStatistic extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'available_memory_in_bytes' => 'integer',
+    ];
+
+    /**
      * The attributes that are sortable.
      *
      * JSON columns cannot be sorted at the moment.

@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\DeviceStatistic\FilterOnlineDeviceAvailableMemoriesChartAction;
-use App\Actions\DeviceStatistic\FilterOnlineDeviceCpuTemperaturesChartAction;
-use App\Actions\DeviceStatistic\FilterOnlineDeviceCpuUsagesChartAction;
-use App\Actions\DeviceStatistic\FilterOnlineDeviceDiskUsagesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDevicesAvailableMemoriesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDevicesCpuTemperaturesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDevicesCpuUsagesChartAction;
+use App\Actions\DeviceStatistic\FilterOnlineDevicesDiskUsagesChartAction;
 use App\Actions\DeviceStatistic\GetLastSevenDayNewDeviceCategoryCountAction;
 use App\Actions\DeviceStatistic\GetLastSevenDayNewDeviceCountAction;
 use App\Actions\DeviceStatistic\GetLastSevenDayNewDeviceGroupCountAction;
 use App\Actions\DeviceStatistic\GetLastSevenDayNewDeviceJobCountAction;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DeviceAvailableMemoryStatisticResource;
+use App\Http\Resources\DeviceCpuTemperatureStatisticResource;
+use App\Http\Resources\DeviceCpuUsageStatisticResource;
+use App\Http\Resources\DeviceDiskUsageStatisticResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +26,7 @@ use Illuminate\Support\Facades\Auth;
 class StatisticController extends Controller
 {
     /**
-     * Return the overall statistics for the logged in user on dashboard.
+     * Return the overall statistics for the logged in user.
      *
      * @param GetLastSevenDayNewDeviceCountAction $getLastSevenDayNewDeviceCountAction
      * @param GetLastSevenDayNewDeviceGroupCountAction $getLastSevenDayNewDeviceGroupCountAction
@@ -68,70 +72,82 @@ class StatisticController extends Controller
     }
 
     /**
-     * Return CPU temperatures chart data.
+     * Return device CPU temperatures chart data.
      *
      * @param Request $request
-     * @param FilterOnlineDeviceCpuTemperaturesChartAction $filterOnlineDeviceCpuTemperaturesGraphAction
+     * @param FilterOnlineDevicesCpuTemperaturesChartAction $filterOnlineDevicesCpuTemperaturesGraphAction
      * @return JsonResponse
      */
-    public function cpuTemperatures(
+    public function onlineDevicesCpuTemperatures(
         Request $request,
-        FilterOnlineDeviceCpuTemperaturesChartAction $filterOnlineDeviceCpuTemperaturesGraphAction
+        FilterOnlineDevicesCpuTemperaturesChartAction $filterOnlineDevicesCpuTemperaturesGraphAction
     ): JsonResponse
     {
-        $cpuTemperatures = $filterOnlineDeviceCpuTemperaturesGraphAction->execute($request->user(), $request->only('timeRangeFilter'));
+        $data = $request->only('timeRangeFilter');
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['cpuTemperatures' => $cpuTemperatures]);
+        $cpuTemperatures = $filterOnlineDevicesCpuTemperaturesGraphAction->execute($data);
+
+        return $this->apiOk(['cpuTemperatures' => new DeviceCpuTemperatureStatisticResource($cpuTemperatures)]);
     }
 
     /**
-     * Return CPU usages chart data.
+     * Return device CPU usages chart data.
      *
      * @param Request $request
-     * @param FilterOnlineDeviceCpuUsagesChartAction $filterOnlineDeviceCpuUsagesChartAction
+     * @param FilterOnlineDevicesCpuUsagesChartAction $filterOnlineDevicesCpuUsagesChartAction
      * @return JsonResponse
      */
-    public function cpuUsages(
+    public function onlineDevicesCpuUsages(
         Request $request,
-        FilterOnlineDeviceCpuUsagesChartAction $filterOnlineDeviceCpuUsagesChartAction
+        FilterOnlineDevicesCpuUsagesChartAction $filterOnlineDevicesCpuUsagesChartAction
     ): JsonResponse
     {
-        $cpuUsages = $filterOnlineDeviceCpuUsagesChartAction->execute($request->user(), $request->only('timeRangeFilter'));
+        $data = $request->only('timeRangeFilter');
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['cpuUsages' => $cpuUsages]);
+        $cpuUsages = $filterOnlineDevicesCpuUsagesChartAction->execute($data);
+
+        return $this->apiOk(['cpuUsages' => new DeviceCpuUsageStatisticResource($cpuUsages)]);
     }
 
     /**
-     * Return disk usages chart data.
+     * Return device disk usages chart data.
      *
      * @param Request $request
-     * @param FilterOnlineDeviceDiskUsagesChartAction $filterOnlineDeviceDiskUsagesChartAction
+     * @param FilterOnlineDevicesDiskUsagesChartAction $filterOnlineDevicesDiskUsagesChartAction
      * @return JsonResponse
      */
-    public function diskUsages(
+    public function onlineDevicesDiskUsages(
         Request $request,
-        FilterOnlineDeviceDiskUsagesChartAction $filterOnlineDeviceDiskUsagesChartAction
+        FilterOnlineDevicesDiskUsagesChartAction $filterOnlineDevicesDiskUsagesChartAction
     ): JsonResponse
     {
-        $diskUsages = $filterOnlineDeviceDiskUsagesChartAction->execute($request->user(), $request->only('timeRangeFilter'));
+        $data = $request->only('timeRangeFilter');
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['diskUsages' => $diskUsages]);
+        $diskUsages = $filterOnlineDevicesDiskUsagesChartAction->execute($data);
+
+        return $this->apiOk(['diskUsages' => new DeviceDiskUsageStatisticResource($diskUsages)]);
     }
 
     /**
-     * Return memory usages chart data.
+     * Return device available memory chart data.
      *
      * @param Request $request
-     * @param FilterOnlineDeviceAvailableMemoriesChartAction $filterOnlineDeviceAvailableMemoriesChartAction
+     * @param FilterOnlineDevicesAvailableMemoriesChartAction $filterOnlineDevicesAvailableMemoriesChartAction
      * @return JsonResponse
      */
-    public function memoryAvailables(
+    public function onlineDevicesMemoryAvailables(
         Request $request,
-        FilterOnlineDeviceAvailableMemoriesChartAction $filterOnlineDeviceAvailableMemoriesChartAction
+        FilterOnlineDevicesAvailableMemoriesChartAction $filterOnlineDevicesAvailableMemoriesChartAction
     ): JsonResponse
     {
-        $availableMemories = $filterOnlineDeviceAvailableMemoriesChartAction->execute($request->user(), $request->only('timeRangeFilter'));
+        $data = $request->only('timeRangeFilter');
+        $data['userId'] = Auth::id();
 
-        return $this->apiOk(['availableMemories' => $availableMemories]);
+        $availableMemories = $filterOnlineDevicesAvailableMemoriesChartAction->execute($data);
+
+        return $this->apiOk(['availableMemories' => new DeviceAvailableMemoryStatisticResource($availableMemories)]);
     }
 }

@@ -40,7 +40,7 @@ class DeviceMetricController extends Controller
     {
         $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($deviceId, $request->only('timeRange'));
 
-        return $this->apiOk(['cpuTemperatures' => $cpuTemperatures]);
+        return $this->apiOk(['cpuTemperatures' => $cpuTemperatures->toArray()]);
     }
 
     /**

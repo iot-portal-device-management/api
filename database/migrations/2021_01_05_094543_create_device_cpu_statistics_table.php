@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::create('device_cpu_statistics', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->float('system_cpu_percentage');
+            $table->float('cpu_usage_percentage');
             $table->uuid('device_id');
             $table->timestamps();
 

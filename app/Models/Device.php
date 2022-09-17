@@ -187,11 +187,11 @@ class Device extends Model
     }
 
     /**
-     * Get the device temperature statistics for the device.
+     * Get the device CPU temperature statistics for the device.
      */
-    public function deviceTemperatureStatistics()
+    public function deviceCpuTemperatureStatistics()
     {
-        return $this->hasMany(DeviceTemperatureStatistic::class);
+        return $this->hasMany(DeviceCpuTemperatureStatistic::class);
     }
 
     /**

@@ -4,35 +4,35 @@ namespace App\Actions\DeviceStatistic;
 
 use App\Models\Device;
 use App\Models\DeviceStatus;
-use App\Models\User;
 use Illuminate\Support\Collection;
 
-class FilterOnlineDeviceCpuTemperaturesChartAction
+class FilterOnlineDevicesAvailableMemoriesChartAction
 {
-    public function execute(User $user, array $data): Collection
+    public function execute(array $data): Collection
     {
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
-        $devices = $user->devices()
-            ->with(['temperatureStatistics' => function ($query) use ($timeRangeFilter) {
+        $devices = Device::userId($data['userId'])
+            ->with(['deviceMemoryStatistics' => function ($query) use ($timeRangeFilter) {
                 $query->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
-                    ->select('temperature', 'device_id', 'created_at');
+                    ->select('available_memory_in_bytes', 'device_id', 'created_at');
             }])
             ->whereHas('deviceStatus', function ($query) {
-                $query->where('name', DeviceStatus::STATUS_ONLINE);
+                $query->ofStatus(DeviceStatus::STATUS_ONLINE);
             })
-            ->whereHas('temperatureStatistics', function ($query) use ($timeRangeFilter) {
+            ->whereHas('deviceMemoryStatistics', function ($query) use ($timeRangeFilter) {
                 $query->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()]);
             })
+            ->limit(10)
             ->get([Device::getTableName() . '.id', Device::getTableName() . '.name']);
 
         $devices->transform(function ($item, $key) {
             return [
                 'name' => $item->name,
-                'data' => $item->temperatureStatistics->transform(function ($item, $key) {
+                'data' => $item->deviceMemoryStatistics->transform(function ($item, $key) {
                     return [
-                        $item->created_at->getPreciseTimestamp(3),
-                        $item->temperature,
+                        'timestamp' => $item->created_at->getPreciseTimestamp(3),
+                        'available_memory_in_bytes' => $item->available_memory_in_bytes,
                     ];
                 }),
             ];

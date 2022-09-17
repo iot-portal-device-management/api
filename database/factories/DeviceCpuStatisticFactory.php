@@ -14,7 +14,7 @@ class DeviceCpuStatisticFactory extends Factory
     public function definition()
     {
         return [
-            'system_cpu_percentage' => $this->faker->randomFloat(2, 0, 100),
+            'cpu_usage_percentage' => $this->faker->randomFloat(2, 0, 100),
         ];
     }
 }

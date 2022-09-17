@@ -10,7 +10,7 @@ use App\Models\DeviceDiskStatistic;
 use App\Models\DeviceEvent;
 use App\Models\DeviceMemoryStatistic;
 use App\Models\DeviceStatus;
-use App\Models\DeviceTemperatureStatistic;
+use App\Models\DeviceCpuTemperatureStatistic;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
@@ -63,7 +63,7 @@ class SampleDatabaseSeeder extends Seeder
                 foreach (range(1, 2) as $day) {
                     foreach (range(1, 1440) as $minute) {
 
-                        DeviceTemperatureStatistic::factory()
+                        DeviceCpuTemperatureStatistic::factory()
                             ->for($device)
                             ->state([
                                 'created_at' => $currentTime,

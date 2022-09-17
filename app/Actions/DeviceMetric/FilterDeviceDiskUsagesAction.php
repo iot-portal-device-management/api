@@ -14,7 +14,7 @@ class FilterDeviceDiskUsagesAction
         $diskUsages = DeviceDiskStatistic::deviceId($deviceId)
             ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
             ->orderBy('created_at')
-            ->get(['id', 'disk_percentage_used', 'created_at']);
+            ->get(['id', 'disk_usage_percentage', 'created_at']);
 
         return $this->transform($diskUsages);
     }
@@ -24,7 +24,7 @@ class FilterDeviceDiskUsagesAction
         $diskUsages->transform(function ($item, $key) {
             return [
                 $item->created_at->getPreciseTimestamp(3),
-                $item->disk_percentage_used,
+                $item->disk_usage_percentage,
             ];
         });
 

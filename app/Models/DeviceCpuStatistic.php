@@ -19,7 +19,16 @@ class DeviceCpuStatistic extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'system_cpu_percentage',
+        'cpu_usage_percentage',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'cpu_usage_percentage' => 'float',
     ];
 
     /**
@@ -31,7 +40,7 @@ class DeviceCpuStatistic extends Model
      */
     protected array $sortableColumns = [
         'id',
-        'system_cpu_percentage',
+        'cpu_usage_percentage',
         'device_id',
         'created_at',
         'updated_at',
@@ -46,7 +55,7 @@ class DeviceCpuStatistic extends Model
      */
     protected array $filterableColumns = [
         'id',
-        'system_cpu_percentage',
+        'cpu_usage_percentage',
         'device_id',
     ];
 

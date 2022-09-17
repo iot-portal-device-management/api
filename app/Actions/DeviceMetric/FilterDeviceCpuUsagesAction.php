@@ -14,7 +14,7 @@ class FilterDeviceCpuUsagesAction
         $cpuUsages = DeviceCpuStatistic::deviceId($deviceId)
             ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
             ->orderBy('created_at')
-            ->get(['id', 'system_cpu_percentage', 'created_at']);
+            ->get(['id', 'cpu_usage_percentage', 'created_at']);
 
         return $this->transform($cpuUsages);
     }
@@ -24,7 +24,7 @@ class FilterDeviceCpuUsagesAction
         $cpuUsages->transform(function ($item, $key) {
             return [
                 $item->created_at->getPreciseTimestamp(3),
-                $item->system_cpu_percentage,
+                $item->cpu_usage_percentage,
             ];
         });
 

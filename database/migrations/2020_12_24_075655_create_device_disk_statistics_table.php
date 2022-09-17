@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::create('device_disk_statistics', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->float('disk_percentage_used');
+            $table->float('disk_usage_percentage');
             $table->uuid('device_id');
             $table->timestamps();
 
