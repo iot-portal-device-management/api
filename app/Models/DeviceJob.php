@@ -9,6 +9,8 @@ use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceJob extends Model
@@ -91,7 +93,7 @@ class DeviceJob extends Model
     /**
      * Get the device job status that owns the device job.
      */
-    public function deviceJobStatus()
+    public function deviceJobStatus(): BelongsTo
     {
         return $this->belongsTo(DeviceJobStatus::class);
     }
@@ -99,7 +101,7 @@ class DeviceJob extends Model
     /**
      * Get the user that owns the device job.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -107,7 +109,7 @@ class DeviceJob extends Model
     /**
      * Get the device group that owns the device job.
      */
-    public function deviceGroup()
+    public function deviceGroup(): BelongsTo
     {
         return $this->belongsTo(DeviceGroup::class);
     }
@@ -115,7 +117,7 @@ class DeviceJob extends Model
     /**
      * Get the saved device command for the device job.
      */
-    public function savedDeviceCommand()
+    public function savedDeviceCommand(): BelongsTo
     {
         return $this->belongsTo(SavedDeviceCommand::class);
     }
@@ -123,7 +125,7 @@ class DeviceJob extends Model
     /**
      * Get the device commands for the device job.
      */
-    public function deviceCommands()
+    public function deviceCommands(): HasMany
     {
         return $this->hasMany(DeviceCommand::class);
     }

@@ -7,6 +7,7 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class SavedDeviceCommand extends Model
@@ -60,7 +61,7 @@ class SavedDeviceCommand extends Model
     /**
      * Get the user that owns the saved device command.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

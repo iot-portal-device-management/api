@@ -7,6 +7,8 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceEventType extends Model
@@ -56,7 +58,7 @@ class DeviceEventType extends Model
     /**
      * Get the device that owns the device event type.
      */
-    public function device()
+    public function device(): BelongsTo
     {
         return $this->belongsTo(Device::class);
     }
@@ -64,7 +66,7 @@ class DeviceEventType extends Model
     /**
      * Get the device events for the device event type.
      */
-    public function deviceEvents()
+    public function deviceEvents(): HasMany
     {
         return $this->hasMany(DeviceEvent::class);
     }

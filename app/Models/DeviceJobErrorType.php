@@ -7,6 +7,7 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceJobErrorType extends Model
@@ -61,7 +62,7 @@ class DeviceJobErrorType extends Model
     /**
      * Get the device events for the device event type.
      */
-    public function deviceJobs()
+    public function deviceJobs(): HasMany
     {
         return $this->hasMany(DeviceJob::class);
     }

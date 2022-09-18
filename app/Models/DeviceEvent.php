@@ -8,6 +8,7 @@ use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceEvent extends Model
@@ -55,7 +56,7 @@ class DeviceEvent extends Model
     /**
      * Get the device event type that owns the device event.
      */
-    public function deviceEventType()
+    public function deviceEventType(): BelongsTo
     {
         return $this->belongsTo(DeviceEventType::class);
     }

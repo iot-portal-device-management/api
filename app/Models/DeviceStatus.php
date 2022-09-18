@@ -7,6 +7,7 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceStatus extends Model
@@ -55,7 +56,7 @@ class DeviceStatus extends Model
     /**
      * Get the devices for the device status.
      */
-    public function devices()
+    public function devices(): HasMany
     {
         return $this->hasMany(Device::class);
     }

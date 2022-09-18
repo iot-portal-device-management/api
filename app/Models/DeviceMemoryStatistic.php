@@ -7,6 +7,7 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceMemoryStatistic extends Model
@@ -62,7 +63,7 @@ class DeviceMemoryStatistic extends Model
     /**
      * Get the device that owns the device memory statistic.
      */
-    public function device()
+    public function device(): BelongsTo
     {
         return $this->belongsTo(Device::class);
     }

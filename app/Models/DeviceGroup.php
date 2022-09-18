@@ -7,6 +7,9 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class DeviceGroup extends Model
@@ -54,7 +57,7 @@ class DeviceGroup extends Model
     /**
      * Get the user that owns the device group.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -62,7 +65,7 @@ class DeviceGroup extends Model
     /**
      * Get the devices for the device group.
      */
-    public function devices()
+    public function devices(): BelongsToMany
     {
         return $this->belongsToMany(Device::class);
     }
@@ -70,7 +73,7 @@ class DeviceGroup extends Model
     /**
      * Get the device jobs for the device group.
      */
-    public function deviceJobs()
+    public function deviceJobs(): HasMany
     {
         return $this->hasMany(DeviceJob::class);
     }

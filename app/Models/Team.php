@@ -7,6 +7,7 @@ use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class Team extends Model
@@ -16,7 +17,7 @@ class Team extends Model
     /**
      * Get the admins that owns the team.
      */
-    public function admins()
+    public function admins(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->wherePivot('role', 0);
     }
@@ -24,7 +25,7 @@ class Team extends Model
     /**
      * The users that joined the team.
      */
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }
@@ -32,7 +33,7 @@ class Team extends Model
     /**
      * Get the devices for the team.
      */
-    public function devices()
+    public function devices(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Device::class);
     }

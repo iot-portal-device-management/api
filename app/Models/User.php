@@ -7,6 +7,9 @@ use App\Traits\HasDeviceConnectionKey;
 use App\Traits\Searchable;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Kirschbaum\PowerJoins\PowerJoins;
@@ -84,7 +87,7 @@ class User extends Authenticatable
     /**
      * Get the managed teams for the user.
      */
-    public function managedTeams()
+    public function managedTeams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class)
             ->wherePivot('role', 0);
@@ -93,7 +96,7 @@ class User extends Authenticatable
     /**
      * The teams that the user joins.
      */
-    public function teams()
+    public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class);
     }
@@ -101,7 +104,7 @@ class User extends Authenticatable
     /**
      * Get all of the device jobs for the user.
      */
-    public function deviceJobs()
+    public function deviceJobs(): HasMany
     {
         return $this->hasMany(DeviceJob::class);
     }
@@ -109,7 +112,7 @@ class User extends Authenticatable
     /**
      * Get all of the device categories for the user.
      */
-    public function deviceCategories()
+    public function deviceCategories(): HasMany
     {
         return $this->hasMany(DeviceCategory::class);
     }
@@ -117,7 +120,7 @@ class User extends Authenticatable
     /**
      * Get all of the device groups for the user.
      */
-    public function deviceGroups()
+    public function deviceGroups(): HasMany
     {
         return $this->hasMany(DeviceGroup::class);
     }
@@ -125,7 +128,7 @@ class User extends Authenticatable
     /**
      * Get all of the saved device commands for the user.
      */
-    public function savedDeviceCommands()
+    public function savedDeviceCommands(): HasMany
     {
         return $this->hasMany(SavedDeviceCommand::class);
     }
@@ -133,7 +136,7 @@ class User extends Authenticatable
     /**
      * Get the owning devices for the user.
      */
-    public function devices()
+    public function devices(): HasManyThrough
     {
         return $this->hasManyThrough(Device::class, DeviceCategory::class);
     }
@@ -141,7 +144,7 @@ class User extends Authenticatable
     /**
      * Get the device FOTA configurations for the user.
      */
-    public function deviceFotaConfigurations()
+    public function deviceFotaConfigurations(): HasMany
     {
         return $this->hasMany(DeviceFotaConfiguration::class);
     }
@@ -149,7 +152,7 @@ class User extends Authenticatable
     /**
      * Get the device AOTA configurations for the user.
      */
-    public function deviceAotaConfigurations()
+    public function deviceAotaConfigurations(): HasMany
     {
         return $this->hasMany(DeviceAotaConfiguration::class);
     }
@@ -157,7 +160,7 @@ class User extends Authenticatable
     /**
      * Get the device configuration files for the user.
      */
-    public function deviceConfigurationFiles()
+    public function deviceConfigurationFiles(): HasMany
     {
         return $this->hasMany(DeviceConfigurationFile::class);
     }

@@ -11,6 +11,10 @@ use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Kirschbaum\PowerJoins\PowerJoins;
 
 class Device extends Model
@@ -117,7 +121,7 @@ class Device extends Model
         });
     }
 
-    public function notFoundMessage()
+    public function notFoundMessage(): string
     {
         return 'Device not found.';
     }
@@ -125,7 +129,7 @@ class Device extends Model
     /**
      * Get the device category for the device.
      */
-    public function deviceCategory()
+    public function deviceCategory(): BelongsTo
     {
         return $this->belongsTo(DeviceCategory::class);
     }
@@ -133,7 +137,7 @@ class Device extends Model
     /**
      * Get the device groups for the device.
      */
-    public function deviceGroups()
+    public function deviceGroups(): BelongsToMany
     {
         return $this->belongsToMany(DeviceGroup::class);
     }
@@ -141,7 +145,7 @@ class Device extends Model
     /**
      * Get the teams that can access the device.
      */
-    public function teams()
+    public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class);
     }
@@ -149,7 +153,7 @@ class Device extends Model
     /**
      * Get the device status for the device.
      */
-    public function deviceStatus()
+    public function deviceStatus(): BelongsTo
     {
         return $this->belongsTo(DeviceStatus::class);
     }
@@ -157,7 +161,7 @@ class Device extends Model
     /**
      * Get the device command types for the device.
      */
-    public function deviceCommandTypes()
+    public function deviceCommandTypes(): HasMany
     {
         return $this->hasMany(DeviceCommandType::class);
     }
@@ -165,7 +169,7 @@ class Device extends Model
     /**
      * Get all of the device commands for the device.
      */
-    public function deviceCommands()
+    public function deviceCommands(): HasManyThrough
     {
         return $this->hasManyThrough(DeviceCommand::class, DeviceCommandType::class);
     }
@@ -173,7 +177,7 @@ class Device extends Model
     /**
      * Get the device event types for the device.
      */
-    public function deviceEventTypes()
+    public function deviceEventTypes(): HasMany
     {
         return $this->hasMany(DeviceEventType::class);
     }
@@ -181,7 +185,7 @@ class Device extends Model
     /**
      * Get the device events for the device.
      */
-    public function deviceEvents()
+    public function deviceEvents(): HasManyThrough
     {
         return $this->hasManyThrough(DeviceEvent::class, DeviceEventType::class);
     }
@@ -189,7 +193,7 @@ class Device extends Model
     /**
      * Get the device CPU temperature statistics for the device.
      */
-    public function deviceCpuTemperatureStatistics()
+    public function deviceCpuTemperatureStatistics(): HasMany
     {
         return $this->hasMany(DeviceCpuTemperatureStatistic::class);
     }
@@ -197,7 +201,7 @@ class Device extends Model
     /**
      * Get the device memory statistics for the device.
      */
-    public function deviceMemoryStatistics()
+    public function deviceMemoryStatistics(): HasMany
     {
         return $this->hasMany(DeviceMemoryStatistic::class);
     }
@@ -205,7 +209,7 @@ class Device extends Model
     /**
      * Get the device disk statistics for the device.
      */
-    public function deviceDiskStatistics()
+    public function deviceDiskStatistics(): HasMany
     {
         return $this->hasMany(DeviceDiskStatistic::class);
     }
@@ -213,7 +217,7 @@ class Device extends Model
     /**
      * Get the device network statistics for the device.
      */
-    public function deviceNetworkStatistics()
+    public function deviceNetworkStatistics(): HasMany
     {
         return $this->hasMany(DeviceNetworkStatistic::class);
     }
@@ -221,7 +225,7 @@ class Device extends Model
     /**
      * Get the device container statistics for the device.
      */
-    public function deviceContainerStatistics()
+    public function deviceContainerStatistics(): HasMany
     {
         return $this->hasMany(DeviceContainerStatistic::class);
     }
@@ -229,7 +233,7 @@ class Device extends Model
     /**
      * Get the device CPU statistics for the device.
      */
-    public function deviceCpuStatistics()
+    public function deviceCpuStatistics(): HasMany
     {
         return $this->hasMany(DeviceCpuStatistic::class);
     }
@@ -293,17 +297,17 @@ class Device extends Model
         });
     }
 
-    public function isRegistered()
+    public function isRegistered(): bool
     {
         return $this->deviceStatus->name === DeviceStatus::STATUS_REGISTERED;
     }
 
-    public function isOnline()
+    public function isOnline(): bool
     {
         return $this->deviceStatus->name === DeviceStatus::STATUS_ONLINE;
     }
 
-    public function isOffline()
+    public function isOffline(): bool
     {
         return $this->deviceStatus->name === DeviceStatus::STATUS_OFFLINE;
     }
