@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceMemoryAvailablesAction
 {
-    public function execute(string $deviceId, array $data): Collection
+    public function execute(array $data): Collection
     {
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
-        $availableMemories = DeviceMemoryStatistic::deviceId($deviceId)
+        $availableMemories = DeviceMemoryStatistic::deviceId($data['deviceId'])
             ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
             ->orderBy('created_at')
             ->get(['id', 'available_memory_in_bytes', 'created_at']);

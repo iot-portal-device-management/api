@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Rules\ExistsDeviceIdsForAuthUser;
 
-class DestroySelectedDevicesRequest extends BaseFormRequest
+class DestroySelectedDevicesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,7 +21,7 @@ class DestroySelectedDevicesRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'ids' => [

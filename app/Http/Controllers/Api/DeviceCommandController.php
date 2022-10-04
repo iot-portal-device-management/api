@@ -61,7 +61,10 @@ class DeviceCommandController extends Controller
         string $deviceId
     ): JsonResponse
     {
-        $deviceCommand = $triggerDeviceCommandAction->execute($deviceId, $request->validated());
+        $data = $request->validated();
+        $data['deviceId'] = $deviceId;
+
+        $deviceCommand = $triggerDeviceCommandAction->execute($data);
 
         return $this->apiOk(['deviceCommand' => new DeviceCommandResource($deviceCommand)]);
     }

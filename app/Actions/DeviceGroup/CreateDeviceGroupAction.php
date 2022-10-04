@@ -3,15 +3,14 @@
 namespace App\Actions\DeviceGroup;
 
 use App\Models\DeviceGroup;
-use App\Models\User;
 
 class CreateDeviceGroupAction
 {
-    public function execute(User $user, array $data)
+    public function execute(array $data)
     {
         $deviceGroup = DeviceGroup::create([
             'name' => $data['name'],
-            'user_id' => $user->id,
+            'user_id' => $data['userId'],
         ]);
 
         if (isset($data['deviceIds']) && $data['deviceIds']) {

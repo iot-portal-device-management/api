@@ -4,7 +4,7 @@ namespace App\Actions\DeviceCategory;
 
 use App\Models\Device;
 
-class UpdateDeviceCategoryAction
+class UpdateDeviceCategoryByIdAction
 {
     private FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction;
 
@@ -13,9 +13,9 @@ class UpdateDeviceCategoryAction
         $this->findDeviceCategoryByIdAction = $findDeviceCategoryByIdAction;
     }
 
-    public function execute(string $id, array $data): bool
+    public function execute(array $data): bool
     {
-        $deviceCategory = $this->findDeviceCategoryByIdAction->execute($id);
+        $deviceCategory = $this->findDeviceCategoryByIdAction->execute($data['deviceCategoryId']);
 
         if (isset($data['name'])) {
             $deviceCategory->update([
@@ -25,7 +25,7 @@ class UpdateDeviceCategoryAction
 
         if (isset($data['deviceIds']) && $data['deviceIds']) {
             Device::idIn($data['deviceIds'])->update([
-                'device_category_id' => $deviceCategory->id,
+                'device_category_id' => $data['deviceCategoryId'],
             ]);
         }
 

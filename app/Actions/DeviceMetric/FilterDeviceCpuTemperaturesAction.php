@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceCpuTemperaturesAction
 {
-    public function execute(string $deviceId, array $data): Collection
+    public function execute(array $data): Collection
     {
         //TODO: implement max time range protection
         $timeRange = (int)($data['timeRange'] ?? 1);
 
-        $cpuTemperatures = DeviceCpuTemperatureStatistic::deviceId($deviceId)
+        $cpuTemperatures = DeviceCpuTemperatureStatistic::deviceId($data['deviceId'])
             ->whereBetween('created_at', [now()->subHours($timeRange), now()])
             ->orderBy('created_at')
             ->get(['id', 'temperature', 'created_at']);

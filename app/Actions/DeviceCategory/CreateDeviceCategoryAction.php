@@ -4,15 +4,14 @@ namespace App\Actions\DeviceCategory;
 
 use App\Models\Device;
 use App\Models\DeviceCategory;
-use App\Models\User;
 
 class CreateDeviceCategoryAction
 {
-    public function execute(User $user, array $data): DeviceCategory
+    public function execute(array $data): DeviceCategory
     {
         $deviceCategory = DeviceCategory::create([
             'name' => $data['name'],
-            'user_id' => $user->id,
+            'user_id' => $data['userId'],
         ]);
 
         if (isset($data['deviceIds']) && $data['deviceIds']) {

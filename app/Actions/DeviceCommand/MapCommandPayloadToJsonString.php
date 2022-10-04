@@ -4,6 +4,7 @@ namespace App\Actions\DeviceCommand;
 
 use App\Helpers\Helper;
 
+// TODO: remove this file cause not using anymore
 class MapCommandPayloadToJsonString
 {
     public function execute(string $commandName, ?array $payload): bool|string

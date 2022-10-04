@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\SavedDeviceCommand\CreateSavedDeviceCommandAction;
-use App\Actions\SavedDeviceCommand\DeleteSavedDeviceCommandsAction;
+use App\Actions\SavedDeviceCommand\DeleteSavedDeviceCommandsByIdsAction;
 use App\Actions\SavedDeviceCommand\FilterDataTableSavedDeviceCommandsAction;
 use App\Actions\SavedDeviceCommand\FindSavedDeviceCommandByIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedSavedDeviceCommandsRequest;
 use App\Http\Requests\StoreSavedDeviceCommandRequest;
-use App\Http\Requests\ValidateSavedCommandFieldsRequest;
 use App\Http\Resources\SavedDeviceCommandCollectionPagination;
 use App\Http\Resources\SavedDeviceCommandResource;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -65,7 +64,10 @@ class SavedDeviceCommandController extends Controller
         CreateSavedDeviceCommandAction $createSavedDeviceCommandAction
     ): JsonResponse
     {
-        $savedDeviceCommand = $createSavedDeviceCommandAction->execute($request->user(), $request->validated());
+        $data = $request->validated();
+        $data['userId'] = Auth::id();
+
+        $savedDeviceCommand = $createSavedDeviceCommandAction->execute($data);
 
         return $this->apiOk(['savedDeviceCommand' => new SavedDeviceCommandResource($savedDeviceCommand)]);
     }
@@ -94,12 +96,12 @@ class SavedDeviceCommandController extends Controller
      * Remove the specified saved device commands from storage.
      *
      * @param DestroySelectedSavedDeviceCommandsRequest $request
-     * @param DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction
+     * @param DeleteSavedDeviceCommandsByIdsAction $deleteSavedDeviceCommandsAction
      * @return JsonResponse
      */
     public function destroySelected(
         DestroySelectedSavedDeviceCommandsRequest $request,
-        DeleteSavedDeviceCommandsAction $deleteSavedDeviceCommandsAction
+        DeleteSavedDeviceCommandsByIdsAction $deleteSavedDeviceCommandsAction
     ): JsonResponse
     {
         $success = $deleteSavedDeviceCommandsAction->execute($request->ids);
@@ -124,16 +126,5 @@ class SavedDeviceCommandController extends Controller
         }
 
         return $this->apiOk(['savedDeviceCommands' => $query->getOptions()]);
-    }
-
-    /**
-     * Validate the saved device command form fields.
-     *
-     * @param ValidateSavedCommandFieldsRequest $request
-     * @return JsonResponse
-     */
-    public function validateField(ValidateSavedCommandFieldsRequest $request): JsonResponse
-    {
-        return $this->apiOk();
     }
 }

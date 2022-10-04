@@ -6,14 +6,14 @@ use App\Models\SavedDeviceCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class StoreSavedDeviceCommandRequest extends BaseFormRequest
+class StoreSavedDeviceCommandRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,7 +23,7 @@ class StoreSavedDeviceCommandRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => [
@@ -31,7 +31,7 @@ class StoreSavedDeviceCommandRequest extends BaseFormRequest
                 'string',
                 'max:255',
                 Rule::unique(SavedDeviceCommand::getTableName(), 'name')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
+                    return $query->where('user_id', Auth::id());
                 }),
             ],
             'deviceCommandTypeName' => 'required|string|max:255',

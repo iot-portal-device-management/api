@@ -4,7 +4,7 @@ namespace App\Actions\Device;
 
 use App\Models\Device;
 
-class DeleteDevicesAction
+class DeleteDevicesByIdsAction
 {
     public function execute(array $ids): bool
     {

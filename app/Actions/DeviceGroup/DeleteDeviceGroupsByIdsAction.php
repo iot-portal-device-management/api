@@ -4,7 +4,7 @@ namespace App\Actions\DeviceGroup;
 
 use App\Models\DeviceGroup;
 
-class DeleteDeviceGroupsAction
+class DeleteDeviceGroupsByIdsAction
 {
     public function execute(array $ids): bool
     {

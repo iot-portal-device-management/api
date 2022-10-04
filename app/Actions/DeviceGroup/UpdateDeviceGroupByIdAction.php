@@ -4,7 +4,7 @@ namespace App\Actions\DeviceGroup;
 
 use App\Models\DeviceGroup;
 
-class UpdateDeviceGroupAction
+class UpdateDeviceGroupByIdAction
 {
     private FindDeviceGroupByIdAction $findDeviceGroupByIdAction;
 
@@ -13,9 +13,9 @@ class UpdateDeviceGroupAction
         $this->findDeviceGroupByIdAction = $findDeviceGroupByIdAction;
     }
 
-    public function execute(string $id, array $data): bool
+    public function execute(array $data): bool
     {
-        $deviceGroup = $this->findDeviceGroupByIdAction->execute($id);
+        $deviceGroup = $this->findDeviceGroupByIdAction->execute($data['deviceGroupId']);
 
         if (isset($data['name'])) {
             $deviceGroup->update([

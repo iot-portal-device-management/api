@@ -25,10 +25,10 @@ class ExistsDeviceCategoryIdsForAuthUser implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, mixed $value): bool
     {
         if (isset($value) && $value) {
-            return DeviceCategory::idIn($value)->userId(Auth::user()->id)->count() >= count($value);
+            return DeviceCategory::idIn($value)->userId(Auth::id())->count() >= count($value);
         }
 
         return false;
@@ -37,9 +37,9 @@ class ExistsDeviceCategoryIdsForAuthUser implements Rule
     /**
      * Get the validation error message.
      *
-     * @return string
+     * @return string|array
      */
-    public function message()
+    public function message(): string|array
     {
         return 'The selected :attribute is invalid.';
     }

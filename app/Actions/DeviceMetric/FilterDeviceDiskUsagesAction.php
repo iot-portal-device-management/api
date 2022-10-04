@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceDiskUsagesAction
 {
-    public function execute(string $deviceId, array $data): Collection
+    public function execute(array $data): Collection
     {
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
-        $diskUsages = DeviceDiskStatistic::deviceId($deviceId)
+        $diskUsages = DeviceDiskStatistic::deviceId($data['deviceId'])
             ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
             ->orderBy('created_at')
             ->get(['id', 'disk_usage_percentage', 'created_at']);

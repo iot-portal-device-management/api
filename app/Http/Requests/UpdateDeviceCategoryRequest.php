@@ -3,18 +3,19 @@
 namespace App\Http\Requests;
 
 use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
+use App\Models\DeviceCategory;
 use App\Rules\ExistsDeviceIdsForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class UpdateDeviceCategoryRequest extends BaseFormRequest
+class UpdateDeviceCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -25,18 +26,18 @@ class UpdateDeviceCategoryRequest extends BaseFormRequest
      * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
      * @return array
      */
-    public function rules(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction)
+    public function rules(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction): array
     {
-        $existingDeviceCategory = $findDeviceCategoryByIdAction->execute($this->route('deviceCategoryId'));
+        $oldDeviceCategoryId = $findDeviceCategoryByIdAction->execute($this->route('deviceCategoryId'))->id;
 
         return [
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('device_categories', 'name')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
-                })->ignore($existingDeviceCategory->id),
+                Rule::unique(DeviceCategory::getTableName(), 'name')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                })->ignore($oldDeviceCategoryId),
             ],
             'deviceIds' => [
                 'nullable',

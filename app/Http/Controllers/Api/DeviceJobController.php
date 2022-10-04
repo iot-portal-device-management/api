@@ -64,7 +64,10 @@ class DeviceJobController extends Controller
      */
     public function store(StoreDeviceJobRequest $request, CreateDeviceJobAction $createDeviceJobAction): JsonResponse
     {
-        $deviceJob = $createDeviceJobAction->execute($request->user(), $request->validated());
+        $data = $request->validated();
+        $data['userId'] = Auth::id();
+
+        $deviceJob = $createDeviceJobAction->execute($data);
 
         if ($deviceJob->exists) {
             ProcessDeviceJobJob::dispatch($deviceJob);
@@ -128,16 +131,5 @@ class DeviceJobController extends Controller
         $deviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($data);
 
         return $this->apiOk(['deviceCommands' => new DeviceCommandCollectionPagination($deviceCommands)]);
-    }
-
-    /**
-     * Validate device jobs fields.
-     *
-     * @param ValidateDeviceJobFieldsRequest $request
-     * @return JsonResponse
-     */
-    public function validateField(ValidateDeviceJobFieldsRequest $request): JsonResponse
-    {
-        return $this->apiOk();
     }
 }

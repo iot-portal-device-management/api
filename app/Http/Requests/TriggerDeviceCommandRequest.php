@@ -6,14 +6,14 @@ use App\Actions\Device\FindDeviceByIdAction;
 use App\Models\DeviceCommandType;
 use Illuminate\Validation\Rule;
 
-class TriggerDeviceCommandRequest extends BaseFormRequest
+class TriggerDeviceCommandRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -24,7 +24,7 @@ class TriggerDeviceCommandRequest extends BaseFormRequest
      * @param FindDeviceByIdAction $findDeviceByIdAction
      * @return array
      */
-    public function rules(FindDeviceByIdAction $findDeviceByIdAction)
+    public function rules(FindDeviceByIdAction $findDeviceByIdAction): array
     {
         $deviceId = $findDeviceByIdAction->execute($this->route('deviceId'))->id;
 

@@ -3,40 +3,45 @@
 namespace App\Actions\Device;
 
 use App\Exceptions\InvalidDeviceConnectionKeyException;
+use App\Models\Device;
 use App\Models\User;
+use Illuminate\Support\Arr;
 
 class RegisterDeviceAction
 {
     /**
-     * @var FindDeviceForUserByUniqueIdAction
+     * @var FindDeviceByIdByUserIdAction
      */
-    private FindDeviceForUserByUniqueIdAction $findDeviceForUserByUniqueIdAction;
+    private FindDeviceByIdByUserIdAction $findDeviceByIdByUserIdAction;
 
     /**
      * @var CreateDeviceAction
      */
     private CreateDeviceAction $createDeviceAction;
 
-    public function __construct(FindDeviceForUserByUniqueIdAction $findDeviceForUserByUniqueIdAction, CreateDeviceAction $createDeviceAction)
+    public function __construct(
+        FindDeviceByIdByUserIdAction $findDeviceByIdByUserIdAction,
+        CreateDeviceAction $createDeviceAction
+    )
     {
-        $this->findDeviceForUserByUniqueIdAction = $findDeviceForUserByUniqueIdAction;
+        $this->findDeviceByIdByUserIdAction = $findDeviceByIdByUserIdAction;
         $this->createDeviceAction = $createDeviceAction;
     }
 
-    public function execute(array $data, string $bearerToken)
+    public function execute(array $data): Device
     {
-        if (isset($data['unique_id']) && $bearerToken) {
-            $user = User::uniqueId($data['unique_id'])->firstOrFail();
+        if (isset($data['userId']) && isset($data['deviceConnectionKey'])) {
+            $user = User::findOrFail($data['userId']);
 
-            if ($user->validateDeviceConnectionKey($bearerToken)) {
-                if (isset($data['device_unique_id'])) {
-                    return $this->findDeviceForUserByUniqueIdAction->execute($user, $data['device_unique_id']);
+            if ($user->validateDeviceConnectionKey($data['deviceConnectionKey'])) {
+                if (isset($data['deviceId'])) {
+                    return $this->findDeviceByIdByUserIdAction->execute(Arr::only($data, ['deviceId', 'userId']));
                 } else {
-                    return $this->createDeviceAction->execute($user);
+                    return $this->createDeviceAction->execute(Arr::only($data, ['userId']));
                 }
-            } else {
-                throw new InvalidDeviceConnectionKeyException('Invalid device connection key.');
             }
         }
+
+        throw new InvalidDeviceConnectionKeyException('Invalid device connection key.');
     }
 }

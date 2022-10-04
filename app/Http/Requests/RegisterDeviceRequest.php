@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\ExistsDeviceUniqueId;
-use App\Rules\ExistsUserUniqueId;
+use App\Rules\ExistsDeviceId;
+use App\Rules\ExistsUserId;
 
-class RegisterDeviceRequest extends BaseFormRequest
+class RegisterDeviceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,16 @@ class RegisterDeviceRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'unique_id' => [
+            'userId' => [
                 'required',
-                new ExistsUserUniqueId,
+                new ExistsUserId,
             ],
-            'device_unique_id' => [
+            'deviceId' => [
                 'nullable',
-                new ExistsDeviceUniqueId,
+                new ExistsDeviceId,
             ],
         ];
     }

@@ -2,18 +2,19 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DeviceGroup;
 use App\Rules\ExistsDeviceIdsForAuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class StoreDeviceGroupRequest extends BaseFormRequest
+class StoreDeviceGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,15 +24,15 @@ class StoreDeviceGroupRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('device_groups', 'name')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
+                Rule::unique(DeviceGroup::getTableName(), 'name')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
                 }),
             ],
             'deviceIds' => [

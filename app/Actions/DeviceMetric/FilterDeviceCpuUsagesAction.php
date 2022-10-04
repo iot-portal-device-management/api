@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 class FilterDeviceCpuUsagesAction
 {
-    public function execute(string $deviceId, array $data): Collection
+    public function execute(array $data): Collection
     {
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
-        $cpuUsages = DeviceCpuStatistic::deviceId($deviceId)
+        $cpuUsages = DeviceCpuStatistic::deviceId($data['deviceId'])
             ->whereBetween('created_at', [now()->subHours($timeRangeFilter), now()])
             ->orderBy('created_at')
             ->get(['id', 'cpu_usage_percentage', 'created_at']);

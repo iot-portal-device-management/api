@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceGroup\CreateDeviceGroupAction;
-use App\Actions\DeviceGroup\DeleteDeviceGroupsAction;
+use App\Actions\DeviceGroup\DeleteDeviceGroupsByIdsAction;
 use App\Actions\DeviceGroup\FilterDataTableDeviceGroupDevicesAction;
 use App\Actions\DeviceGroup\FilterDataTableDeviceGroupsAction;
 use App\Actions\DeviceGroup\FindDeviceGroupByIdAction;
-use App\Actions\DeviceGroup\UpdateDeviceGroupAction;
+use App\Actions\DeviceGroup\UpdateDeviceGroupByIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceGroupsRequest;
 use App\Http\Requests\StoreDeviceGroupRequest;
 use App\Http\Requests\UpdateDeviceGroupRequest;
-use App\Http\Requests\ValidateDeviceGroupFieldsRequest;
 use App\Http\Resources\DeviceCollectionPagination;
 use App\Http\Resources\DeviceGroupCollectionPagination;
 use App\Http\Resources\DeviceGroupResource;
@@ -70,7 +69,10 @@ class DeviceGroupController extends Controller
         CreateDeviceGroupAction $createDeviceGroupAction
     ): JsonResponse
     {
-        $deviceGroup = $createDeviceGroupAction->execute($request->user(), $request->validated());
+        $data = $request->validated();
+        $data['userId'] = Auth::id();
+
+        $deviceGroup = $createDeviceGroupAction->execute($data);
 
         return $this->apiOk(['deviceGroup' => new DeviceGroupResource($deviceGroup)]);
     }
@@ -96,19 +98,22 @@ class DeviceGroupController extends Controller
      * Update the specified device group in storage.
      *
      * @param UpdateDeviceGroupRequest $request
-     * @param UpdateDeviceGroupAction $updateDeviceGroupAction
+     * @param UpdateDeviceGroupByIdAction $updateDeviceGroupByIdAction
      * @param FindDeviceGroupByIdAction $findDeviceGroupByIdAction
      * @param string $deviceGroupId
      * @return JsonResponse
      */
     public function update(
         UpdateDeviceGroupRequest $request,
-        UpdateDeviceGroupAction $updateDeviceGroupAction,
+        UpdateDeviceGroupByIdAction $updateDeviceGroupByIdAction,
         FindDeviceGroupByIdAction $findDeviceGroupByIdAction,
         string $deviceGroupId
     ): JsonResponse
     {
-        $success = $updateDeviceGroupAction->execute($deviceGroupId, $request->validated());
+        $data = $request->validated();
+        $data['deviceGroupId'] = $deviceGroupId;
+
+        $success = $updateDeviceGroupByIdAction->execute($data);
 
         return $success
             ? $this->apiOk(['deviceGroup' => new DeviceGroupResource($findDeviceGroupByIdAction->execute($deviceGroupId))])
@@ -119,15 +124,15 @@ class DeviceGroupController extends Controller
      * Remove the specified device groups from storage.
      *
      * @param DestroySelectedDeviceGroupsRequest $request
-     * @param DeleteDeviceGroupsAction $deleteDeviceGroupsAction
+     * @param DeleteDeviceGroupsByIdsAction $deleteDeviceGroupsByIdsAction
      * @return JsonResponse
      */
     public function destroySelected(
         DestroySelectedDeviceGroupsRequest $request,
-        DeleteDeviceGroupsAction $deleteDeviceGroupsAction
+        DeleteDeviceGroupsByIdsAction $deleteDeviceGroupsByIdsAction
     ): JsonResponse
     {
-        $success = $deleteDeviceGroupsAction->execute($request->ids);
+        $success = $deleteDeviceGroupsByIdsAction->execute($request->ids);
 
         return $success
             ? $this->apiOk()
@@ -172,16 +177,5 @@ class DeviceGroupController extends Controller
         }
 
         return $this->apiOk(['deviceGroups' => $query->getOptions()]);
-    }
-
-    /**
-     * Validate device group options for user.
-     *
-     * @param ValidateDeviceGroupFieldsRequest $request
-     * @return JsonResponse
-     */
-    public function validateField(ValidateDeviceGroupFieldsRequest $request): JsonResponse
-    {
-        return $this->apiOk();
     }
 }

@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\DeviceCategory\CreateDeviceCategoryAction;
-use App\Actions\DeviceCategory\DeleteDeviceCategoriesAction;
+use App\Actions\DeviceCategory\DeleteDeviceCategoriesByIdsAction;
 use App\Actions\DeviceCategory\FilterDataTableDeviceCategoriesAction;
 use App\Actions\DeviceCategory\FilterDataTableDeviceCategoryDevicesAction;
 use App\Actions\DeviceCategory\FindDeviceCategoryByIdAction;
-use App\Actions\DeviceCategory\UpdateDeviceCategoryAction;
+use App\Actions\DeviceCategory\UpdateDeviceCategoryByIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDeviceCategoriesRequest;
 use App\Http\Requests\StoreDeviceCategoryRequest;
 use App\Http\Requests\UpdateDeviceCategoryRequest;
-use App\Http\Requests\ValidateDeviceCategoryFieldsRequest;
 use App\Http\Resources\DeviceCategoryCollectionPagination;
 use App\Http\Resources\DeviceCategoryResource;
 use App\Http\Resources\DeviceCollectionPagination;
@@ -70,7 +69,10 @@ class DeviceCategoryController extends Controller
         CreateDeviceCategoryAction $createDeviceCategoryAction
     ): JsonResponse
     {
-        $deviceCategory = $createDeviceCategoryAction->execute($request->user(), $request->validated());
+        $data = $request->validated();
+        $data['userId'] = Auth::id();
+
+        $deviceCategory = $createDeviceCategoryAction->execute($data);
 
         return $this->apiOk(['deviceCategory' => new DeviceCategoryResource($deviceCategory)]);
     }
@@ -99,19 +101,22 @@ class DeviceCategoryController extends Controller
      * Update the specified device category in storage.
      *
      * @param UpdateDeviceCategoryRequest $request
-     * @param UpdateDeviceCategoryAction $updateDeviceCategoryAction
+     * @param UpdateDeviceCategoryByIdAction $updateDeviceCategoryByIdAction
      * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
      * @param string $deviceCategoryId
      * @return JsonResponse
      */
     public function update(
         UpdateDeviceCategoryRequest $request,
-        UpdateDeviceCategoryAction $updateDeviceCategoryAction,
+        UpdateDeviceCategoryByIdAction $updateDeviceCategoryByIdAction,
         FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction,
         string $deviceCategoryId
     ): JsonResponse
     {
-        $success = $updateDeviceCategoryAction->execute($deviceCategoryId, $request->validated());
+        $data = $request->validated();
+        $data['deviceCategoryId'] = $deviceCategoryId;
+
+        $success = $updateDeviceCategoryByIdAction->execute($data);
 
         return $success
             ? $this->apiOk(['deviceCategory' => new DeviceCategoryResource($findDeviceCategoryByIdAction->execute($deviceCategoryId))])
@@ -122,15 +127,15 @@ class DeviceCategoryController extends Controller
      * Remove the specified device categories from storage.
      *
      * @param DestroySelectedDeviceCategoriesRequest $request
-     * @param DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction
+     * @param DeleteDeviceCategoriesByIdsAction $deleteDeviceCategoriesByIdsAction
      * @return JsonResponse
      */
     public function destroySelected(
         DestroySelectedDeviceCategoriesRequest $request,
-        DeleteDeviceCategoriesAction $deleteDeviceCategoriesAction
+        DeleteDeviceCategoriesByIdsAction $deleteDeviceCategoriesByIdsAction
     ): JsonResponse
     {
-        $success = $deleteDeviceCategoriesAction->execute($request->ids);
+        $success = $deleteDeviceCategoriesByIdsAction->execute($request->ids);
 
         return $success
             ? $this->apiOk()
@@ -174,16 +179,5 @@ class DeviceCategoryController extends Controller
         }
 
         return $this->apiOk(['deviceCategories' => $query->getOptions()]);
-    }
-
-    /**
-     * Validate device category selection.
-     *
-     * @param ValidateDeviceCategoryFieldsRequest $request
-     * @return JsonResponse
-     */
-    public function validateField(ValidateDeviceCategoryFieldsRequest $request): JsonResponse
-    {
-        return $this->apiOk();
     }
 }

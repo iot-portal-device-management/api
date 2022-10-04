@@ -32,7 +32,7 @@ class MqttClientServiceProvider extends ServiceProvider
     protected function registerServices(): void
     {
         $this->app->bind(ConnectionManager::class, function (Application $app) {
-            return new ConnectionManager($app, $app->make('config')->get('mqtt-client', []));
+            return new ConnectionManager($app, $app->make('config')->get('mqtt_client', []));
         });
 
         $this->app->bind(Repository::class, MemoryRepository::class);

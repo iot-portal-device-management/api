@@ -31,6 +31,7 @@ return [
     'connections' => [
 
         'default' => [
+            'external_endpoint' => env('MQTT_EXTERNAL_ENDPOINT', 'vernemq'),
 
             // The host and port to which the client shall connect.
             'host' => env('MQTT_HOST'),

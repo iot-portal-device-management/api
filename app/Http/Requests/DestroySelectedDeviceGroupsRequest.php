@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use App\Rules\ExistsDeviceGroupIdsForAuthUser;
 
-class DestroySelectedDeviceGroupsRequest extends BaseFormRequest
+class DestroySelectedDeviceGroupsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,7 +21,7 @@ class DestroySelectedDeviceGroupsRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'ids' => [

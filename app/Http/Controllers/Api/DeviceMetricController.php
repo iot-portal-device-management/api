@@ -38,7 +38,10 @@ class DeviceMetricController extends Controller
         string $deviceId
     ): JsonResponse
     {
-        $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($deviceId, $request->only('timeRange'));
+        $data = $request->only('timeRange');
+        $data['deviceId'] = $deviceId;
+
+        $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($data);
 
         return $this->apiOk(['cpuTemperatures' => $cpuTemperatures->toArray()]);
     }
@@ -57,7 +60,10 @@ class DeviceMetricController extends Controller
         string $deviceId
     ): JsonResponse
     {
-        $cpuUsages = $filterDeviceCpuUsagesAction->execute($deviceId, $request->only('timeRange'));
+        $data = $request->only('timeRange');
+        $data['deviceId'] = $deviceId;
+
+        $cpuUsages = $filterDeviceCpuUsagesAction->execute($data);
 
         return $this->apiOk(['cpuUsages' => $cpuUsages->toArray()]);
     }
@@ -76,7 +82,10 @@ class DeviceMetricController extends Controller
         string $deviceId
     ): JsonResponse
     {
-        $diskUsages = $filterDeviceDiskUsagesAction->execute($deviceId, $request->only('timeRange'));
+        $data = $request->only('timeRange');
+        $data['deviceId'] = $deviceId;
+
+        $diskUsages = $filterDeviceDiskUsagesAction->execute($data);
 
         return $this->apiOk(['diskUsages' => $diskUsages->toArray()]);
     }
@@ -95,7 +104,10 @@ class DeviceMetricController extends Controller
         string $deviceId
     ): JsonResponse
     {
-        $availableMemories = $filterDeviceMemoryAvailablesAction->execute($deviceId, $request->only('timeRange'));
+        $data = $request->only('timeRange');
+        $data['deviceId'] = $deviceId;
+
+        $availableMemories = $filterDeviceMemoryAvailablesAction->execute($data);
 
         return $this->apiOk(['availableMemories' => $availableMemories->toArray()]);
     }

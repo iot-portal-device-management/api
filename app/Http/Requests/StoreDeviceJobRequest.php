@@ -8,14 +8,14 @@ use App\Models\SavedDeviceCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class StoreDeviceJobRequest extends BaseFormRequest
+class StoreDeviceJobRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -25,7 +25,7 @@ class StoreDeviceJobRequest extends BaseFormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => [
@@ -33,19 +33,19 @@ class StoreDeviceJobRequest extends BaseFormRequest
                 'string',
                 'max:255',
                 Rule::unique(DeviceJob::getTableName(), 'name')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
+                    return $query->where('user_id', Auth::id());
                 }),
             ],
             'deviceGroupId' => [
                 'required',
                 Rule::exists(DeviceGroup::getTableName(), 'id')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
+                    return $query->where('user_id', Auth::id());
                 }),
             ],
             'savedDeviceCommandId' => [
                 'required',
                 Rule::exists(SavedDeviceCommand::getTableName(), 'id')->where(function ($query) {
-                    return $query->where('user_id', Auth::user()->id);
+                    return $query->where('user_id', Auth::id());
                 }),
             ],
         ];

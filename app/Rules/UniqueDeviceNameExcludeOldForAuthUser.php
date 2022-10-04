@@ -28,20 +28,20 @@ class UniqueDeviceNameExcludeOldForAuthUser implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, mixed $value): bool
     {
         return Device::name($value)
                 ->excludeId($this->oldDeviceId)
-                ->userId(Auth::user()->id)
+                ->userId(Auth::id())
                 ->count() <= 0;
     }
 
     /**
      * Get the validation error message.
      *
-     * @return string
+     * @return string|array
      */
-    public function message()
+    public function message(): string|array
     {
         return 'The :attribute has already been taken.';
     }

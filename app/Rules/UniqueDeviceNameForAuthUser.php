@@ -25,17 +25,17 @@ class UniqueDeviceNameForAuthUser implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, mixed $value): bool
     {
-        return Device::name($value)->userId(Auth::user()->id)->count() <= 0;
+        return Device::name($value)->userId(Auth::id())->count() <= 0;
     }
 
     /**
      * Get the validation error message.
      *
-     * @return string
+     * @return string|array
      */
-    public function message()
+    public function message(): string|array
     {
         return 'The :attribute has already been taken.';
     }

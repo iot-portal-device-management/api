@@ -2,10 +2,10 @@
 
 namespace App\Rules;
 
-use App\Models\Device;
+use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 
-class ExistsDeviceUniqueId implements Rule
+class ExistsUserId implements Rule
 {
     /**
      * Create a new rule instance.
@@ -24,17 +24,17 @@ class ExistsDeviceUniqueId implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, mixed $value): bool
     {
-        return Device::uniqueId($value)->count() > 0;
+        return User::id($value)->count() > 0;
     }
 
     /**
      * Get the validation error message.
      *
-     * @return string
+     * @return string|array
      */
-    public function message()
+    public function message(): string|array
     {
         return 'The selected :attribute is invalid.';
     }

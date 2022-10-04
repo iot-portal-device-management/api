@@ -10,6 +10,7 @@ class FilterOnlineDevicesAvailableMemoriesChartAction
 {
     public function execute(array $data): Collection
     {
+        //TODO: implement max time range protection
         $timeRangeFilter = (int)($data['timeRangeFilter'] ?? 1);
 
         $devices = Device::userId($data['userId'])

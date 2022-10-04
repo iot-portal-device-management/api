@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Device\CreateDeviceAction;
-use App\Actions\Device\DeleteDevicesAction;
+use App\Actions\Device\DeleteDevicesByIdsAction;
 use App\Actions\Device\FilterDataTableDevicesAction;
 use App\Actions\Device\FindDeviceByIdAction;
 use App\Actions\Device\RegisterDeviceAction;
-use App\Actions\Device\UpdateDeviceAction;
+use App\Actions\Device\UpdateDeviceByIdAction;
 use App\Exceptions\InvalidDeviceConnectionKeyException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedDevicesRequest;
 use App\Http\Requests\RegisterDeviceRequest;
 use App\Http\Requests\StoreDeviceRequest;
 use App\Http\Requests\UpdateDeviceRequest;
-use App\Http\Requests\ValidateDeviceFieldsRequest;
 use App\Http\Resources\DeviceCollectionPagination;
 use App\Http\Resources\DeviceResource;
 use App\Models\Device;
@@ -48,7 +47,7 @@ class DeviceController extends Controller
      * @param FilterDataTableDevicesAction $filterDataTableDevicesAction
      * @return JsonResponse
      */
-    public function index(Request $request, FilterDataTableDevicesAction $filterDataTableDevicesAction)
+    public function index(Request $request, FilterDataTableDevicesAction $filterDataTableDevicesAction): JsonResponse
     {
         $data = $request->all();
         $data['userId'] = Auth::id();
@@ -67,7 +66,10 @@ class DeviceController extends Controller
      */
     public function store(StoreDeviceRequest $request, CreateDeviceAction $createDeviceAction): JsonResponse
     {
-        $device = $createDeviceAction->execute($request->user(), $request->validated());
+        $data = $request->validated();
+        $data['userId'] = Auth::id();
+
+        $device = $createDeviceAction->execute($data);
 
         return $this->apiOk(['device' => new DeviceResource($device)]);
     }
@@ -93,20 +95,30 @@ class DeviceController extends Controller
      * Update the specified device in storage.
      *
      * @param UpdateDeviceRequest $request
-     * @param UpdateDeviceAction $updateDeviceAction
+     * @param UpdateDeviceByIdAction $updateDeviceByIdAction
      * @param string $deviceId
      * @return JsonResponse
      */
     public function update(
         UpdateDeviceRequest $request,
-        UpdateDeviceAction $updateDeviceAction,
+        UpdateDeviceByIdAction $updateDeviceByIdAction,
         string $deviceId
     ): JsonResponse
     {
-        $success = $updateDeviceAction->execute($deviceId, $request->validated());
+        $data = $request->validated();
+        $data['deviceId'] = $deviceId;
+
+        $success = $updateDeviceByIdAction->execute($data);
 
         return $success
-            ? $this->apiOk(['device' => new DeviceResource(Device::id($deviceId)->with('deviceCategory:id,name', 'deviceStatus:id,name')->firstOrFail())])
+            ? $this->apiOk(['device' => new DeviceResource(
+                Device::id($deviceId)
+                    ->with(
+                        'deviceCategory:id,name',
+                        'deviceStatus:id,name',
+                    )
+                    ->firstOrFail()
+            )])
             : $this->apiInternalServerError('Failed to update device.');
     }
 
@@ -114,30 +126,19 @@ class DeviceController extends Controller
      * Remove the specified devices from storage.
      *
      * @param DestroySelectedDevicesRequest $request
-     * @param DeleteDevicesAction $deleteDevicesAction
+     * @param DeleteDevicesByIdsAction $deleteDevicesByIdsAction
      * @return JsonResponse
      */
     public function destroySelected(
         DestroySelectedDevicesRequest $request,
-        DeleteDevicesAction $deleteDevicesAction
+        DeleteDevicesByIdsAction $deleteDevicesByIdsAction
     ): JsonResponse
     {
-        $success = $deleteDevicesAction->execute($request->ids);
+        $success = $deleteDevicesByIdsAction->execute($request->ids);
 
         return $success
             ? $this->apiOk()
             : $this->apiInternalServerError('Failed to delete devices');
-    }
-
-    /**
-     * Validate device selection.
-     *
-     * @param ValidateDeviceFieldsRequest $request
-     * @return JsonResponse
-     */
-    public function validateField(ValidateDeviceFieldsRequest $request): JsonResponse
-    {
-        return $this->apiOk();
     }
 
     /**
@@ -150,16 +151,18 @@ class DeviceController extends Controller
      */
     public function register(RegisterDeviceRequest $request, RegisterDeviceAction $registerDeviceAction): JsonResponse
     {
-        $device = $registerDeviceAction->execute($request->validated(), $request->bearerToken());
+        $data = $request->validated();
+        $data['deviceConnectionKey'] = $request->bearerToken();
 
-//        TODO: Possible refactoring, remove if statement since it is not necessary.
-        if ($device) {
-            return $this->apiOk([
-                'mqttEndpoint' => config('mqttclient.connections.default.external_endpoint'),
-                'device' => $device
-            ]);
-        }
+        $device = $registerDeviceAction->execute($data);
 
-        return $this->apiBadRequest('Invalid device_connection_key.');
+        return $this->apiOk([
+            'mqttEndpoint' => config(
+                'mqtt_client.connections.'
+                . config('mqtt_client.default_connection')
+                . '.external_endpoint'
+            ),
+            'device' => $device,
+        ]);
     }
 }
