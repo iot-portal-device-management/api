@@ -23,8 +23,11 @@ class JsonResource extends BaseJsonResource
 
     /**
      * Encode a value to camelCase JSON
+     *
+     * @param mixed $value
+     * @return array|string|null
      */
-    public function encodeJson($value)
+    public function encodeJson(mixed $value): array|string|null
     {
         if ($value instanceof Arrayable) {
             return $this->encodeArrayable($value);
@@ -40,10 +43,10 @@ class JsonResource extends BaseJsonResource
     /**
      * Encode a Arrayable
      *
-     * @param $arrayable
+     * @param Arrayable $arrayable
      * @return array
      */
-    public function encodeArrayable($arrayable): array
+    public function encodeArrayable(Arrayable $arrayable): array
     {
         $array = $arrayable->toArray();
         return $this->encodeJson($array);
@@ -52,10 +55,10 @@ class JsonResource extends BaseJsonResource
     /**
      * Encode an array
      *
-     * @param $array
-     * @return array|null
+     * @param array $array
+     * @return array
      */
-    public function encodeArray($array): ?array
+    public function encodeArray(array $array): array
     {
         $newArray = [];
         foreach ($array as $key => $val) {

@@ -162,7 +162,7 @@ class DeviceController extends Controller
                 . config('mqtt_client.default_connection')
                 . '.external_endpoint'
             ),
-            'device' => $device,
+            'device' => new DeviceResource($device),
         ]);
     }
 }

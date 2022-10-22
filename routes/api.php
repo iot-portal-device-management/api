@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\DeviceEventController;
 use App\Http\Controllers\Api\DeviceGroupController;
 use App\Http\Controllers\Api\DeviceJobController;
 use App\Http\Controllers\Api\DeviceMetricController;
+use App\Http\Controllers\Api\Mqtt\EndpointController;
 use App\Http\Controllers\Api\SavedDeviceCommandController;
 use App\Http\Controllers\Api\StatisticController;
 use App\Http\Controllers\Api\TestController;
@@ -35,6 +36,9 @@ require __DIR__ . '/api_auth.php';
 Route::get('/111', function (Request $request) {
     return $request->user();
 });
+
+// VERNEMQ WEBHOOKS ENDPOINT
+Route::post('/mqtt/endpoint', [EndpointController::class, 'mqttEndpoint']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {

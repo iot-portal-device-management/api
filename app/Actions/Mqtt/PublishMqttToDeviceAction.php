@@ -13,6 +13,9 @@ class PublishMqttToDeviceAction
 
     public function execute(string $deviceId, string $methodName, string $requestId, string $payload)
     {
-        $this->publishMqttAction->execute('iotportal/' . $deviceId . '/methods/POST/' . $methodName . '/?$rid=' . $requestId, $payload);
+        $this->publishMqttAction->execute(
+            'iotportal/' . $deviceId . '/methods/POST/' . $methodName . '/?$rid=' . $requestId,
+            $payload
+        );
     }
 }

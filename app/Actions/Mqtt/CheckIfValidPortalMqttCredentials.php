@@ -9,8 +9,8 @@ class CheckIfValidPortalMqttCredentials
         $mqttConfig = config('mqtt_client.connections.' . config('mqtt_client.default_connection'));
 
         if (
-            $username === $mqttConfig['auth']['username']
-            && $password === $mqttConfig['auth']['password']
+            $username === $mqttConfig['connection_settings']['auth']['username']
+            && $password === $mqttConfig['connection_settings']['auth']['password']
             && $clientId === $mqttConfig['client_id']
         ) {
             return true;

@@ -9,8 +9,8 @@ class CheckIfValidPortalMqttTopics
         $mqttConfig = config('mqtt_client.connections.' . config('mqtt_client.default_connection'));
 
         if (
-            $username === $mqttConfig['auth']['username']
-            && $clientId === $mqttConfig['auth']['client_id']
+            $username === $mqttConfig['connection_settings']['auth']['username']
+            && $clientId === $mqttConfig['connection_settings']['auth']['client_id']
             && preg_match('/iotportal\/([\w\-]+)\/methods\/POST\/([\w\-_]+)\/\?\$rid=([\d]+)/', $topic)
         ) {
             return true;
