@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     /**
-     * Return the current logged in user data.
+     * Return the current logged-in user data.
      *
      * @param Request $request
      * @return JsonResponse

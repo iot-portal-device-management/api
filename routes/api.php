@@ -40,8 +40,12 @@ Route::get('/111', function (Request $request) {
 // VERNEMQ WEBHOOKS ENDPOINT
 Route::post('/mqtt/endpoint', [EndpointController::class, 'mqttEndpoint']);
 
+// DEVICE REGISTRATION ENDPOINT
+Route::post('/devices/register', [DeviceController::class, 'register']);
+
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
     // LOGGED IN USER
     Route::get('/user', [UserController::class, 'user']);
 

@@ -1,0 +1,18 @@
+# Defaults
+ARG PHP_VERSION=8.1.11-fpm-alpine3.16
+
+FROM php:${PHP_VERSION}
+
+COPY --from=api-builder --chown=www-data:www-data /var/www/html/ /var/www/html/
+
+COPY --chown=www-data:www-data ./dockerfiles/build/docker-entrypoint /usr/local/bin/
+
+RUN chmod u+x /usr/local/bin/docker-entrypoint
+
+USER www-data:www-data
+
+ENTRYPOINT ["docker-entrypoint"]
+
+CMD ["php-fpm"]
+
+# docker build -f dockerfiles/Dockerfile.production -t iotportaldevicemanagement-api .

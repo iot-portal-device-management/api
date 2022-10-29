@@ -1,0 +1,39 @@
+# ide
+/.idea
+/.vscode
+
+# README
+**/README*
+
+# docker
+**/dockerfiles*
+**/Dockerfile*
+**/.dockerignore*
+
+# git
+.git
+**/.gitattributes*
+**/.gitignore*
+
+# env files
+.env*
+
+# dependencies
+/node_modules
+/vendor
+
+# logs
+npm-debug.log
+yarn-error.log
+
+# storage
+/public/hot
+/public/storage
+/storage/*.key
+
+# PHPUnit
+.phpunit.result.cache
+
+# Homestead
+Homestead.json
+Homestead.yaml
