@@ -3,6 +3,7 @@
 namespace App\Services\Mqtt;
 
 use App\Exceptions\MqttConnectionNotAvailableException;
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
@@ -46,6 +47,7 @@ class ConnectionManager
      * Gets the connection with the specified name.
      *
      * @param string|null $name
+     * @param string|null $clientIdPrefix
      * @return MqttClientContract
      * @throws BindingResolutionException
      * @throws ConfigurationInvalidException
@@ -53,7 +55,7 @@ class ConnectionManager
      * @throws MqttConnectionNotAvailableException
      * @throws ProtocolNotSupportedException
      */
-    public function connection(string $name = null): MqttClientContract
+    public function connection(string $name = null, string $clientIdPrefix = null): MqttClientContract
     {
         if ($name === null) {
             $name = $this->defaultConnection;
@@ -66,7 +68,7 @@ class ConnectionManager
         }
 
         if (!array_key_exists($name, $this->connections)) {
-            $this->connections[$name] = $this->createConnection($name);
+            $this->connections[$name] = $this->createConnection($name, $clientIdPrefix);
         }
 
         return $this->connections[$name];
@@ -116,14 +118,16 @@ class ConnectionManager
      * Creates a new MQTT client and connects to the specified server.
      *
      * @param string $name
+     * @param string|null $clientIdPrefix
      * @return MqttClientContract
      * @throws BindingResolutionException
      * @throws ConfigurationInvalidException
      * @throws ConnectingToBrokerFailedException
      * @throws MqttConnectionNotAvailableException
      * @throws ProtocolNotSupportedException
+     * @throws Exception
      */
-    protected function createConnection(string $name): MqttClientContract
+    protected function createConnection(string $name, string $clientIdPrefix = null): MqttClientContract
     {
         $config = Arr::get($this->config, "connections.{$name}");
 
@@ -133,7 +137,10 @@ class ConnectionManager
 
         $host = (string)Arr::get($config, 'host');
         $port = (int)Arr::get($config, 'port', 1883);
-        $clientId = Arr::get($config, 'client_id');
+        $clientId = $clientIdPrefix
+            ? $clientIdPrefix . $this->generateRandomClientId()
+            : Arr::get($config, 'client_id');
+
         $protocol = (string)Arr::get($config, 'protocol', MqttClient::MQTT_3_1);
         $cleanSession = (bool)Arr::get($config, 'use_clean_session', true);
         $repository = Arr::get($config, 'repository', Repository::class);
@@ -177,5 +184,16 @@ class ConnectionManager
             ->setLastWillMessage(Arr::get($config, 'last_will.message'))
             ->setLastWillQualityOfService((int)Arr::get($config, 'last_will.quality_of_service', MqttClient::QOS_AT_MOST_ONCE))
             ->setRetainLastWill((bool)Arr::get($config, 'last_will.retain', false));
+    }
+
+    /**
+     * Generates a random client id in the form of a md5 hash.
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function generateRandomClientId(): string
+    {
+        return substr(md5(uniqid((string) random_int(0, PHP_INT_MAX), true)), 0, 20);
     }
 }

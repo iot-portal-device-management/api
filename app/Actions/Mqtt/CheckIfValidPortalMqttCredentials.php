@@ -2,8 +2,12 @@
 
 namespace App\Actions\Mqtt;
 
+use App\Traits\CheckIfMqttClientIdPrefixMatch;
+
 class CheckIfValidPortalMqttCredentials
 {
+    use CheckIfMqttClientIdPrefixMatch;
+
     public function execute(string $username, string $password, string $clientId): bool
     {
         $mqttConfig = config('mqtt_client.connections.' . config('mqtt_client.default_connection'));
@@ -11,7 +15,7 @@ class CheckIfValidPortalMqttCredentials
         if (
             $username === $mqttConfig['connection_settings']['auth']['username']
             && $password === $mqttConfig['connection_settings']['auth']['password']
-            && $clientId === $mqttConfig['client_id']
+            && $this->isMqttClientIdPrefixMatch($mqttConfig['client_id_prefix'], $clientId)
         ) {
             return true;
         }

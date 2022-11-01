@@ -40,6 +40,10 @@ return [
             // The MQTT protocol version used for the connection.
             'protocol' => MqttClient::MQTT_3_1,
 
+            // A specific client id prefix to be used for the connection. Maximum of three characters,
+            // random 20 characters will be appended at the back as the client id for each new connection.
+            'client_id_prefix' => env('MQTT_CLIENT_ID_PREFIX'),
+
             // A specific client id to be used for the connection. If omitted,
             // a random client id will be generated for each new connection.
             'client_id' => env('MQTT_CLIENT_ID'),
