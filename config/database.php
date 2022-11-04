@@ -75,7 +75,12 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            // depends on your security level https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS
+            'sslmode' => env('DB_SSLMODE', 'verify-ca'),
+            'sslrootcert' => env('DB_SSLROOTCERT', '/certificates/rootCA.crt'),
+            // Enable below two lines for client authentication (Mutual authentication)
+            // 'sslcert' =>  env('DB_SSLCERT', '/certificates/postgres.crt'),
+            // 'sslkey' =>  env('DB_SSLKEY', '/certificates/postgres.key'),
         ],
 
         'sqlsrv' => [
@@ -129,12 +134,22 @@ return [
         ],
 
         'default' => [
+            'scheme' => env('REDIS_SCHEME', 'tls'),
             'url' => env('REDIS_URL'),
             'host' => env('REDIS_HOST', '127.0.0.1'),
             'username' => env('REDIS_USERNAME'),
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            'context' => [
+                'stream' => [
+                    'verify_peer' => env('REDIS_VERIFY_PEER', true),
+                    'cafile' => env('REDIS_CAFILE', '/certificates/rootCA.crt'),
+                    // Enable below two lines for client authentication (Mutual authentication)
+                    // 'local_cert' => env('REDIS_LOCAL_CERT', '/certificates/localhost.crt'),
+                    // 'local_pk' => env('REDIS_LOCAL_PK', '/certificates/localhost.key'),
+                ],
+            ],
         ],
 
         'cache' => [

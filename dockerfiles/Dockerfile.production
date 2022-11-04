@@ -21,7 +21,7 @@ RUN set -eux; \
 
 COPY --from=api-builder --chown=www-data:www-data /var/www/html/ /var/www/html/
 
-COPY --chown=www-data:www-data ./dockerfiles/build/docker-entrypoint /usr/local/bin/
+COPY --chown=www-data:www-data ./dockerfiles/docker-entrypoint /usr/local/bin/
 
 RUN chmod u+x /usr/local/bin/docker-entrypoint
 
