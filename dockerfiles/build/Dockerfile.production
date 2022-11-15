@@ -6,6 +6,8 @@ FROM composer:${COMPOSER_VERSION} AS composer
 
 FROM php:${PHP_VERSION}
 
+LABEL com.iotportaldevicemanagement.product="iotportaldevicemanagement"
+
 # Get Composer
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
