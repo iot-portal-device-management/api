@@ -34,7 +34,8 @@ require __DIR__ . '/api_auth.php';
 //});
 
 Route::get('/111', function (Request $request) {
-    return $request->user();
+    return config('app.env');
+//    return $request->user();
 });
 
 // VERNEMQ WEBHOOKS ENDPOINT
