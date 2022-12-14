@@ -14,7 +14,7 @@ use App\Http\Resources\DeviceCommandCollectionPagination;
 use App\Http\Resources\DeviceJobCollectionPagination;
 use App\Http\Resources\DeviceJobResource;
 use App\Jobs\ProcessDeviceJobJob;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\DeviceJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,16 +25,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class DeviceJobController extends Controller
 {
-//    /**
-//     * DeviceJobController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:viewAny,App\Models\DeviceJob')->only('index');
-//        $this->middleware('can:create,App\Models\DeviceJob')->only('store');
-//        $this->middleware('can:deleteMany,App\Models\DeviceJob')->only('destroySelected');;
-//    }
-
     /**
      * Return a listing of the device job.
      *
@@ -81,15 +71,12 @@ class DeviceJobController extends Controller
      * Return the specified device job.
      *
      * @param FindDeviceJobByIdAction $findDeviceJobByIdAction
-     * @param string $deviceJobId
+     * @param DeviceJob $deviceJob
      * @return JsonResponse
-     * @throws AuthorizationException
      */
-    public function show(FindDeviceJobByIdAction $findDeviceJobByIdAction, string $deviceJobId): JsonResponse
+    public function show(FindDeviceJobByIdAction $findDeviceJobByIdAction, DeviceJob $deviceJob): JsonResponse
     {
-        $deviceJob = $findDeviceJobByIdAction->execute($deviceJobId);
-
-        $this->authorize('view', $deviceJob);
+        $deviceJob = $findDeviceJobByIdAction->execute($deviceJob->id);
 
         return $this->apiOk(['deviceJob' => new DeviceJobResource($deviceJob)]);
     }
@@ -98,15 +85,15 @@ class DeviceJobController extends Controller
      * Return the status of the device job.
      *
      * @param CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction
-     * @param string $deviceJobId
+     * @param DeviceJob $deviceJob
      * @return JsonResponse
      */
     public function showProgressStatus(
         CalculateDeviceJobProgressStatusAction $calculateDeviceJobProgressStatusAction,
-        string $deviceJobId
+        DeviceJob $deviceJob
     ): JsonResponse
     {
-        $deviceJobProgressStatus = $calculateDeviceJobProgressStatusAction->execute($deviceJobId);
+        $deviceJobProgressStatus = $calculateDeviceJobProgressStatusAction->execute($deviceJob->id);
 
         return $this->apiOk(['progressStatus' => $deviceJobProgressStatus]);
     }
@@ -116,17 +103,17 @@ class DeviceJobController extends Controller
      *
      * @param Request $request
      * @param FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction
-     * @param string $deviceJobId
+     * @param DeviceJob $deviceJob
      * @return JsonResponse
      */
     public function deviceJobDeviceCommandsIndex(
         Request $request,
         FilterDataTableDeviceJobDeviceCommandsAction $filterDataTableDeviceJobDeviceCommandsAction,
-        string $deviceJobId
+        DeviceJob $deviceJob
     ): JsonResponse
     {
         $data = $request->all();
-        $data['deviceJobId'] = $deviceJobId;
+        $data['deviceJobId'] = $deviceJob->id;
 
         $deviceCommands = $filterDataTableDeviceJobDeviceCommandsAction->execute($data);
 

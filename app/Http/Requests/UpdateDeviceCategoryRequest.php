@@ -23,12 +23,11 @@ class UpdateDeviceCategoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
      * @return array
      */
-    public function rules(FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction): array
+    public function rules(): array
     {
-        $oldDeviceCategoryId = $findDeviceCategoryByIdAction->execute($this->route('deviceCategoryId'))->id;
+        $oldDeviceCategoryId = $this->route('deviceCategory')->id;
 
         return [
             'name' => [

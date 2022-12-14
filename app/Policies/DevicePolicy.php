@@ -17,7 +17,7 @@ class DevicePolicy
      * @param User $user
      * @return Response|bool
      */
-    public function viewAny(User $user): Response|bool
+    public function viewIndex(User $user): Response|bool
     {
         return true;
     }
@@ -75,7 +75,7 @@ class DevicePolicy
      * @param User $user
      * @return Response|bool
      */
-    public function deleteMany(User $user)
+    public function deleteMany(User $user): Response|bool
     {
         $ids = request()->ids;
         return $user->devices->whereIn('id', $ids)->count() === count($ids);
@@ -112,7 +112,7 @@ class DevicePolicy
      * @param Device $device
      * @return Response|bool
      */
-    public function triggerCommand(User $user, Device $device)
+    public function triggerDeviceCommand(User $user, Device $device): Response|bool
     {
         return $user->id === $device->deviceCategory->user_id;
     }

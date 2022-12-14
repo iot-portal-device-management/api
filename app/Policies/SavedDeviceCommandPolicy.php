@@ -17,7 +17,7 @@ class SavedDeviceCommandPolicy
      * @param User $user
      * @return Response|bool
      */
-    public function viewAny(User $user): Response|bool
+    public function viewIndex(User $user): Response|bool
     {
         return true;
     }

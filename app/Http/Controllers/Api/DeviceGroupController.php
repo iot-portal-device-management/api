@@ -15,7 +15,7 @@ use App\Http\Requests\UpdateDeviceGroupRequest;
 use App\Http\Resources\DeviceCollectionPagination;
 use App\Http\Resources\DeviceGroupCollectionPagination;
 use App\Http\Resources\DeviceGroupResource;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\DeviceGroup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,17 +26,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class DeviceGroupController extends Controller
 {
-//    /**
-//     * DeviceGroupController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:viewAny,App\Models\DeviceGroup')->only(['index', 'options']);
-//        $this->middleware('can:create,App\Models\DeviceGroup')->only('store');
-//        $this->middleware('can:update,deviceGroup')->only('update');
-//        $this->middleware('can:deleteMany,App\Models\DeviceGroup')->only('destroySelected');
-//    }
-
     /**
      * Return a listing of the device group.
      *
@@ -80,17 +69,11 @@ class DeviceGroupController extends Controller
     /**
      * Return the specified device group.
      *
-     * @param FindDeviceGroupByIdAction $findDeviceGroupByIdAction
-     * @param string $deviceGroupId
+     * @param DeviceGroup $deviceGroup
      * @return JsonResponse
-     * @throws AuthorizationException
      */
-    public function show(FindDeviceGroupByIdAction $findDeviceGroupByIdAction, string $deviceGroupId): JsonResponse
+    public function show(DeviceGroup $deviceGroup): JsonResponse
     {
-        $deviceGroup = $findDeviceGroupByIdAction->execute($deviceGroupId);
-
-        $this->authorize('view', $deviceGroup);
-
         return $this->apiOk(['deviceGroup' => new DeviceGroupResource($deviceGroup)]);
     }
 
@@ -100,23 +83,23 @@ class DeviceGroupController extends Controller
      * @param UpdateDeviceGroupRequest $request
      * @param UpdateDeviceGroupByIdAction $updateDeviceGroupByIdAction
      * @param FindDeviceGroupByIdAction $findDeviceGroupByIdAction
-     * @param string $deviceGroupId
+     * @param DeviceGroup $deviceGroup
      * @return JsonResponse
      */
     public function update(
         UpdateDeviceGroupRequest $request,
         UpdateDeviceGroupByIdAction $updateDeviceGroupByIdAction,
         FindDeviceGroupByIdAction $findDeviceGroupByIdAction,
-        string $deviceGroupId
+        DeviceGroup $deviceGroup
     ): JsonResponse
     {
         $data = $request->validated();
-        $data['deviceGroupId'] = $deviceGroupId;
+        $data['deviceGroupId'] = $deviceGroup->id;
 
         $success = $updateDeviceGroupByIdAction->execute($data);
 
         return $success
-            ? $this->apiOk(['deviceGroup' => new DeviceGroupResource($findDeviceGroupByIdAction->execute($deviceGroupId))])
+            ? $this->apiOk(['deviceGroup' => new DeviceGroupResource($findDeviceGroupByIdAction->execute($deviceGroup->id))])
             : $this->apiInternalServerError('Failed to update device group');
     }
 
@@ -144,17 +127,17 @@ class DeviceGroupController extends Controller
      *
      * @param Request $request
      * @param FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction
-     * @param string $deviceGroupId
+     * @param DeviceGroup $deviceGroup
      * @return JsonResponse
      */
     public function deviceGroupDevicesIndex(
         Request $request,
         FilterDataTableDeviceGroupDevicesAction $filterDataTableDeviceGroupDevicesAction,
-        string $deviceGroupId
+        DeviceGroup $deviceGroup,
     ): JsonResponse
     {
         $data = $request->all();
-        $data['deviceGroupId'] = $deviceGroupId;
+        $data['deviceGroupId'] = $deviceGroup->id;
 
         $devices = $filterDataTableDeviceGroupDevicesAction->execute($data);
 

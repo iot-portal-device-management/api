@@ -15,7 +15,7 @@ use App\Http\Requests\UpdateDeviceCategoryRequest;
 use App\Http\Resources\DeviceCategoryCollectionPagination;
 use App\Http\Resources\DeviceCategoryResource;
 use App\Http\Resources\DeviceCollectionPagination;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\DeviceCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,17 +26,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class DeviceCategoryController extends Controller
 {
-//    /**
-//     * DeviceCategoryController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:viewAny,App\Models\DeviceCategory')->only(['index', 'options']);
-//        $this->middleware('can:create,App\Models\DeviceCategory')->only('store');
-//        $this->middleware('can:update,deviceCategory')->only('update');
-//        $this->middleware('can:deleteMany,App\Models\DeviceCategory')->only('destroySelected');
-//    }
-
     /**
      * Return a listing of the device categories.
      *
@@ -80,20 +69,11 @@ class DeviceCategoryController extends Controller
     /**
      * Display the specified device category.
      *
-     * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
-     * @param string $deviceCategoryId
+     * @param DeviceCategory $deviceCategory
      * @return JsonResponse
-     * @throws AuthorizationException
      */
-    public function show(
-        FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction,
-        string $deviceCategoryId
-    ): JsonResponse
+    public function show(DeviceCategory $deviceCategory): JsonResponse
     {
-        $deviceCategory = $findDeviceCategoryByIdAction->execute($deviceCategoryId);
-
-        $this->authorize('view', $deviceCategory);
-
         return $this->apiOk(['deviceCategory' => new DeviceCategoryResource($deviceCategory)]);
     }
 
@@ -103,23 +83,23 @@ class DeviceCategoryController extends Controller
      * @param UpdateDeviceCategoryRequest $request
      * @param UpdateDeviceCategoryByIdAction $updateDeviceCategoryByIdAction
      * @param FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction
-     * @param string $deviceCategoryId
+     * @param DeviceCategory $deviceCategory
      * @return JsonResponse
      */
     public function update(
         UpdateDeviceCategoryRequest $request,
         UpdateDeviceCategoryByIdAction $updateDeviceCategoryByIdAction,
         FindDeviceCategoryByIdAction $findDeviceCategoryByIdAction,
-        string $deviceCategoryId
+        DeviceCategory $deviceCategory
     ): JsonResponse
     {
         $data = $request->validated();
-        $data['deviceCategoryId'] = $deviceCategoryId;
+        $data['deviceCategoryId'] = $deviceCategory->id;
 
         $success = $updateDeviceCategoryByIdAction->execute($data);
 
         return $success
-            ? $this->apiOk(['deviceCategory' => new DeviceCategoryResource($findDeviceCategoryByIdAction->execute($deviceCategoryId))])
+            ? $this->apiOk(['deviceCategory' => new DeviceCategoryResource($findDeviceCategoryByIdAction->execute($deviceCategory->id))])
             : $this->apiInternalServerError('Failed to update device category.');
     }
 
@@ -147,17 +127,17 @@ class DeviceCategoryController extends Controller
      *
      * @param Request $request
      * @param FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction
-     * @param string $deviceCategoryId
+     * @param DeviceCategory $deviceCategory
      * @return JsonResponse
      */
     public function deviceCategoryDevicesIndex(
         Request $request,
         FilterDataTableDeviceCategoryDevicesAction $filterDataTableDeviceCategoryDevicesAction,
-        string $deviceCategoryId
+        DeviceCategory $deviceCategory,
     ): JsonResponse
     {
         $data = $request->all();
-        $data['deviceCategoryId'] = $deviceCategoryId;
+        $data['deviceCategoryId'] = $deviceCategory->id;
 
         $devices = $filterDataTableDeviceCategoryDevicesAction->execute($data);
 

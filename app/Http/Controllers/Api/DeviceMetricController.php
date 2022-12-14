@@ -7,6 +7,7 @@ use App\Actions\DeviceMetric\FilterDeviceCpuUsagesAction;
 use App\Actions\DeviceMetric\FilterDeviceDiskUsagesAction;
 use App\Actions\DeviceMetric\FilterDeviceMemoryAvailablesAction;
 use App\Http\Controllers\Controller;
+use App\Models\Device;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,30 +17,22 @@ use Illuminate\Http\Request;
  */
 class DeviceMetricController extends Controller
 {
-//    /**
-//     * DeviceMetricController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:view,device')->only(['cpuTemperatures', 'cpuUsages', 'diskUsages', 'memoryAvailables']);
-//    }
-
     /**
      * Return CPU temperature data for the specified device.
      *
      * @param Request $request
      * @param FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function cpuTemperatures(
         Request $request,
         FilterDeviceCpuTemperaturesAction $filterDeviceCpuTemperaturesAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->only('timeRange');
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $cpuTemperatures = $filterDeviceCpuTemperaturesAction->execute($data);
 
@@ -51,17 +44,17 @@ class DeviceMetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function cpuUsages(
         Request $request,
         FilterDeviceCpuUsagesAction $filterDeviceCpuUsagesAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->only('timeRange');
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $cpuUsages = $filterDeviceCpuUsagesAction->execute($data);
 
@@ -73,17 +66,17 @@ class DeviceMetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function diskUsages(
         Request $request,
         FilterDeviceDiskUsagesAction $filterDeviceDiskUsagesAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->only('timeRange');
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $diskUsages = $filterDeviceDiskUsagesAction->execute($data);
 
@@ -95,17 +88,17 @@ class DeviceMetricController extends Controller
      *
      * @param Request $request
      * @param FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function memoryAvailables(
         Request $request,
         FilterDeviceMemoryAvailablesAction $filterDeviceMemoryAvailablesAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->only('timeRange');
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $availableMemories = $filterDeviceMemoryAvailablesAction->execute($data);
 

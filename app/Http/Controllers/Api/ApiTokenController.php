@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 class ApiTokenController extends Controller
 {
     /**
-     * Return user unique id and device connection key.
+     * Return user's unique id and device connection key.
      *
      * @param Request $request
      * @return JsonResponse

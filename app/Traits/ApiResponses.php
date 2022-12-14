@@ -65,6 +65,22 @@ trait ApiResponses
         ], $status);
     }
 
+    public function apiNotFound(
+        array|string $result = [],
+        bool $success = false,
+        array $errors = [],
+        array $message = [],
+        int $status = Response::HTTP_NOT_FOUND
+    ): JsonResponse
+    {
+        return response()->json([
+            'result' => $result,
+            'success' => $success,
+            'errors' => $errors,
+            'messages' => $message,
+        ], $status);
+    }
+
     public function apiUnprocessableEntity(
         array|string $result = [],
         bool $success = false,

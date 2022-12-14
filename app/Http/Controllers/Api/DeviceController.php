@@ -17,10 +17,10 @@ use App\Http\Requests\UpdateDeviceRequest;
 use App\Http\Resources\DeviceCollectionPagination;
 use App\Http\Resources\DeviceResource;
 use App\Models\Device;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Class DeviceController
@@ -28,18 +28,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class DeviceController extends Controller
 {
-//    /**
-//     * DeviceController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:viewAny,App\Models\Device')->only('index');
-//        $this->middleware('can:create,App\Models\Device')->only('store');
-//        $this->middleware('can:update,device')->only('update');
-//        $this->middleware('can:deleteMany,App\Models\Device')->only('destroySelected');
-//        $this->middleware('can:triggerCommand,device')->only('commands');
-//    }
-
     /**
      * Return a listing of the devices.
      *
@@ -78,15 +66,12 @@ class DeviceController extends Controller
      * Return the specified device.
      *
      * @param FindDeviceByIdAction $findDeviceByIdAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
-     * @throws AuthorizationException
      */
-    public function show(FindDeviceByIdAction $findDeviceByIdAction, string $deviceId): JsonResponse
+    public function show(FindDeviceByIdAction $findDeviceByIdAction, Device $device): JsonResponse
     {
-        $device = $findDeviceByIdAction->execute($deviceId);
-
-        $this->authorize('view', $device);
+        $device = $findDeviceByIdAction->execute($device->id);
 
         return $this->apiOk(['device' => new DeviceResource($device)]);
     }
@@ -96,23 +81,23 @@ class DeviceController extends Controller
      *
      * @param UpdateDeviceRequest $request
      * @param UpdateDeviceByIdAction $updateDeviceByIdAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function update(
         UpdateDeviceRequest $request,
         UpdateDeviceByIdAction $updateDeviceByIdAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->validated();
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $success = $updateDeviceByIdAction->execute($data);
 
         return $success
             ? $this->apiOk(['device' => new DeviceResource(
-                Device::id($deviceId)
+                Device::id($device->id)
                     ->with(
                         'deviceCategory:id,name',
                         'deviceStatus:id,name',

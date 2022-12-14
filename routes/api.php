@@ -10,8 +10,17 @@ use App\Http\Controllers\Api\DeviceMetricController;
 use App\Http\Controllers\Api\Mqtt\EndpointController;
 use App\Http\Controllers\Api\SavedDeviceCommandController;
 use App\Http\Controllers\Api\StatisticController;
-use App\Http\Controllers\Api\TestController;
 use App\Http\Controllers\Api\UserController;
+use App\Models\Device;
+use App\Models\DeviceCategory;
+use App\Models\DeviceCpuTemperatureStatistic;
+use App\Models\DeviceGroup;
+use App\Models\DeviceJob;
+use App\Models\SavedDeviceCommand;
+use App\Models\User;
+use App\Policies\DeviceCpuStatisticPolicy;
+use App\Policies\DeviceDiskStatisticPolicy;
+use App\Policies\DeviceMemoryStatisticPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,22 +37,11 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/api_auth.php';
 
-
-//Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
-Route::get('/111', function (Request $request) {
-    return config('app.env');
-//    return $request->user();
-});
-
 // VERNEMQ WEBHOOKS ENDPOINT
 Route::post('/mqtt/endpoint', [EndpointController::class, 'mqttEndpoint']);
 
 // DEVICE REGISTRATION ENDPOINT
 Route::post('/devices/register', [DeviceController::class, 'register']);
-
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
@@ -52,131 +50,167 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
     // USER STATISTICS
-    Route::get('/statistics', [StatisticController::class, 'showStatistics']);
+    Route::get('/statistics', [StatisticController::class, 'showStatistics'])
+        ->can('viewOverallStatistic', User::class);
 
     // STATISTICS CPU TEMPERATURES
-    Route::get('/statistics/devices/online/cpu/temperatures', [StatisticController::class, 'onlineDevicesCpuTemperatures']);
+    Route::get('/statistics/devices/online/cpu/temperatures', [StatisticController::class, 'onlineDevicesCpuTemperatures'])
+        ->can('view', DeviceCpuTemperatureStatistic::class);
 
     // STATISTICS CPU USAGES
-    Route::get('/statistics/devices/online/cpu/usages', [StatisticController::class, 'onlineDevicesCpuUsages']);
+    Route::get('/statistics/devices/online/cpu/usages', [StatisticController::class, 'onlineDevicesCpuUsages'])
+        ->can('view', DeviceCpuStatisticPolicy::class);
 
     // STATISTICS DISK USAGES
-    Route::get('/statistics/devices/online/disk/usages', [StatisticController::class, 'onlineDevicesDiskUsages']);
+    Route::get('/statistics/devices/online/disk/usages', [StatisticController::class, 'onlineDevicesDiskUsages'])
+        ->can('view', DeviceDiskStatisticPolicy::class);
 
     // STATISTICS MEMORY AVAILABLES
-    Route::get('/statistics/devices/online/memory/availables', [StatisticController::class, 'onlineDevicesMemoryAvailables']);
+    Route::get('/statistics/devices/online/memory/availables', [StatisticController::class, 'onlineDevicesMemoryAvailables'])
+        ->can('view', DeviceMemoryStatisticPolicy::class);
 
 
     // DEVICES
-    Route::get('/devices', [DeviceController::class, 'index']);
+    Route::get('/devices', [DeviceController::class, 'index'])
+        ->can('viewIndex', Device::class);
 
-    Route::post('/devices', [DeviceController::class, 'store']);
+    Route::post('/devices', [DeviceController::class, 'store'])
+        ->can('create', Device::class);
 
-    Route::get('/devices/{deviceId}', [DeviceController::class, 'show'])
-        ->whereUuid('deviceId');
+    Route::get('/devices/{device}', [DeviceController::class, 'show'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 
-    Route::match(['put', 'patch'], '/devices/{deviceId}', [DeviceController::class, 'update'])
-        ->whereUuid('deviceId');
+    Route::match(['put', 'patch'], '/devices/{device}', [DeviceController::class, 'update'])
+        ->whereUuid('device')
+        ->can('update', 'device');
 
-    Route::delete('/devices', [DeviceController::class, 'destroySelected']);
+    Route::delete('/devices', [DeviceController::class, 'destroySelected'])
+        ->can('deleteMany', Device::class);
 
 
     // DEVICE GROUPS
-    Route::get('/device/groups/options', [DeviceGroupController::class, 'options']);
+    Route::get('/device/groups/options', [DeviceGroupController::class, 'options'])
+        ->can('viewIndex', DeviceGroup::class);
 
-    Route::get('/device/groups/{deviceGroupId}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex'])
-        ->whereUuid('deviceGroupId');
+    Route::get('/device/groups/{deviceGroup}/devices', [DeviceGroupController::class, 'deviceGroupDevicesIndex'])
+        ->whereUuid('deviceGroup')
+        ->can('view', 'deviceGroup');
 
-    Route::get('/device/groups', [DeviceGroupController::class, 'index']);
+    Route::get('/device/groups', [DeviceGroupController::class, 'index'])
+        ->can('viewIndex', DeviceGroup::class);
 
-    Route::post('/device/groups', [DeviceGroupController::class, 'store']);
+    Route::post('/device/groups', [DeviceGroupController::class, 'store'])
+        ->can('create', DeviceGroup::class);
 
-    Route::get('/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'show'])
-        ->whereUuid('deviceGroupId');
+    Route::get('/device/groups/{deviceGroup}', [DeviceGroupController::class, 'show'])
+        ->whereUuid('deviceGroup')
+        ->can('view', 'deviceGroup');
 
-    Route::match(['put', 'patch'], '/device/groups/{deviceGroupId}', [DeviceGroupController::class, 'update'])
-        ->whereUuid('deviceGroupId');
+    Route::match(['put', 'patch'], '/device/groups/{deviceGroup}', [DeviceGroupController::class, 'update'])
+        ->whereUuid('deviceGroup')
+        ->can('update', 'deviceGroup');
 
-    Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected']);
+    Route::delete('/device/groups', [DeviceGroupController::class, 'destroySelected'])
+        ->can('deleteMany', DeviceGroup::class);
 
 
     // DEVICE CATEGORIES
-    Route::get('/device/categories/options', [DeviceCategoryController::class, 'options']);
+    Route::get('/device/categories/options', [DeviceCategoryController::class, 'options'])
+        ->can('viewIndex', DeviceCategory::class);
 
-    Route::get('/device/categories/{deviceCategoryId}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex'])
-        ->whereUuid('deviceCategoryId');
+    Route::get('/device/categories/{deviceCategory}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex'])
+        ->whereUuid('deviceCategory')
+        ->can('view', 'deviceCategory');
 
-    Route::get('/device/categories', [DeviceCategoryController::class, 'index']);
+    Route::get('/device/categories', [DeviceCategoryController::class, 'index'])
+        ->can('viewIndex', DeviceCategory::class);
 
-    Route::post('/device/categories', [DeviceCategoryController::class, 'store']);
+    Route::post('/device/categories', [DeviceCategoryController::class, 'store'])
+        ->can('create', DeviceCategory::class);
 
-    Route::get('/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'show'])
-        ->whereUuid('deviceCategoryId');
+    Route::get('/device/categories/{deviceCategory}', [DeviceCategoryController::class, 'show'])
+        ->whereUuid('deviceCategory')
+        ->can('view', 'deviceCategory');
 
-    Route::match(['put', 'patch'], '/device/categories/{deviceCategoryId}', [DeviceCategoryController::class, 'update'])
-        ->whereUuid('deviceCategoryId');
+    Route::match(['put', 'patch'], '/device/categories/{deviceCategory}', [DeviceCategoryController::class, 'update'])
+        ->whereUuid('deviceCategory')
+        ->can('update', 'deviceCategory');
 
-    Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected']);
+    Route::delete('/device/categories', [DeviceCategoryController::class, 'destroySelected'])
+        ->can('deleteMany', DeviceCategory::class);
 
 
     // DEVICE JOBS
-    Route::get('/device/jobs/{deviceJobId}/progressStatus', [DeviceJobController::class, 'showProgressStatus'])
-        ->whereUuid('deviceJobId');
+    Route::get('/device/jobs/{deviceJob}/progressStatus', [DeviceJobController::class, 'showProgressStatus'])
+        ->whereUuid('deviceJob')
+        ->can('view', 'deviceJob');
 
-    Route::get('/device/jobs/{deviceJobId}/deviceCommands', [DeviceJobController::class, 'deviceJobDeviceCommandsIndex'])
-        ->whereUuid('deviceJobId');
+    Route::get('/device/jobs/{deviceJob}/deviceCommands', [DeviceJobController::class, 'deviceJobDeviceCommandsIndex'])
+        ->whereUuid('deviceJob')
+        ->can('view', 'deviceJob');
 
-    Route::get('/device/jobs', [DeviceJobController::class, 'index']);
+    Route::get('/device/jobs', [DeviceJobController::class, 'index'])
+        ->can('viewIndex', DeviceJob::class);
 
-    Route::post('/device/jobs', [DeviceJobController::class, 'store']);
+    Route::post('/device/jobs', [DeviceJobController::class, 'store'])
+        ->can('create', DeviceJob::class);
 
-    Route::get('/device/jobs/{deviceJobId}', [DeviceJobController::class, 'show'])
-        ->whereUuid('deviceJobId');
+    Route::get('/device/jobs/{deviceJob}', [DeviceJobController::class, 'show'])
+        ->whereUuid('deviceJob')
+        ->can('view', 'deviceJob');
 
 
     // SAVED DEVICE COMMANDS
-    Route::get('/device/commands/saved/options', [SavedDeviceCommandController::class, 'options']);
+    Route::get('/device/commands/saved/options', [SavedDeviceCommandController::class, 'options'])
+        ->can('viewIndex', SavedDeviceCommand::class);
 
-    Route::get('/device/commands/saved', [SavedDeviceCommandController::class, 'index']);
+    Route::get('/device/commands/saved', [SavedDeviceCommandController::class, 'index'])
+        ->can('viewIndex', SavedDeviceCommand::class);
 
-    Route::post('/device/commands/saved', [SavedDeviceCommandController::class, 'store']);
+    Route::post('/device/commands/saved', [SavedDeviceCommandController::class, 'store'])
+        ->can('create', SavedDeviceCommand::class);
 
-    Route::get('/device/commands/saved/{savedDeviceCommandId}', [SavedDeviceCommandController::class, 'show'])
-        ->whereUuid('savedDeviceCommandId');
+    Route::get('/device/commands/saved/{savedDeviceCommand}', [SavedDeviceCommandController::class, 'show'])
+        ->whereUuid('savedDeviceCommand')
+        ->can('view', 'savedDeviceCommand');
 
-    Route::delete('/device/commands/saved', [SavedDeviceCommandController::class, 'destroySelected']);
+    Route::delete('/device/commands/saved', [SavedDeviceCommandController::class, 'destroySelected'])
+        ->can('deleteMany', SavedDeviceCommand::class);
 
 
     // DEVICE METRICS AKA. DEVICE METRICS CHARTS
-    Route::get('/devices/{deviceId}/metrics/cpu/temperatures', [DeviceMetricController::class, 'cpuTemperatures'])
-        ->whereUuid('deviceId');
+    Route::get('/devices/{device}/metrics/cpu/temperatures', [DeviceMetricController::class, 'cpuTemperatures'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 
-    Route::get('/devices/{deviceId}/metrics/cpu/usages', [DeviceMetricController::class, 'cpuUsages'])
-        ->whereUuid('deviceId');
+    Route::get('/devices/{device}/metrics/cpu/usages', [DeviceMetricController::class, 'cpuUsages'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 
-    Route::get('/devices/{deviceId}/metrics/disk/usages', [DeviceMetricController::class, 'diskUsages'])
-        ->whereUuid('deviceId');
+    Route::get('/devices/{device}/metrics/disk/usages', [DeviceMetricController::class, 'diskUsages'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 
-    Route::get('/devices/{deviceId}/metrics/memory/availables', [DeviceMetricController::class, 'memoryAvailables'])
-        ->whereUuid('deviceId');
+    Route::get('/devices/{device}/metrics/memory/availables', [DeviceMetricController::class, 'memoryAvailables'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 
 
     // DEVICE OTA COMMAND TRIGGER ENDPOINT
-    Route::post('/devices/{deviceId}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
-        ->whereUuid('deviceId');
+    Route::post('/devices/{device}/triggerDeviceCommand', [DeviceCommandController::class, 'triggerDeviceCommand'])
+        ->whereUuid('device')
+        ->can('triggerDeviceCommand', 'device');
 
 
     // DEVICE COMMANDS
-    Route::get('/devices/{deviceId}/deviceCommands', [DeviceCommandController::class, 'index'])
-        ->whereUuid('deviceId');
+    Route::get('/devices/{device}/deviceCommands', [DeviceCommandController::class, 'index'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 
 
     // DEVICE EVENTS
-    Route::get('/devices/{deviceId}/deviceEvents', [DeviceEventController::class, 'index'])
-        ->whereUuid('deviceId');
-
+    Route::get('/devices/{device}/deviceEvents', [DeviceEventController::class, 'index'])
+        ->whereUuid('device')
+        ->can('view', 'device');
 });
-
-Route::get('/test', [TestController::class, 'index']);
-
-

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TriggerDeviceCommandRequest;
 use App\Http\Resources\DeviceCommandCollectionPagination;
 use App\Http\Resources\DeviceCommandResource;
+use App\Models\Device;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,30 +18,22 @@ use Illuminate\Http\Request;
  */
 class DeviceCommandController extends Controller
 {
-//    /**
-//     * DeviceCommandController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:view,device')->only('index');
-//    }
-
     /**
      * Return a listing of the device commands.
      *
      * @param Request $request
      * @param FilterDataTableDeviceCommandsAction $filterDataTableDeviceCommandsAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function index(
         Request $request,
         FilterDataTableDeviceCommandsAction $filterDataTableDeviceCommandsAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->all();
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $deviceCommands = $filterDataTableDeviceCommandsAction->execute($data);
 
@@ -52,17 +45,17 @@ class DeviceCommandController extends Controller
      *
      * @param TriggerDeviceCommandRequest $request
      * @param TriggerDeviceCommandAction $triggerDeviceCommandAction
-     * @param string $deviceId
+     * @param Device $device
      * @return JsonResponse
      */
     public function triggerDeviceCommand(
         TriggerDeviceCommandRequest $request,
         TriggerDeviceCommandAction $triggerDeviceCommandAction,
-        string $deviceId
+        Device $device
     ): JsonResponse
     {
         $data = $request->validated();
-        $data['deviceId'] = $deviceId;
+        $data['deviceId'] = $device->id;
 
         $deviceCommand = $triggerDeviceCommandAction->execute($data);
 

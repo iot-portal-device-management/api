@@ -23,12 +23,11 @@ class UpdateDeviceGroupRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @param FindDeviceGroupByIdAction $findDeviceGroupByIdAction
      * @return array
      */
-    public function rules(FindDeviceGroupByIdAction $findDeviceGroupByIdAction): array
+    public function rules(): array
     {
-        $oldDeviceGroupId = $findDeviceGroupByIdAction->execute($this->route('deviceGroupId'))->id;
+        $oldDeviceGroupId = $this->route('deviceGroup')->id;;
 
         return [
             'name' => [

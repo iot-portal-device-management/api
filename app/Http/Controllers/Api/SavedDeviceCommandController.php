@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Actions\SavedDeviceCommand\CreateSavedDeviceCommandAction;
 use App\Actions\SavedDeviceCommand\DeleteSavedDeviceCommandsByIdsAction;
 use App\Actions\SavedDeviceCommand\FilterDataTableSavedDeviceCommandsAction;
-use App\Actions\SavedDeviceCommand\FindSavedDeviceCommandByIdAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroySelectedSavedDeviceCommandsRequest;
 use App\Http\Requests\StoreSavedDeviceCommandRequest;
 use App\Http\Resources\SavedDeviceCommandCollectionPagination;
 use App\Http\Resources\SavedDeviceCommandResource;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\SavedDeviceCommand;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,16 +21,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class SavedDeviceCommandController extends Controller
 {
-//    /**
-//     * SavedDeviceCommandController constructor.
-//     */
-//    public function __construct()
-//    {
-//        $this->middleware('can:viewAny,App\Models\SavedDeviceCommand')->only(['index', 'options']);
-//        $this->middleware('can:create,App\Models\SavedDeviceCommand')->only('store');
-//        $this->middleware('can:deleteMany,App\Models\SavedDeviceCommand')->only('destroySelected');
-//    }
-
     /**
      * Return a listing of the saved device commands.
      *
@@ -75,20 +64,11 @@ class SavedDeviceCommandController extends Controller
     /**
      * Return the specified saved device command.
      *
-     * @param FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction
-     * @param string $savedDeviceCommandId
+     * @param SavedDeviceCommand $savedDeviceCommand
      * @return JsonResponse
-     * @throws AuthorizationException
      */
-    public function show(
-        FindSavedDeviceCommandByIdAction $findSavedDeviceCommandByIdAction,
-        string $savedDeviceCommandId
-    ): JsonResponse
+    public function show(SavedDeviceCommand $savedDeviceCommand): JsonResponse
     {
-        $savedDeviceCommand = $findSavedDeviceCommandByIdAction->execute($savedDeviceCommandId);
-
-        $this->authorize('view', $savedDeviceCommand);
-
         return $this->apiOk(['savedDeviceCommand' => new SavedDeviceCommandResource($savedDeviceCommand)]);
     }
 
