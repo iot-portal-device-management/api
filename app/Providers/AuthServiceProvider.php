@@ -24,6 +24,7 @@ use App\Policies\SavedDeviceCommandPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -54,10 +55,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Password::defaults(function () {
+            $rule = Password::min(16);
+
+            return $this->app->isProduction()
+                ? $rule->mixedCase()->symbols()->uncompromised()
+                : $rule;
+        });
+
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
             return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
-
-        //
     }
 }

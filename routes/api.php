@@ -13,15 +13,14 @@ use App\Http\Controllers\Api\StatisticController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\Device;
 use App\Models\DeviceCategory;
+use App\Models\DeviceCpuStatistic;
 use App\Models\DeviceCpuTemperatureStatistic;
+use App\Models\DeviceDiskStatistic;
 use App\Models\DeviceGroup;
 use App\Models\DeviceJob;
+use App\Models\DeviceMemoryStatistic;
 use App\Models\SavedDeviceCommand;
 use App\Models\User;
-use App\Policies\DeviceCpuStatisticPolicy;
-use App\Policies\DeviceDiskStatisticPolicy;
-use App\Policies\DeviceMemoryStatisticPolicy;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,12 +40,13 @@ require __DIR__ . '/api_auth.php';
 Route::post('/mqtt/endpoint', [EndpointController::class, 'mqttEndpoint']);
 
 // DEVICE REGISTRATION ENDPOINT
-Route::post('/devices/register', [DeviceController::class, 'register']);
+Route::post('/devices/register', [DeviceController::class, 'register'])
+    ->middleware(['throttle:6,1']);
 
-Route::middleware(['auth:sanctum'])->group(function () {
-
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // LOGGED IN USER
-    Route::get('/user', [UserController::class, 'user']);
+    Route::get('/user', [UserController::class, 'user'])
+        ->can('viewOwn', User::class);
 
 
     // USER STATISTICS
@@ -54,20 +54,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->can('viewOverallStatistic', User::class);
 
     // STATISTICS CPU TEMPERATURES
-    Route::get('/statistics/devices/online/cpu/temperatures', [StatisticController::class, 'onlineDevicesCpuTemperatures'])
+    Route::get('/statistics/devices/online/cpu/temperatures',
+        [StatisticController::class, 'onlineDevicesCpuTemperatures'])
         ->can('view', DeviceCpuTemperatureStatistic::class);
 
     // STATISTICS CPU USAGES
     Route::get('/statistics/devices/online/cpu/usages', [StatisticController::class, 'onlineDevicesCpuUsages'])
-        ->can('view', DeviceCpuStatisticPolicy::class);
+        ->can('view', DeviceCpuStatistic::class);
 
     // STATISTICS DISK USAGES
     Route::get('/statistics/devices/online/disk/usages', [StatisticController::class, 'onlineDevicesDiskUsages'])
-        ->can('view', DeviceDiskStatisticPolicy::class);
+        ->can('view', DeviceDiskStatistic::class);
 
     // STATISTICS MEMORY AVAILABLES
-    Route::get('/statistics/devices/online/memory/availables', [StatisticController::class, 'onlineDevicesMemoryAvailables'])
-        ->can('view', DeviceMemoryStatisticPolicy::class);
+    Route::get('/statistics/devices/online/memory/availables',
+        [StatisticController::class, 'onlineDevicesMemoryAvailables'])
+        ->can('view', DeviceMemoryStatistic::class);
 
 
     // DEVICES
@@ -119,7 +121,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/device/categories/options', [DeviceCategoryController::class, 'options'])
         ->can('viewIndex', DeviceCategory::class);
 
-    Route::get('/device/categories/{deviceCategory}/devices', [DeviceCategoryController::class, 'deviceCategoryDevicesIndex'])
+    Route::get('/device/categories/{deviceCategory}/devices',
+        [DeviceCategoryController::class, 'deviceCategoryDevicesIndex'])
         ->whereUuid('deviceCategory')
         ->can('view', 'deviceCategory');
 
@@ -133,7 +136,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->whereUuid('deviceCategory')
         ->can('view', 'deviceCategory');
 
-    Route::match(['put', 'patch'], '/device/categories/{deviceCategory}', [DeviceCategoryController::class, 'update'])
+    Route::match(['put', 'patch'], '/device/categories/{deviceCategory}',
+        [DeviceCategoryController::class, 'update'])
         ->whereUuid('deviceCategory')
         ->can('update', 'deviceCategory');
 
@@ -146,7 +150,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->whereUuid('deviceJob')
         ->can('view', 'deviceJob');
 
-    Route::get('/device/jobs/{deviceJob}/deviceCommands', [DeviceJobController::class, 'deviceJobDeviceCommandsIndex'])
+    Route::get('/device/jobs/{deviceJob}/deviceCommands',
+        [DeviceJobController::class, 'deviceJobDeviceCommandsIndex'])
         ->whereUuid('deviceJob')
         ->can('view', 'deviceJob');
 

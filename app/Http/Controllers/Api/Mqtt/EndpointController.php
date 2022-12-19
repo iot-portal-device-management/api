@@ -14,7 +14,6 @@ use App\Models\Device;
 use App\Models\DeviceEventType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -32,8 +31,6 @@ class EndpointController extends Controller
     public function mqttEndpoint(Request $request): JsonResponse
     {
         $verneMqHook = $request->header(config('vernemq.webhook_header', 'vernemq-hook'));
-        Log::debug('[MQTT Received] ' . $verneMqHook . ', Request: ' . json_encode($request->except('password')));
-        Log::debug('[MQTT Received1] ' . $verneMqHook . ', Payload: ' . base64_decode($request->input('payload')));
 
         if ($verneMqHook) {
             if ($verneMqHook === config('vernemq.hooks.auth_on_register', 'auth_on_register')) {
@@ -64,16 +61,11 @@ class EndpointController extends Controller
         $password = $request->password;
         $clientId = $request->client_id;
 
-        Log::debug('[authOnRegister] $username=' . $username . ', $password=' . $password . '$clientId=' . $clientId);
-
         // If the payload provided matches the portal MQTT server credentials, then it is from the backend portal, we
         // return OK if they are matched.
         if ((new CheckIfValidPortalMqttCredentials)->execute($username, $password, $clientId)) {
-            Log::debug('[authOnRegister] returned OK');
             return $this->apiMqttOk('ok');
         }
-
-        Log::debug('[authOnRegister]  still run');
 
         // Else, we check if the MQTT message is from the device client and if the credentials match.
         $validator = Validator::make($request->all(), [
@@ -147,8 +139,6 @@ class EndpointController extends Controller
         $username = $request->username;
         $clientId = $request->client_id;
         $topic = $request->topic;
-
-        Log::debug('[authOnPublish] $username=' . $username . ', $clientId=' . $clientId . '$topic=' . $topic);
 
         // If the payload provided matches the portal MQTT server credentials, then it is from the backend portal, we
         // return OK if they are matched.
@@ -250,8 +240,6 @@ class EndpointController extends Controller
      */
     protected function messagesEvents(Device $device, ?string $payload): JsonResponse
     {
-        Log::debug('[MQTT Message DeviceEventType] ' . $payload);
-
         $deviceEvent = $device->deviceEvents()->create([
             'raw_data' => Helper::isJson($payload) ? $payload : json_encode($payload),
             'device_event_type_id' => $device->deviceEventTypes()->getType(DeviceEventType::TYPE_TELEMETRY)->id,
@@ -314,8 +302,6 @@ class EndpointController extends Controller
      */
     protected function propertiesReported(Device $device, ?string $payload): JsonResponse
     {
-        Log::debug('[MQTT Properties Reported] ' . $payload);
-
         $deviceEvent = $device->deviceEvents()->create([
             'raw_data' => Helper::isJson($payload) ? $payload : json_encode($payload),
             'device_event_type_id' => $device->deviceEventTypes()->getType(DeviceEventType::TYPE_PROPERTY)->id,
