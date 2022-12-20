@@ -178,6 +178,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\MqttClientServiceProvider::class,
 
     ],
 
@@ -194,6 +195,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+         'MQTT' => \App\Facades\MQTT::class,
     ])->toArray(),
 
 ];
