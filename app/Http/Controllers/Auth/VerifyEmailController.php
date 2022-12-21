@@ -20,7 +20,9 @@ class VerifyEmailController extends Controller
     {
         if ($request->user()->hasVerifiedEmail()) {
             return redirect()->intended(
-                config('app.frontend_url') . RouteServiceProvider::HOME . '?verified=1'
+                config('app.frontend_url') . RouteServiceProvider::HOME
+                # TODO: Fix frontend does not support '?verified=1' param, resulted in refresh loop
+//                config('app.frontend_url') . RouteServiceProvider::HOME . '?verified=1'
             );
         }
 
@@ -29,7 +31,8 @@ class VerifyEmailController extends Controller
         }
 
         return redirect()->intended(
-            config('app.frontend_url') . RouteServiceProvider::HOME . '?verified=1'
+            config('app.frontend_url') . RouteServiceProvider::HOME
+//            config('app.frontend_url') . RouteServiceProvider::HOME . '?verified=1'
         );
     }
 }
