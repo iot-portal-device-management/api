@@ -37,11 +37,12 @@ use Illuminate\Support\Facades\Route;
 require __DIR__ . '/api_auth.php';
 
 // VERNEMQ WEBHOOKS ENDPOINT
-Route::post('/mqtt/endpoint', [EndpointController::class, 'mqttEndpoint']);
+Route::post('/mqtt/endpoint', [EndpointController::class, 'mqttEndpoint'])
+    ->withoutMiddleware('throttle:api')
+    ->middleware('throttle:120,1');
 
 // DEVICE REGISTRATION ENDPOINT
-Route::post('/devices/register', [DeviceController::class, 'register'])
-    ->middleware(['throttle:6,1']);
+Route::post('/devices/register', [DeviceController::class, 'register']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // LOGGED IN USER

@@ -14,6 +14,7 @@ use App\Models\Device;
 use App\Models\DeviceEventType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -140,6 +141,8 @@ class EndpointController extends Controller
         $clientId = $request->client_id;
         $topic = $request->topic;
 
+        Log::debug('[authOnPublish] $username=' . $username . ', $clientId=' . $clientId . '$topic=' . $topic);
+
         // If the payload provided matches the portal MQTT server credentials, then it is from the backend portal, we
         // return OK if they are matched.
         if ((new CheckIfValidPortalMqttTopics)->execute($username, $clientId, $topic)) {
@@ -172,7 +175,8 @@ class EndpointController extends Controller
                     return $this->messagesEvents($device, $payload);
                 } elseif (preg_match('/devices\/([\w\-]+)\/properties\/reported/', $topic)) {
                     return $this->propertiesReported($device, $payload);
-                } elseif (preg_match('/iotportal\/([\w\-]+)\/methods\/res\/\?\$rid=([\d]+)/', $topic, $requestIdMatches)) {
+                } elseif (preg_match('/iotportal\/([\w\-]+)\/methods\/res\/\?\$rid=([\w\-]+)/', $topic, $requestIdMatches)) {
+                    Log::debug('Catched ID: ' . $requestIdMatches[2]);
                     return $this->updateResponse($device, $requestIdMatches[2]);
                 }
 
@@ -354,10 +358,10 @@ class EndpointController extends Controller
      * Update command response time for clients.
      *
      * @param Device $device
-     * @param int $requestId
+     * @param string $requestId
      * @return JsonResponse
      */
-    protected function updateResponse(Device $device, int $requestId): JsonResponse
+    protected function updateResponse(Device $device, string $requestId): JsonResponse
     {
         $success = $device->deviceCommands()->find($requestId)->update(['responded_at' => now()]);
 
