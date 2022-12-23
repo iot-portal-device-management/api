@@ -4,7 +4,7 @@
   </a>
 </h1>
 
-This repository houses the APIs and queue workers needed for IoT Portal Device Management.
+This repository houses the APIs and jobs needed for IoT Portal Device Management.
 
 ## 👏 Contributing
 
