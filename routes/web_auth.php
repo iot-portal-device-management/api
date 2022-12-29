@@ -1,4 +1,8 @@
 <?php
+/*
+ * Copyright (C) 2021-2022 Intel Corporation
+ * SPDX-License-Identifier: MIT
+ */
 
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;

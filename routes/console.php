@@ -1,4 +1,8 @@
 <?php
+/*
+ * Copyright (C) 2021-2022 Intel Corporation
+ * SPDX-License-Identifier: MIT
+ */
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;

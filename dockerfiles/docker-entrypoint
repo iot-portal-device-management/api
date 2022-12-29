@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 
+#
+# Copyright (C) 2021-2022 Intel Corporation
+# SPDX-License-Identifier: MIT
+#
+
 set -e
 
 if [ "$APP_ENV" = "production" ]; then
