@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "api",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "API for IoT Portal Device Management.",
+    "keywords": ["iot", "telemetry", "datacenter", "manageability"],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
