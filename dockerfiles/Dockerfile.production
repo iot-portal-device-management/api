@@ -10,7 +10,12 @@ FROM php:${PHP_VERSION}
 
 LABEL com.iotportaldevicemanagement.product="iotportaldevicemanagement"
 
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 RUN set -eux; \
+    mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \
+    sed -i "s~expose_php =.*~expose_php = Off~g" "$PHP_INI_DIR/php.ini"; \
     apk add --no-cache \
             libpq-dev \
     ; \
