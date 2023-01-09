@@ -10,10 +10,8 @@ FROM php:${PHP_VERSION}
 
 LABEL com.iotportaldevicemanagement.product="iotportaldevicemanagement"
 
-# Use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
 RUN set -eux; \
+    # Use the default production configuration
     mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \
     sed -i "s~expose_php =.*~expose_php = Off~g" "$PHP_INI_DIR/php.ini"; \
     apk add --no-cache \
@@ -21,12 +19,12 @@ RUN set -eux; \
     ; \
     \
     apk add --no-cache --virtual .build-deps \
-            $PHPIZE_DEPS \
+            "$PHPIZE_DEPS" \
             pcre-dev \
     ; \
     \
     pecl install -o -f redis-5.3.7; \
-	docker-php-ext-install -j$(nproc) pdo pdo_pgsql; \
+	docker-php-ext-install -j"$(nproc)" pdo pdo_pgsql; \
     docker-php-ext-enable redis; \
     apk del --no-network .build-deps; \
     rm -rf /tmp/pear
