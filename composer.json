@@ -1,5 +1,5 @@
 {
-    "name": "api",
+    "name": "iot-portal-device-management/api",
     "type": "project",
     "description": "API for IoT Portal Device Management.",
     "keywords": ["iot", "telemetry", "datacenter", "manageability"],
