@@ -10,6 +10,11 @@ FROM php:${PHP_VERSION}
 
 LABEL com.iotportaldevicemanagement.product="iotportaldevicemanagement"
 
+RUN if [ -n ${http_proxy} ]; then \
+    # set pecl to use http_proxy
+    pear config-set http_proxy ${http_proxy:-""} \
+;fi
+
 RUN set -eux; \
     # Use the default production configuration
     mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \
