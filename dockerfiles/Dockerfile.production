@@ -24,7 +24,7 @@ RUN set -eux; \
     ; \
     \
     # set pecl to use http_proxy if set
-    if [ -n ${http_proxy} ]; then pear config-set http_proxy ${http_proxy:-""}; fi \
+    if [ -n ${http_proxy} ]; then pear config-set http_proxy ${http_proxy:-""}; fi; \
     pecl install -o -f redis-5.3.7; \
 	docker-php-ext-install -j"$(nproc)" pdo pdo_pgsql; \
     docker-php-ext-enable redis; \
