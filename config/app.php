@@ -180,6 +180,9 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\MqttClientServiceProvider::class,
 
+        // Override vendor implementation
+        App\Providers\SanctumServiceProvider::class,
+
     ],
 
     /*
